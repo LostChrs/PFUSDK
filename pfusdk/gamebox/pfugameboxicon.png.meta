@@ -1,0 +1,31 @@
+{
+  "ver": "2.2.0",
+  "uuid": "718d2583-307b-40ce-bd96-bf0825b02f03",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "subMetas": {
+    "pfugameboxicon": {
+      "ver": "1.0.3",
+      "uuid": "f07214b3-1013-4e84-b598-e883b5c45f7c",
+      "rawTextureUuid": "718d2583-307b-40ce-bd96-bf0825b02f03",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 92,
+      "height": 92,
+      "rawWidth": 92,
+      "rawHeight": 92,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
