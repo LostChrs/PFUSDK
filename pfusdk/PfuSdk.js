@@ -32,6 +32,7 @@ var PfuSdk = cc.Class({
             }
         }
         let self = this;
+        self._isIphoneX = (cc.winSize.height / cc.winSize.width) >= 2;
         this.log("Version:"+VERSION);
         cc.game.on(cc.game.EVENT_SHOW, function () {
             self.onAppShow();
@@ -599,6 +600,7 @@ var PfuSdk = cc.Class({
             self._bannerAd.destroy();
         }
         let needWidth = config.bannerSize == 1?750:200;
+        let offY = self._isIphoneX ? 20:0;
         let bannerAd = wx.createBannerAd({
             adUnitId: config.wxBannerId,
             style: {
@@ -608,7 +610,7 @@ var PfuSdk = cc.Class({
             }
         });
         bannerAd.onResize(res => {
-            bannerAd.style.top = self._wxHeight - res.height;
+            bannerAd.style.top = self._wxHeight - res.height - offY;
             bannerAd.style.left = self._wxWidth / 2 - res.width / 2;
         });
 
@@ -638,7 +640,6 @@ var PfuSdk = cc.Class({
             let rewardedVideoAd = this._videoAds;
             rewardedVideoAd.show()
                 .catch(err => {
-                   
                     self.HideBanner(false);
                     if(failCb)failCb();
                 }).then(() => {
@@ -648,7 +649,6 @@ var PfuSdk = cc.Class({
                         self._bannerAd.hide();
                     }
                 });
-
         }
     },
     checkBanner() {
@@ -677,6 +677,7 @@ var PfuSdk = cc.Class({
                 sprite.spriteFrame = sp;
             };
         }
+
     },
     setItem(key, value) {
         cc.sys.localStorage.setItem(key, JSON.stringify(value));
