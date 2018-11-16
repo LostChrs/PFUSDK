@@ -14,11 +14,13 @@ const urlGetUserInfoList= "https://info.jfydgame.com/user/1333";
 const urlUploadUserInfo= "https://info.jfydgame.com/user/1801";//上传用户信息
 const urlGAClick = "https://info.jfydgame.com/user/2201";
 const urlGAVideo = "https://info.jfydgame.com/user/2202";
+const urlGetAdsList = "https://wxhz.jfydgame.com/jfyd_advert_wechat/wxbox";
 //pfuSdkBoxRelive  跳转盒子复活
 var pfuOnline = {
     bOpenAds:false,
     uid:"",
     topPath:"",
+    onlineCbList:[],
     initData(callback){
         var self = this;
         this.getWeChatOnlineParameters(function(data){
@@ -34,7 +36,10 @@ var pfuOnline = {
                 self.wechatid = data.value["5"].value;//微信游戏参数(获取广告位ID)
                 self.wechatshare = data.value["6"].value;//微信分享管理
                 if(callback)callback();
-                if(self._adsListCb)self._adsListCb(self.moregame);
+
+                self.onlineCbList.forEach(cb => {
+                    cb();
+                });
             }
         });
 
@@ -44,13 +49,23 @@ var pfuOnline = {
             cc.sys.localStorage.setItem("shareIdx",0);
         }
     },
+
+    addCb(cb){
+        if(this.onlineCbList.indexOf(cb) < 0){
+            this.onlineCbList.push(cb);
+        }
+    },
     getAdsList(cb){
         let self = this;
         this._adsListCb = cb;
-        if(self.moregame){
-            if(cb)cb(self.moregame);
-        }
+        let obj = {
+            uid:"",
+            wxid:config.wxId,
+            from:""
+        };
+        msg.send(obj,urlGetAdsList,cb);
     },
+
     updateBannerLink(){
         this.bannerList = [];
         this.moregame.forEach(item => {

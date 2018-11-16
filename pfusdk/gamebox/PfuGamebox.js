@@ -20,15 +20,17 @@ cc.Class({
         this.spacing = (this.contentSize.width - this.itemTemplate.width * 5) / 6;
         this.content.width = len * (this.itemTemplate.width + this.spacing) + this.spacing;
         
-        online.getAdsList(list =>{
-            if(online.wechatparam.pfuSdkMoreGame && online.wechatparam.pfuSdkMoreGame == "0"){
-                self.content.active = false;
-            }else{
-                self.initList(list);
-            }
-            
-        });
-        
+        online.addCb(()=>{
+            online.getAdsList(res =>{
+                let list = res.adverts;
+                if(online.wechatparam.pfuSdkMoreGame && online.wechatparam.pfuSdkMoreGame == "0"){
+                    self.content.active = false;
+                }else{
+                    self.initList(list);
+                }
+                
+            });
+        })
     },
 
     initList(list){
