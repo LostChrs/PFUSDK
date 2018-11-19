@@ -583,8 +583,37 @@ var PfuSdk = cc.Class({
             })
             this._videoAds = videoAd;
         }
+    },
 
-       
+    showAdsPlacement(placementId){
+        if(placementId){
+             let videoAd = wx.createRewardedVideoAd({
+                adUnitId: placementId
+            });
+            videoAd.onClose(res => {
+                if(config.autoBannerVisible){
+                    self.HideBanner(false);
+                }
+                if (res && res.isEnded && self._isPlayingVideo) {
+                    // 正常播放结束，可以下发游戏奖励
+                    online.pfuGAVideo(GAType.VideoFinished,PfuSdk.loginToken);
+                    if (self._videoCallback) self._videoCallback();
+                }
+                else {
+                    // 播放中途退出，不下发游戏奖励
+                    if (self._videoCloseCallback) self._videoCloseCallback();
+                }
+                self._isPlayingVideo = false;
+            });
+
+            videoAd.onError(err => {
+                if(config.autoBannerVisible){
+                    self.HideBanner(false);
+                }
+                self.checkBanner();
+            })
+            this._videoAds = videoAd;
+        }
     },
 
     loadAds(cb) {
@@ -635,7 +664,7 @@ var PfuSdk = cc.Class({
         }
     },
 
-    showVideo(cb, failCb, closeCb) {
+    showVideo(cb, failCb, closeCb,placementId) {
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
         } else {
@@ -644,6 +673,9 @@ var PfuSdk = cc.Class({
             }
             this._videoCloseCallback = closeCb;
             this._videoCallback = cb;
+            if(placementId){
+                this.showAdsPlacement(placementId);
+            }
             let self = this;
             let rewardedVideoAd = this._videoAds;
             rewardedVideoAd.show()

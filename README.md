@@ -73,9 +73,10 @@ pfuSdk.Instance.showShare(()=>{console.log("分享成功")},params);
 ### 看视频
 >视频广告需要在`PfuConfig.js`中配置`wxVideoId`参数
 ```
-pfuSdk.Instance.showVideo(successCb,failCb,closeCb);
+pfuSdk.Instance.showVideo(successCb,failCb,closeCb,placementId);
 ```
 其中3个参数分别代表成功回调，失败回调，视频未看完回调。3个参数均为可选参数。
+如果不同广告点有不同的广告Id,请传递placementId
 
 也可以提前检测是否有可播放的广告。
 ```
