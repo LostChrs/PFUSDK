@@ -80,6 +80,9 @@ var PfuSdk = cc.Class({
     onAppHide(){
         
     },
+    isFullScreen(){
+        return this._isIphoneX;
+    },
     //时间戳方法
     getNowTimestamp() {
         //毫秒000
