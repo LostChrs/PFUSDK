@@ -280,7 +280,7 @@ var PfuSdk = cc.Class({
     },
     //更多游戏图标自动更新，请在获取在线参数后调用,传入需要更新的sprite
     setMoreGame(spLeft, spRight) {
-
+        this.log("setMoreGame:"+spLeft+","+spRight+":pfuSdkMoreGame-->"+online.wechatparam.pfuSdkMoreGame);
         if (online.wechatparam.pfuSdkMoreGame && online.wechatparam.pfuSdkMoreGame == "0") {
             if(spLeft) spLeft.node.active = false;
             if(spRight) spRight.node.active = false;
@@ -659,12 +659,9 @@ var PfuSdk = cc.Class({
         })
 
         self._bannerAd = bannerAd;
-        if (self._isPlayingVideo == false) {
-            bannerAd.show().catch(err => {
-               
-                self.scheduleOnce(self.createBanner, 5);
-            })
-        }
+        bannerAd.show().catch(err => {
+            self.scheduleOnce(self.createBanner, 5);
+        })
     },
 
     showVideo(cb, failCb, closeCb,placementId) {
