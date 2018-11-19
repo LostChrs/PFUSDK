@@ -373,6 +373,18 @@ var PfuSdk = cc.Class({
     },
     updateMoreGameBtn() {
         let self = this;
+        if(!cc.isValid(this._moreGameSpriteLeft.node)){
+            this._moreGameSpriteLeft = null;
+        }
+
+        if(!cc.isValid(this._moreGameSpriteRight.node)){
+            this._moreGameSpriteRight = null;
+        }
+
+        if(this._moreGameSpriteLeft == null && this._moreGameSpriteRight == null){
+            this.unschedule(this.updateMoreGameBtn);
+            return;
+        }
         //left
         if (this._moreGameSpriteLeft && this._moreGameListLeft.length > 0) {
             this._moreGameIdxLeft++;
