@@ -160,21 +160,22 @@ var PfuSdk = cc.Class({
     //在线参数回调
     setOnlineParamsCallback(cb) {
         this._onlineParamsCallback = cb;
-        if (this._onlineParams) {
-            if (this._onlineParamsCallback) this._onlineParamsCallback(this._onlineParams);
+        this.log("setOnlineParamsCallback:"+online.wechatparam);
+        if (online.wechatparam) {
+            if (this._onlineParamsCallback) this._onlineParamsCallback(online.wechatparam);
         }
     },
     //获取微信在线参数
     getOnlineParams() {
-        if (this._onlineParams) return this._onlineParams;
+        if (online.wechatparam) return online.wechatparam;
         return null;
     },
     requestOnlineParams() {
         let self = this;
         online.initData(() => {
-            self._onlineParams = online.wechatparam;
             self.showOpenAds();
-            if (self._onlineParamsCallback) self._onlineParamsCallback(self._onlineParams);
+            this.log("requestOnlineParams:"+online.wechatparam);
+            if (self._onlineParamsCallback) self._onlineParamsCallback(online.wechatparam);
         });
     },
 
