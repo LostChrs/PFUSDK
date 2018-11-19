@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.0.2";
+const VERSION = "1.0.0";
 var online = require("./online/PfuOnline");
 var config = require("./PfuConfig");
 
@@ -243,25 +243,30 @@ var PfuSdk = cc.Class({
         }
     },
 
-    showShare(cb) {
+    showShare(cb,parmas) {
         this._shareCb = cb;
 
         let self = this;
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             this._startShare = true;
             this.setItem("shareTs",this.getNowTimestamp());
+
+            let queryData = "fromUid=" + PfuSdk.uid;
+            if(parmas){
+                queryData += "&"+parmas;
+            }
             if (online.wechatparam.pfuSdkTestMode && online.wechatparam.pfuSdkTestMode == "0") {
                 let shareInfo = online.getShareInfo();
                 wx.shareAppMessage({
                     title: shareInfo.desc,
                     imageUrl: online.getImagePath(shareInfo.shareLink),
-                    query: "fromUid=" + PfuSdk.uid,
+                    query: queryData,
                     withShareTicket: true,
                 });
             } else {
                 wx.shareAppMessage({
                     title: "快来和我一起玩吧~",
-                    query: "fromUid=" + PfuSdk.uid,
+                    query: queryData,
                     withShareTicket: true,
                 });
             }

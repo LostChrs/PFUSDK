@@ -32,11 +32,15 @@ let config = {
 ```
 "navigateToMiniProgramAppIdList":[
     "wxe675b6aad9612c74",
-    "wxb24776419b94d332",
     "wx5608cdb7dc533937",
     "wxa9da0461bfaa8629",
     "wxd6f44b18b8fed9f2",
-    "wxb82f826b0d650def"
+    "wxb24776419b94d332",
+    "wxb82f826b0d650def",
+    "wx2d47467291703ec7",
+    "wx7505f4985abb17ce",
+    "wx716b36314be3fe89",
+    "wx8b25b991dcc6edf6"
   ]
 ```
 ### 获取在线参数(*必接)
@@ -63,8 +67,9 @@ properties: {
 ```
 ### 分享
 ```
-pfuSdk.Instance.showShare(()=>{console.log("分享成功")});
+pfuSdk.Instance.showShare(()=>{console.log("分享成功")},params);
 ```
+>分享时第二个参数为用户自定义参数，可不传。如"playerId=222&level=1"
 ### 看视频
 >视频广告需要在`PfuConfig.js`中配置`wxVideoId`参数
 ```
