@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "1.0.0";
+const VERSION = "0.0.2";
 var online = require("./online/PfuOnline");
 var config = require("./PfuConfig");
 
@@ -555,8 +555,8 @@ var PfuSdk = cc.Class({
                 adUnitId: config.wxVideoId
             });
             videoAd.onClose(res => {
-                if (self._bannerAd) {
-                    self._bannerAd.show();
+                if(config.autoBannerVisible){
+                    self.HideBanner(false);
                 }
                 if (res && res.isEnded && self._isPlayingVideo) {
                     // 正常播放结束，可以下发游戏奖励
@@ -571,6 +571,9 @@ var PfuSdk = cc.Class({
             });
 
             videoAd.onError(err => {
+                if(config.autoBannerVisible){
+                    self.HideBanner(false);
+                }
                 self.checkBanner();
             })
             this._videoAds = videoAd;
@@ -640,7 +643,9 @@ var PfuSdk = cc.Class({
             let rewardedVideoAd = this._videoAds;
             rewardedVideoAd.show()
                 .catch(err => {
-                    self.HideBanner(false);
+                    if(config.autoBannerVisible){
+                        self.HideBanner(false);
+                    }
                     if(failCb)failCb();
                 }).then(() => {
                     self._isPlayingVideo = true;
