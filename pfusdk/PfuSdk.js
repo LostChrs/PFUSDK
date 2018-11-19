@@ -174,7 +174,7 @@ var PfuSdk = cc.Class({
         let self = this;
         online.initData(() => {
             self.showOpenAds();
-            this.log("requestOnlineParams:"+online.wechatparam);
+            this.log("requestOnlineParams:"+JSON.stringify(online.wechatparam));
             if (self._onlineParamsCallback) self._onlineParamsCallback(online.wechatparam);
         });
     },
