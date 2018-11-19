@@ -1,4 +1,4 @@
-# PFUSDK
+# PFUSDK V0.0.2
 
 # 快速接入
 将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。`PfuSdk`为单例脚本，并且通过`cc.game.addPersistRootNode(this.node);`设置为常驻节点，切换场景时不会销毁，因此只需要将其挂载到主场景即可。
@@ -18,6 +18,8 @@ let config = {
 
     wxVideoId:"adunit-c758250e9f75430c",//视频广告Id
     wxBannerId:"adunit-8c19e95d3c8e9a7a",//banner广告Id
+    bannerSize:2,//1为最大尺寸  2为最小尺寸
+    autoBannerVisible:true,//是否由Sdk自动控制banner的显示隐藏，默认banner会一直显示。如果用户只需要在特殊界面显示banner，请设置为false，自己控制banner的显示。
     
     payAppId:"1450018202",//虚拟支付Id，当接入虚拟支付的时候需要填写
 
