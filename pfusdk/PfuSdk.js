@@ -373,11 +373,11 @@ var PfuSdk = cc.Class({
     },
     updateMoreGameBtn() {
         let self = this;
-        if(!cc.isValid(this._moreGameSpriteLeft.node)){
+        if(this._moreGameSpriteLeft && !cc.isValid(this._moreGameSpriteLeft.node)){
             this._moreGameSpriteLeft = null;
         }
 
-        if(!cc.isValid(this._moreGameSpriteRight.node)){
+        if(this._moreGameSpriteRight && !cc.isValid(this._moreGameSpriteRight.node)){
             this._moreGameSpriteRight = null;
         }
 
