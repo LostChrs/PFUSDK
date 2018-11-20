@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "1.0.0";
+const VERSION = "0.0.3";
 var online = require("./online/PfuOnline");
 var config = require("./PfuConfig");
 
@@ -40,6 +40,7 @@ var PfuSdk = cc.Class({
         cc.game.on(cc.game.EVENT_HIDE, function () {
             self.onAppHide();
         });
+        this._bannerHideState = false;
         this._startShare = false;
         this._inviteFriendInfoList = this.getItem("inviteFriendInfoList");
         if (!this._inviteFriendInfoList) {
@@ -573,15 +574,13 @@ var PfuSdk = cc.Class({
         let self = this;
         //视频广告
         if (config.wxVideoId != "") {
-            self._isPlayingVideo = false;
+
             let videoAd = wx.createRewardedVideoAd({
                 adUnitId: config.wxVideoId
             });
             videoAd.onClose(res => {
-                if(config.autoBannerVisible){
-                    self.HideBanner(false);
-                }
-                if (res && res.isEnded && self._isPlayingVideo) {
+                self._resetBannerState();
+                if (res && res.isEnded) {
                     // 正常播放结束，可以下发游戏奖励
                     online.pfuGAVideo(GAType.VideoFinished,PfuSdk.loginToken);
                     if (self._videoCallback) self._videoCallback();
@@ -590,29 +589,25 @@ var PfuSdk = cc.Class({
                     // 播放中途退出，不下发游戏奖励
                     if (self._videoCloseCallback) self._videoCloseCallback();
                 }
-                self._isPlayingVideo = false;
+
             });
 
             videoAd.onError(err => {
-                if(config.autoBannerVisible){
-                    self.HideBanner(false);
-                }
-                self.checkBanner();
+                self._resetBannerState();
             })
             this._videoAds = videoAd;
         }
     },
 
     showAdsPlacement(placementId){
+        let self = this;
         if(placementId){
              let videoAd = wx.createRewardedVideoAd({
                 adUnitId: placementId
             });
             videoAd.onClose(res => {
-                if(config.autoBannerVisible){
-                    self.HideBanner(false);
-                }
-                if (res && res.isEnded && self._isPlayingVideo) {
+                self._resetBannerState();
+                if (res && res.isEnded) {
                     // 正常播放结束，可以下发游戏奖励
                     online.pfuGAVideo(GAType.VideoFinished,PfuSdk.loginToken);
                     if (self._videoCallback) self._videoCallback();
@@ -621,14 +616,11 @@ var PfuSdk = cc.Class({
                     // 播放中途退出，不下发游戏奖励
                     if (self._videoCloseCallback) self._videoCloseCallback();
                 }
-                self._isPlayingVideo = false;
+
             });
 
             videoAd.onError(err => {
-                if(config.autoBannerVisible){
-                    self.HideBanner(false);
-                }
-                self.checkBanner();
+                self._resetBannerState();
             })
             this._videoAds = videoAd;
         }
@@ -695,12 +687,9 @@ var PfuSdk = cc.Class({
             let rewardedVideoAd = this._videoAds;
             rewardedVideoAd.show()
                 .catch(err => {
-                    if(config.autoBannerVisible){
-                        self.HideBanner(false);
-                    }
+                    self._resetBannerState();
                     if(failCb)failCb();
                 }).then(() => {
-                    self._isPlayingVideo = true;
                     //隐藏banner
                     if (self._bannerAd) {
                         self._bannerAd.hide();
@@ -708,11 +697,13 @@ var PfuSdk = cc.Class({
                 });
         }
     },
-    checkBanner() {
-        this.HideBanner(false);
+    _resetBannerState(){
+        this.HideBanner(this._bannerHideState);
     },
+  
     HideBanner(hide) {
-        this._isPlayingVideo = hide;
+        //这里记录banner状态
+        this._bannerHideState = hide;
         if (this._bannerAd) {
             if (hide) {
                 this._bannerAd.hide();

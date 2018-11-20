@@ -1,4 +1,4 @@
-# PFUSDK V0.0.2
+# PFUSDK V0.0.3
 
 # 快速接入
 将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。`PfuSdk`为单例脚本，并且通过`cc.game.addPersistRootNode(this.node);`设置为常驻节点，切换场景时不会销毁，因此只需要将其挂载到主场景即可。
@@ -70,6 +70,14 @@ properties: {
 pfuSdk.Instance.showShare(()=>{console.log("分享成功")},params);
 ```
 >分享时第二个参数为用户自定义参数，可不传。如"playerId=222&level=1"
+
+### Banner广告
+配置`PfuConfig.js`中的`wxBannerId`，Banner广告即可自动创建和显示
+如需要自己控制Banner的显示隐藏，请调用HideBanner方法
+```
+pfuSdk.Instance.HideBanner(true);//隐藏Banner
+pfuSdk.Instance.HideBanner(false);//显示Banner
+```
 ### 看视频
 >视频广告需要在`PfuConfig.js`中配置`wxVideoId`参数
 ```
