@@ -54,6 +54,10 @@ var pfuOnline = {
         if(this.onlineCbList.indexOf(cb) < 0){
             this.onlineCbList.push(cb);
         }
+
+        if(this.wechatparam){
+            if(cb)cb();
+        }
     },
     getAdsList(cb){
         let self = this;
