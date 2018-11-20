@@ -306,7 +306,7 @@ var PfuSdk = cc.Class({
         });
 
         if(spLeft){
-            this.addButtonClick(spLeft.node,this.onMoreGameClick);
+            this.addButtonClick(spLeft.node,this.onMoreGameClick.bind(this));
              //left
             if (this._moreGameListLeft.length > 0) {
                 this._moreGameSpriteLeft.node.active = true;
@@ -319,7 +319,7 @@ var PfuSdk = cc.Class({
         }
 
         if(spRight){
-            this.addButtonClick(spRight.node,this.onMoreGameClick);
+            this.addButtonClick(spRight.node,this.onMoreGameClick.bind(this));
                 //right
             if (this._moreGameListRight.length > 0) {
                 this._moreGameSpriteRight.node.active = true;
@@ -333,35 +333,37 @@ var PfuSdk = cc.Class({
         this.updateMoreGameBtn();
         this.schedule(this.updateMoreGameBtn, 10, cc.macro.REPEAT_FOREVER, 0);
     },
-    onMoreGameClick(btn){
-        //this.log("onMoreGameClick:"+JSON.stringify(btn.node.gameInfo));
-        let info = btn.node.gameInfo;
+    onMoreGameClick(event,node){
+        this.log("onMoreGameClick:"+JSON.stringify(node.gameInfo));
+        let info = node.gameInfo;
         let gaid = this.getGAID(info.iconlink);
         online.pfuGAClick(GAType.MoreGame,gaid,PfuSdk.loginToken);
-
-        if (wx.navigateToMiniProgram) {
-            wx.navigateToMiniProgram({
-                appId: "wxe675b6aad9612c74",
-                path: "pages/fromGame/singer?pfukey=" + info.wechatGameid,
-                success(res) {
-                    
-                },
-                fail(res) {
-                    
-                }
-            })
-        } else {
-            wx.previewImage({
-                current: info.link,
-                urls: [info.link],
-                success: function (args) {
-                    
-                },
-                fail: function (args) {
-                    
-                }
-            });
+        if (cc.sys.platform === cc.sys.WECHAT_GAME){
+            if (wx.navigateToMiniProgram) {
+                wx.navigateToMiniProgram({
+                    appId: "wxe675b6aad9612c74",
+                    path: "pages/fromGame/singer?pfukey=" + info.wechatGameid,
+                    success(res) {
+                        
+                    },
+                    fail(res) {
+                        
+                    }
+                })
+            } else {
+                wx.previewImage({
+                    current: info.link,
+                    urls: [info.link],
+                    success: function (args) {
+                        
+                    },
+                    fail: function (args) {
+                        
+                    }
+                });
+            }
         }
+        
     },
     getMoreGameAction() {
         let t = 0.4;
@@ -746,11 +748,9 @@ var PfuSdk = cc.Class({
         }
     },
     addButtonClick(btnNode,callback){
-        if(!btnNode.getComponent(cc.Button)){
-            btnNode.addComponent(cc.Button);
-        }
-
-        btnNode.on('click', callback, this);
+        btnNode.on(cc.Node.EventType.TOUCH_START, function (event) {
+            if(callback)callback(event,btnNode);
+        }, this);
     },
     //截取md5值
     getGAID(picUrl){
