@@ -18,6 +18,7 @@ var PfuSdk = cc.Class({
         loginId: "",
         uid: "",
         pfuUserInfo: null,
+        bannerAd:null,
     },
     properties: {
 
@@ -144,7 +145,7 @@ var PfuSdk = cc.Class({
     },
 
     getUserInfo() {
-        this._wxUserInfo = cc.sys.localStorage.setItem("wxUserInfo");
+        this._wxUserInfo = cc.sys.localStorage.getItem("wxUserInfo");
         if (this._wxUserInfo) {
             if (!PfuSdk.pfuUserInfo.name) {
                 online.pfuUploadUserInfo(this._wxUserInfo.nickName, this._wxUserInfo.avatarUrl, PfuSdk.loginToken);
@@ -593,6 +594,7 @@ var PfuSdk = cc.Class({
             });
 
             videoAd.onError(err => {
+                self.log("ShowVideo onError:"+JSON.stringify(err));
                 self._resetBannerState();
             })
             this._videoAds = videoAd;
@@ -620,6 +622,7 @@ var PfuSdk = cc.Class({
             });
 
             videoAd.onError(err => {
+                self.log("ShowVideo onError:"+JSON.stringify(err));
                 self._resetBannerState();
             })
             this._videoAds = videoAd;
@@ -643,8 +646,8 @@ var PfuSdk = cc.Class({
 
     createBanner() {
         let self = this;
-        if (self._bannerAd != null) {
-            self._bannerAd.destroy();
+        if (PfuSdk.bannerAd != null) {
+            PfuSdk.bannerAd.destroy();
         }
         let needWidth = config.bannerSize == 1?750:200;
         let offY = self._isIphoneX ? 20:0;
@@ -662,10 +665,10 @@ var PfuSdk = cc.Class({
         });
 
         bannerAd.onError(err => {
-            
+            this.log("Banner onError:"+JSON.stringify(err));
         })
 
-        self._bannerAd = bannerAd;
+        PfuSdk.bannerAd = bannerAd;
         bannerAd.show().catch(err => {
             self.scheduleOnce(self.createBanner, 5);
         })
@@ -691,8 +694,8 @@ var PfuSdk = cc.Class({
                     if(failCb)failCb();
                 }).then(() => {
                     //隐藏banner
-                    if (self._bannerAd) {
-                        self._bannerAd.hide();
+                    if (PfuSdk.bannerAd) {
+                        PfuSdk.bannerAd.hide();
                     }
                 });
         }
@@ -704,11 +707,12 @@ var PfuSdk = cc.Class({
     HideBanner(hide) {
         //这里记录banner状态
         this._bannerHideState = hide;
-        if (this._bannerAd) {
+        this.log("HideBanner-->"+hide+"-->"+PfuSdk.bannerAd);
+        if (PfuSdk.bannerAd) {
             if (hide) {
-                this._bannerAd.hide();
+                PfuSdk.bannerAd.hide();
             } else {
-                this._bannerAd.show();
+                PfuSdk.bannerAd.show();
             }
         }
     },
