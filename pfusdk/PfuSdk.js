@@ -346,18 +346,26 @@ var PfuSdk = cc.Class({
         this._moreGameSpriteLeft = spLeft;
         this._moreGameSpriteRight = spRight;
         this.unschedule(this.updateMoreGameBtn);
-
+        let configList = config.wxJumpAppIdList;
+       
         //get list
         this._moreGameListLeft = [];
         this._moreGameListRight = [];
 
         online.moregame.forEach(item => {
-            if (item.position === "0") {
-                this._moreGameListLeft.push(item);
-            } else {
-                this._moreGameListRight.push(item);
-            }
+            //过滤
+            configList.forEach(wxId => {
+                if(item.wechatGameid == wxId){
+                    if (item.position === "0") {
+                        this._moreGameListLeft.push(item);
+                    } else {
+                        this._moreGameListRight.push(item);
+                    }
+                }
+            });
         });
+
+
 
         if(spLeft){
             this.addButtonClick(spLeft.node,this.onMoreGameClick.bind(this));
@@ -393,29 +401,11 @@ var PfuSdk = cc.Class({
         let gaid = this.getGAID(info.iconlink);
         online.pfuGAClick(GAType.MoreGame,gaid,PfuSdk.loginToken);
         if (cc.sys.platform === cc.sys.WECHAT_GAME){
-            if (wx.navigateToMiniProgram) {
-                wx.navigateToMiniProgram({
-                    appId: "wxe675b6aad9612c74",
-                    path: "pages/fromGame/singer?pfukey=" + info.wechatGameid,
-                    success(res) {
-                        
-                    },
-                    fail(res) {
-                        
-                    }
-                })
-            } else {
-                wx.previewImage({
-                    current: info.link,
-                    urls: [info.link],
-                    success: function (args) {
-                        
-                    },
-                    fail: function (args) {
-                        
-                    }
-                });
-            }
+            let path = info.path ? info.path : "";
+            wx.navigateToMiniProgram({
+                appId: info.wechatGameid,
+                path: path
+            })
         }
         
     },
