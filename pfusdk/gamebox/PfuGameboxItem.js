@@ -28,12 +28,14 @@ cc.Class({
     },
 
     resetSize(node,sp,h){
-        //根据高度适应
-        let rect = sp.getRect();
-        let r = rect.height/rect.width;
-        let w = h / r;
-        node.height = h ;
-        node.width = w;
+        if(node){
+            //根据高度适应
+            let rect = sp.getRect();
+            let r = rect.height/rect.width;
+            let w = h / r;
+            node.height = h;
+            node.width = w;
+        }
     },
     checkDirectJump(wxId){
         let list = config.wxJumpAppIdList;

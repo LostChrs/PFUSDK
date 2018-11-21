@@ -2,10 +2,10 @@
 let config = {
     version:"1.0.0",//*必填  游戏参数版本号，用来控制运营后台参数
     appId:1306146,//*必填  嘉丰永道appId
-    wxId:"",//*必填  微信小游戏Id
-    pfuPrivateKey:"",//*必填  嘉丰永道分配给合作方的私钥
+    wxId:"wxc3de0b459142bb1b",//*必填  微信小游戏Id
+    pfuPrivateKey:"bp11lflsecbme9itsb4f",//*必填  嘉丰永道分配给合作方的私钥
 
-    wxVideoId:"",//视频广告Id
+    wxVideoId:"adunit-c758250e9f75430c",//视频广告Id
     wxBannerId:"",//banner广告Id
     bannerSize:2,//1为最大尺寸  2为最小尺寸
     autoBannerVisible:true,//是否由Sdk自动控制banner的显示隐藏，默认banner会一直显示。如果用户只需要在特殊界面显示banner，请设置为false，自己控制banner的显示。

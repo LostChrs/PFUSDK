@@ -1,4 +1,4 @@
-# PFUSDK V0.0.4
+# PFUSDK V0.0.5
 
 # 快速接入
 将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。`PfuSdk`为单例脚本，并且通过`cc.game.addPersistRootNode(this.node);`设置为常驻节点，切换场景时不会销毁，因此只需要将其挂载到主场景即可，注意不要挂载到Canvas下，应该挂载到根节点。
@@ -71,6 +71,7 @@ pfuSdk.Instance.showShare(()=>{console.log("分享成功")},params);
 ```
 >分享时第二个参数为用户自定义参数，可不传。如"playerId=222&level=1"
 
+
 ### Banner广告
 配置`PfuConfig.js`中的`wxBannerId`，Banner广告即可自动创建和显示
 如需要自己控制Banner的显示隐藏，请调用HideBanner方法
@@ -91,6 +92,13 @@ pfuSdk.Instance.showVideo(successCb,failCb,closeCb,placementId);
 pfuSdk.Instance.loadAds(res=>{console.log("广告是否可播放:"+res)});
 ```
 
+### 复活
+引导玩家跳转到游戏盒子后复活
+```
+ PfuSdk.Instance.jumpGameboxForRelive(()=>{
+            console.log("复活成功");
+        })
+```
 ### 获取玩家邀请的新用户列表
 使用sdk中的分享功能后，通过分享卡片进入游戏的新用户将被服务器记录。游戏中可以直接使用此邀请用户列表。为了记录玩家的基本信息，游戏必须在第一个界面（未进入主场景前）获取相应权限，相关代码如下：
 

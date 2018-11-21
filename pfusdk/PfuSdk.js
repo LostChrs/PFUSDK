@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.0.3";
+const VERSION = "0.0.5";
 var online = require("./online/PfuOnline");
 var config = require("./PfuConfig");
 
@@ -22,6 +22,7 @@ var PfuSdk = cc.Class({
         bannerAd:null,
         videoAd:null,
         videoAdSuccessCb:null,
+        reliveCb:null,
         mScreenRatio:0,
     },
     properties: {
@@ -41,12 +42,12 @@ var PfuSdk = cc.Class({
         let self = this;
         PfuSdk.mScreenRatio = cc.winSize.height / cc.winSize.width;
         this.log("Version:"+VERSION);
-        cc.game.on(cc.game.EVENT_SHOW, function () {
-            self.onAppShow();
-        });
-        cc.game.on(cc.game.EVENT_HIDE, function () {
-            self.onAppHide();
-        });
+        // cc.game.on(cc.game.EVENT_SHOW, function () {
+        //     self.onAppShow();
+        // });
+        // cc.game.on(cc.game.EVENT_HIDE, function () {
+        //     self.onAppHide();
+        // });
         this._bannerHideState = false;
         this._startShare = false;
         this._inviteFriendInfoList = this.getItem("inviteFriendInfoList");
@@ -59,6 +60,13 @@ var PfuSdk = cc.Class({
         this.login();
         this.initAds();
         this.initShare();
+
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            wx.onShow(res=>{
+                //this.log(JSON.stringify(res));
+                this.onAppShow(res);
+            });
+        }
     },
     //刘海屏
     isIphoneX(){
@@ -68,30 +76,36 @@ var PfuSdk = cc.Class({
     isFullScreen(){
         return 1.789 < PfuSdk.mScreenRatio && PfuSdk.mScreenRatio < 19 / 9;
     },
-    onAppShow() {
+    onAppShow(launchOptions) {
         let self = this;
-        let launchOptions = wx.getLaunchOptionsSync();
         this.log("场景值:" + launchOptions.scene);
         //验证支付
         // this.checkOrderList();
-        // if (launchOptions.scene == 1037 || launchOptions.scene == 1038) {
-        //     if (launchOptions.referrerInfo.extraData) {
-        //         //this.log("支付结果:" + launchOptions.referrerInfo.extraData.result);
-
-        //     } else {
-        //         if (!launchOptions.referrerInfo.extraData.result) {
-                    
-        //         }
-        //     }
-        // }
+        if (launchOptions.scene == 1037 || launchOptions.scene == 1038) {
+            if (launchOptions.referrerInfo && launchOptions.referrerInfo.extraData) {
+                //this.log("支付结果:" + launchOptions.referrerInfo.extraData.result);
+                //复活
+                if(PfuSdk.reliveCb){
+                    if(launchOptions.referrerInfo.extraData.relive){
+                        PfuSdk.reliveCb();
+                        PfuSdk.reliveCb = null;
+                    }
+                }
+            }
+        }
 
         if(this._startShare){
             this._startShare = false;
             let ts = this.getDiffFromNow(this.getItem("shareTs"));
             if(Math.abs(ts) > online.shareTime){
                 if(this._shareCb)this._shareCb();
+            }else{
+                if(this._shareCb){
+                    this.showTips("分享到群才行哦");
+                }
             }
         }
+       
     },
     onAppHide(){
         
@@ -220,6 +234,30 @@ var PfuSdk = cc.Class({
     },
     payAndroid(pName,pPrice){
         this.log("安卓支付");
+    },
+
+    //跳转盒子复活
+    jumpGameboxForRelive(cb){
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            PfuSdk.reliveCb = cb;
+            let jumpId = "wxe675b6aad9612c74";
+            if(online.wechatparam.pfuSdkBoxRelive){
+                jumpId = online.wechatparam.pfuSdkBoxRelive;
+            }
+            wx.navigateToMiniProgram({
+                appId: jumpId,
+                path: "pages/index/index?pfukey="+config.wxId+"&pfuRelive=true",
+                envVersion:"develop",
+                success(res) {
+                    
+                },
+                fail(res) {
+                    PfuSdk.reliveCb = null;
+                }
+            })
+        }else{
+            if(cb)cb();
+        }
     },
 
     //分享
@@ -711,11 +749,13 @@ var PfuSdk = cc.Class({
     
                 PfuSdk.videoAd.onError(err => {
                     self.log("ShowVideo onError:"+JSON.stringify(err));
-                    if(failCb)failCb();
+                   
                     self._resetBannerState();
                     //非审核模式下播放视频失败，会走分享
                     if(!online.isTestMode()){
                         self.showShare(cb);
+                    }else{
+                        if(failCb)failCb();
                     }
                 })
                 PfuSdk.videoAd.load().then(()=>{
@@ -784,5 +824,15 @@ var PfuSdk = cc.Class({
     },
     log(str){
         console.log("[PFUSDK] "+str);
+    },
+    showTips(str){
+        if(cc.sys.platform == cc.sys.WECHAT_GAME){
+            wx.showToast({
+                title: str,
+                icon: 'none',
+                duration: 2000
+              })
+        }
+        
     }
 });
