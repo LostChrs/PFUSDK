@@ -52,33 +52,36 @@ cc.Class({
             let info = this._data;
             let gaid = PfuSdk.Instance.getGAID(info.link);
             online.pfuGAClick(6,gaid,PfuSdk.loginToken);
-            if (info.jumpId && info.jumpId !="") {
+
+            //检测可以直接跳转的
+            if(this.checkDirectJump(info.wechatGameid)){
+                let path = info.path ? info.path : "";
                 wx.navigateToMiniProgram({
                     appId: info.jumpId,
-                    path: "pages/fromGame/singer?pfukey=" + info.wechatGameid,
+                    path: path
                 })
-            } else {
-                //检测可以直接跳转的
-                if(this.checkDirectJump(info.wechatGameid)){
-                    let path = info.path ? info.path : "";
-                    wx.navigateToMiniProgram({
-                        appId: info.jumpId,
-                        path: path
-                    })
-                }else{
-                    wx.previewImage({
-                        current: info.qrcodelink,
-                        urls: [info.qrcodelink],
-                        success: function (args) {
-                            console.log("识别成功", args);
-                        },
-                        fail: function (args) {
-                            console.log("识别失败", args);
-                        }
-                    });
-                }
-               
+            }else{
+                wx.previewImage({
+                    current: info.qrcodelink,
+                    urls: [info.qrcodelink],
+                    success: function (args) {
+                        console.log("识别成功", args);
+                    },
+                    fail: function (args) {
+                        console.log("识别失败", args);
+                    }
+                });
             }
+
+            // if (info.jumpId && info.jumpId !="") {
+            //     wx.navigateToMiniProgram({
+            //         appId: info.jumpId,
+            //         path: "pages/fromGame/singer?pfukey=" + info.wechatGameid,
+            //     })
+            // } else {
+                
+               
+            // }
 
         }
     }
