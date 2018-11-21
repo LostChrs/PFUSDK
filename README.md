@@ -1,7 +1,7 @@
-# PFUSDK V0.0.3
+# PFUSDK V0.0.4
 
 # 快速接入
-将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。`PfuSdk`为单例脚本，并且通过`cc.game.addPersistRootNode(this.node);`设置为常驻节点，切换场景时不会销毁，因此只需要将其挂载到主场景即可。
+将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。`PfuSdk`为单例脚本，并且通过`cc.game.addPersistRootNode(this.node);`设置为常驻节点，切换场景时不会销毁，因此只需要将其挂载到主场景即可，注意不要挂载到Canvas下，应该挂载到根节点。
 
 sdk会在启动后自动调用常用接口的初始化，如登录，分享（分享的图片和标题），显示开屏二维码广告，获取在线参数等等。用户无需关心实现逻辑。**用户所有调用接口都应该在脚本的start函数后。**
 >所有项目均会自动生成常用在线参数，如pfuSdkTestMode(审核模式),pfuSdkShowOpenAds(显示开屏广告)等。审核模式开启时将自动隐藏更多游戏列表，更多游戏按钮等功能。
@@ -19,7 +19,7 @@ let config = {
     wxVideoId:"adunit-c758250e9f75430c",//视频广告Id
     wxBannerId:"adunit-8c19e95d3c8e9a7a",//banner广告Id
     bannerSize:2,//1为最大尺寸  2为最小尺寸
-    autoBannerVisible:true,//是否由Sdk自动控制banner的显示隐藏，默认banner会一直显示。如果用户只需要在特殊界面显示banner，请设置为false，自己控制banner的显示。
+    
     
     payAppId:"1450018202",//虚拟支付Id，当接入虚拟支付的时候需要填写
 

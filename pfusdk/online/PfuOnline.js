@@ -20,6 +20,7 @@ var pfuOnline = {
     bOpenAds:false,
     uid:"",
     topPath:"",
+    shareTime:2,
     onlineCbList:[],
     initData(callback){
         var self = this;
@@ -33,6 +34,9 @@ var pfuOnline = {
                 self.moregame = data.value["3"].adverts;//更多游戏 bannerLink
                 self.updateBannerLink();
                 self.wechatparam = data.value["4"].value;//微信在线参数
+                if(self.wechatparam.pfuSdkShareTime){
+                    self.shareTime = self.wechatparam.pfuSdkShareTime;
+                }
                 self.wechatid = data.value["5"].value;//微信游戏参数(获取广告位ID)
                 self.wechatshare = data.value["6"].value;//微信分享管理
                 if(callback)callback();
@@ -48,6 +52,9 @@ var pfuOnline = {
             this._shareIdx = 0;
             cc.sys.localStorage.setItem("shareIdx",0);
         }
+    },
+    isTestMode(){
+      return  this.wechatparam.pfuSdkTestMode && this.wechatparam.pfuSdkTestMode == "1";
     },
 
     addCb(cb){
