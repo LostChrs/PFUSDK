@@ -355,7 +355,7 @@ var PfuSdk = cc.Class({
         online.moregame.forEach(item => {
             //过滤
             configList.forEach(wxId => {
-                if(item.wechatGameid == wxId){
+                if(item.wechatgameid == wxId){
                     if (item.position === "0") {
                         this._moreGameListLeft.push(item);
                     } else {
@@ -403,7 +403,7 @@ var PfuSdk = cc.Class({
         if (cc.sys.platform === cc.sys.WECHAT_GAME){
             let path = info.path ? info.path : "";
             wx.navigateToMiniProgram({
-                appId: info.wechatGameid,
+                appId: info.wechatgameid,
                 path: path
             })
         }
