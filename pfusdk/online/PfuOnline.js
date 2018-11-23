@@ -194,22 +194,32 @@ var pfuOnline = {
         let sceneId = launchOptions.scene;
         if(sceneId == 1007 ||sceneId ==1008 ||sceneId ==1044 ||sceneId ==1096){
             data.srcid = "share";
+            
         }
         if(sceneId ==1005 ||sceneId ==1006||sceneId == 1027||sceneId == 1042||sceneId == 1053){
             data.srcid = "search";
         }
 
-         // 参数的query字段中可以获取到gdt_vid、weixinadinfo、channel等参数值
-         let query = launchOptions.query;
-         let gdt_vid = query.gdt_vid;
-         let weixinadinfo = query.weixinadinfo;
-         // 获取⼴告id
-         let aid = 0;
-         if (weixinadinfo) {
-             let weixinadinfoArr = weixinadinfo.split(".");
-             aid = weixinadinfoArr[0];
-             data.srcid = "weixinad_"+aid;
-         }
+        // 参数的query字段中可以获取到gdt_vid、weixinadinfo、channel等参数值
+        let query = launchOptions.query;
+        let gdt_vid = query.gdt_vid;
+        let weixinadinfo = query.weixinadinfo;
+        // 获取⼴告id
+        let aid = 0;
+        if (weixinadinfo) {
+            let weixinadinfoArr = weixinadinfo.split(".");
+            aid = weixinadinfoArr[0];
+            data.srcid = "weixinad_"+aid;
+        }
+        let shareImage = query.shareImage;
+        if (shareImage && shareImage != "") {
+            data.srcid = "share_"+shareImage;
+        }
+
+        let fromUid = query.fromUid;
+        if (fromUid && fromUid != "") {
+            data.rinviteUid = fromUid;
+        }
         msg.sendCommonShare(data,urlPfuLogin,null,cb);
     },
 

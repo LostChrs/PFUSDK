@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.0.5";
+const VERSION = "0.0.6";
 var online = require("./online/PfuOnline");
 var config = require("./PfuConfig");
 
@@ -299,7 +299,7 @@ var PfuSdk = cc.Class({
         }
     },
 
-    showShare(cb,parmas) {
+    showShare(cb,parmas,title,imageUrl) {
         this._shareCb = cb;
 
         let self = this;
@@ -315,15 +315,21 @@ var PfuSdk = cc.Class({
                 let shareInfo = online.getShareInfo();
                 let gaid = this.getGAID(shareInfo.shareLink);
                 online.pfuGAClick(GAType.ShareNum,gaid,PfuSdk.loginToken);
+                
+                queryData += "&shareImage="+gaid;
+                let shareTitle = title? title :  shareInfo.desc;
+                let shareImage = imageUrl?imageUrl : online.getImagePath(shareInfo.shareLink);
                 wx.shareAppMessage({
-                    title: shareInfo.desc,
-                    imageUrl: online.getImagePath(shareInfo.shareLink),
+                    title: shareTitle,
+                    imageUrl: shareImage,
                     query: queryData,
                     withShareTicket: true,
                 });
             } else {
+                let shareTitle = title? title :  "快来和我一起玩吧~";
+              
                 wx.shareAppMessage({
-                    title: "快来和我一起玩吧~",
+                    title: shareTitle,
                     query: queryData,
                     withShareTicket: true,
                 });
