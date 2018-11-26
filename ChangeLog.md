@@ -1,6 +1,7 @@
 ### v0.0.6
 * 分享接口增加了自定义标题和图片的参数 `showShare(cb,parmas,title,imageUrl)`
 * 增加了分享来源统计
+* 增加了侧边栏更多游戏列表
 
 ### v0.0.5
 * 添加跳转游戏盒子复活功能 `jumpGameboxForRelive()`

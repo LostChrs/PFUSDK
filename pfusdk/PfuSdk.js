@@ -1,7 +1,7 @@
 //PfuSdk 
 const VERSION = "0.0.6";
-var online = require("./online/PfuOnline");
-var config = require("./PfuConfig");
+var online = require("PfuOnline");
+var config = require("PfuConfig");
 
 var GAType = cc.Enum({
     MoreGame:5,
@@ -40,6 +40,7 @@ var PfuSdk = cc.Class({
             }
         }
         let self = this;
+        this._inviteNum = 0;
         PfuSdk.mScreenRatio = cc.winSize.height / cc.winSize.width;
         this.log("Version:"+VERSION);
         // cc.game.on(cc.game.EVENT_SHOW, function () {
@@ -154,7 +155,12 @@ var PfuSdk = cc.Class({
                         PfuSdk.uid = data.uid;
                         PfuSdk.pfuUserInfo = data;
                         self._isLogin = true;
-                        self.getUserInfo();
+                        let info = self.getUserInfo();
+                        if (info) {
+                            if (!PfuSdk.pfuUserInfo.name) {
+                                online.pfuUploadUserInfo(info.nickName, info.avatarUrl, PfuSdk.loginToken);
+                            }
+                        }
                         self.checkOrderList();
                         //判断是否是邀请进来的新用户
                         self.checkNewInviteUser();
@@ -171,13 +177,11 @@ var PfuSdk = cc.Class({
     },
 
     getUserInfo() {
-        this._wxUserInfo = cc.sys.localStorage.getItem("wxUserInfo");
-        if (this._wxUserInfo) {
-            if (!PfuSdk.pfuUserInfo.name) {
-                online.pfuUploadUserInfo(this._wxUserInfo.nickName, this._wxUserInfo.avatarUrl, PfuSdk.loginToken);
-            }
-        }
+        this._wxUserInfo = this.getItem("wxUserInfo");
+        return this._wxUserInfo;
     },
+
+
     //开屏二维码
     showOpenAds() {
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
@@ -188,7 +192,7 @@ var PfuSdk = cc.Class({
     //在线参数回调
     setOnlineParamsCallback(cb) {
         this._onlineParamsCallback = cb;
-        this.log("setOnlineParamsCallback:"+online.wechatparam);
+        //this.log("setOnlineParamsCallback:"+online.wechatparam);
         if (online.wechatparam) {
             if (this._onlineParamsCallback) this._onlineParamsCallback(online.wechatparam);
         }
@@ -616,6 +620,28 @@ var PfuSdk = cc.Class({
 
     getInviteUserInfoList() {
         return this._inviteFriendInfoList;
+    },
+
+    getNewInviteNum() {
+        return this._inviteNum;
+    },
+
+    useInvite() {
+        if (this._inviteNum <= 0) return;
+        this._inviteNum--;
+        for (let i = 0; i < this._inviteFriendInfoList.length; i++) {
+            if (this._inviteFriendInfoList[i].used == false) {
+                this._inviteFriendInfoList[i].used = true;
+                break;
+            }
+        }
+
+        Helper.setItem("inviteFriendInfoList", this._inviteFriendInfoList);
+        if (this._inviteChangeCallback) this._inviteChangeCallback();
+    },
+
+    listenInviteChange(cb) {
+        this._inviteChangeCallback = cb;
     },
     //广告
     initAds() {

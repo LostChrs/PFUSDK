@@ -1,4 +1,4 @@
-# PFUSDK V0.0.5
+# PFUSDK V0.0.6
 
 # 快速接入
 将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。`PfuSdk`为单例脚本，并且通过`cc.game.addPersistRootNode(this.node);`设置为常驻节点，切换场景时不会销毁，因此只需要将其挂载到主场景即可，注意不要挂载到Canvas下，应该挂载到根节点。
@@ -32,15 +32,15 @@ let config = {
 ```
 "navigateToMiniProgramAppIdList":[
     "wxe675b6aad9612c74",
-    "wx5608cdb7dc533937",
-    "wxa9da0461bfaa8629",
-    "wxd6f44b18b8fed9f2",
-    "wxb24776419b94d332",
-    "wxb82f826b0d650def",
     "wx2d47467291703ec7",
-    "wx7505f4985abb17ce",
     "wx716b36314be3fe89",
-    "wx8b25b991dcc6edf6"
+    "wx8b25b991dcc6edf6",
+    "wx99e08aff982f8dde",
+    "wx3b33f72ee2ec7bc1",
+    "wx989199f7dc0e3a50",
+    "wxbbbef0244fa4d4e4",
+    "wx87fe1890ea1384a5",
+    "wxa0eee1fe564aa730"
   ]
 ```
 ### 获取在线参数(*必接)
@@ -50,7 +50,9 @@ let config = {
 ```
 回调中的obj为在线参数对象，用户可直接使用，如`obj.pfuSdkTestMode`。**Sdk中一些和在线参数有关的接口需要在此回调中调用。**
 ### 更多游戏列表
-将`pfusdk/pfuGamebox.prefab`拖入场景中适当位置。游戏启动后列表会自动初始化。如果玩家需要控制列表的显示隐藏，可以直接引用此控件，通过`node.active = true`控制。
+将`pfusdk/prefabs/pfuGamebox.prefab`拖入场景中适当位置。游戏启动后列表会自动初始化。如果玩家需要控制列表的显示隐藏，可以直接引用此控件，通过`node.active = true`控制。
+
+还提供侧边栏的更多游戏列表，将`pfusdk/prefabs/pfuSidePage.prefab`拖入场景适当位置即可
 
 ### 更多游戏按钮
 游戏中可设置左右两个更多游戏按钮。在UI上创建任意Sprite控件，调整到适当大小。调用如下函数(在**在线参数回调**中调用)

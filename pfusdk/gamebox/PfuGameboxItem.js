@@ -5,14 +5,21 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        iconSp:cc.Sprite
+        iconSp:cc.Sprite,
+        lbName:cc.Label,
     },
 
     initData(data){
         this._data = data;
         let self = this;
+        if(this.lbName){
+            let gameName = data.gameName.substr(0,5);
+            this.lbName.string = gameName;
+        }
         //iconlink wechatgameid boxId
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+           
+            
             let url = data.link;
             let image = wx.createImage();
             image.src = url;
@@ -22,7 +29,7 @@ cc.Class({
                 self._texture.handleLoadedTexture();
                 let sp = new cc.SpriteFrame(self._texture);
                 self.iconSp.spriteFrame = sp;
-                self.resetSize(self.iconSp.node,sp,120);
+                self.resetSize(self.iconSp.node,sp,82);
             };
         }
     },
