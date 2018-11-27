@@ -27,7 +27,7 @@ cc.Class({
                 if(online.wechatparam.pfuSdkMoreGame && online.wechatparam.pfuSdkMoreGame == "0"){
                     self.content.active = false;
                 }else{
-                    self.initList(this.getCanJumpList(list));
+                    self.initList(list);
                 }
                 
             });

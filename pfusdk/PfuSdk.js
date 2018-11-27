@@ -289,14 +289,13 @@ var PfuSdk = cc.Class({
     jumpGameboxForRelive(cb){
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             PfuSdk.reliveCb = cb;
-            let jumpId = "wxe675b6aad9612c74";
+            let jumpId = "wx3e33fef689f472b1";
             if(online.wechatparam.pfuSdkBoxRelive){
                 jumpId = online.wechatparam.pfuSdkBoxRelive;
             }
             wx.navigateToMiniProgram({
                 appId: jumpId,
                 path: "pages/index/index?pfukey="+config.wxId+"&pfuRelive=true",
-                envVersion:"develop",
                 success(res) {
                     
                 },
@@ -457,8 +456,12 @@ var PfuSdk = cc.Class({
         online.pfuGAClick(GAType.MoreGame,gaid,PfuSdk.loginToken);
         if (cc.sys.platform === cc.sys.WECHAT_GAME){
             let path = info.path ? info.path : "";
+            let jumpId = info.wechatgameid;
+            if(info.boxId && info.boxId != ""){
+                jumpId = info.boxId;
+            }
             wx.navigateToMiniProgram({
-                appId: info.wechatgameid,
+                appId: jumpId,
                 path: path
             })
         }

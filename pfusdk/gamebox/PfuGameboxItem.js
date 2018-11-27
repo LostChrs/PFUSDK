@@ -61,12 +61,19 @@ cc.Class({
             online.pfuGAClick(6,gaid,PfuSdk.loginToken);
 
             let path = info.path ? info.path : "";
-            wx.navigateToMiniProgram({
-                appId: info.wechatGameid,
-                path: path
-            })
-
-
+            if(this.checkDirectJump(info.wechatGameid)){
+                wx.navigateToMiniProgram({
+                    appId: info.wechatGameid,
+                    path: path
+                })
+            }else{
+                if (info.qrcodelink){
+                    wx.previewImage({
+                      urls:[info.qrcodelink]
+                    });
+                  }
+            }
+            
         }
     }
 });
