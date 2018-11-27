@@ -51,6 +51,7 @@ var PfuSdk = cc.Class({
         // });
         this._bannerHideState = false;
         this._startShare = false;
+        this._shareNum = 0;
         this._inviteFriendInfoList = this.getItem("inviteFriendInfoList");
         if (!this._inviteFriendInfoList) {
             this._inviteFriendInfoList = [];
@@ -99,11 +100,21 @@ var PfuSdk = cc.Class({
             this._startShare = false;
             if(!this.isTestMode()){
                 let ts = this.getDiffFromNow(this.getItem("shareTs"));
-                if(Math.abs(ts) > online.shareTime){
-                    if(this._shareCb)this._shareCb();
+                let needTime = (parseInt(online.shareTime) + this._shareNum);
+                if(needTime >=5 )needTime = 5;
+                if(Math.abs(ts) > needTime){
+                    if(this._shareCb){
+                        this._shareCb();
+                        this._shareNum++;
+                    }
                 }else{
                     if(this._shareCb){
-                        this.showTips("分享到群才行哦");
+                        if(this._shareNum == 0){
+                            this.showTips("分享到群才行哦");
+                        }else{
+                            this.showTips("请分享到不同的群哦~");
+                        }
+                        
                     }
                 }
             }
