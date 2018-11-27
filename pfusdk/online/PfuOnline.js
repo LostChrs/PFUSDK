@@ -21,6 +21,8 @@ var pfuOnline = {
     uid:"",
     topPath:"",
     shareTime:2,
+    shareTitle1:"分享到群才行哦",
+    shareTitle2:"请分享到不同的群哦~",
     onlineCbList:[],
     initData(callback){
         var self = this;
@@ -37,6 +39,14 @@ var pfuOnline = {
                 if(self.wechatparam.pfuSdkShareTime){
                     self.shareTime = self.wechatparam.pfuSdkShareTime;
                 }
+                if(self.wechatparam.pfuSdkShare1){
+                    self.shareTitle1 = self.wechatparam.pfuSdkShare1;
+                }
+                if(self.wechatparam.pfuSdkShare2){
+                    self.shareTitle1 = self.wechatparam.pfuSdkShare2;
+                }
+                
+
                 self.wechatid = data.value["5"].value;//微信游戏参数(获取广告位ID)
                 self.wechatshare = data.value["6"].value;//微信分享管理
                 if(callback)callback();
