@@ -20,7 +20,7 @@ var pfuOnline = {
     bOpenAds:false,
     uid:"",
     topPath:"",
-    shareTime:2,
+    shareTime:2000,
     shareTitle1:"分享到群才行哦",
     shareTitle2:"请分享到不同的群哦~",
     onlineCbList:[],
