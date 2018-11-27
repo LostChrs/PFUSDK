@@ -69,7 +69,13 @@ var PfuSdk = cc.Class({
                 this.onAppShow(res);
             });
         }
+
     },
+    resetDailyTask(){
+        this._shareNum = 0;
+        this.setItem("pfuSdkShareNum",0);
+    },
+    
     //刘海屏
     isIphoneX(){
         return PfuSdk.mScreenRatio >= 19 / 9;
@@ -95,6 +101,29 @@ var PfuSdk = cc.Class({
                 }
             }
         }
+
+
+         //检测新日期
+         var recordDate = Helper.getItem("recordDate");
+         if (recordDate) {
+             let date = new Date();
+             let d = date.getUTCDate();
+             if (d != recordDate) {
+                 console.log("----检查每日登陆:"+d+"->"+recordDate);
+                 Helper.setItem("recordDate", d);
+                 this.resetDailyTask();
+             } else {
+                this._shareNum = this.getItem("pfuSdkShareNum",0);
+             }
+         } else {
+             let date = new Date();
+             let d = date.getUTCDate();
+             Helper.setItem("recordDate", d);
+ 
+             this.resetDailyTask();
+         }
+
+
 
         if(this._startShare){
             this._startShare = false;
@@ -841,12 +870,17 @@ var PfuSdk = cc.Class({
     setItem(key, value) {
         cc.sys.localStorage.setItem(key, JSON.stringify(value));
     },
-    getItem(key) {
+    getItem(key,defaultValue) {
         let rt = cc.sys.localStorage.getItem(key);
         if (rt) {
             return JSON.parse(rt);
         } else {
-            return null;
+            if(defaultValue){
+                this.setItem(key,defaultValue);
+                return defaultValue;
+            }else{
+                return null;
+            }
         }
     },
     addButtonClick(btnNode,callback){

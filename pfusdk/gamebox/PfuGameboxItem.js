@@ -29,7 +29,7 @@ cc.Class({
                 self._texture.handleLoadedTexture();
                 let sp = new cc.SpriteFrame(self._texture);
                 self.iconSp.spriteFrame = sp;
-                self.resetSize(self.iconSp.node,sp,82);
+                self.resetSize(self.iconSp.node,sp,110);
             };
         }
     },
