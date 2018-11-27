@@ -97,19 +97,24 @@ var PfuSdk = cc.Class({
 
         if(this._startShare){
             this._startShare = false;
-            let ts = this.getDiffFromNow(this.getItem("shareTs"));
-            if(Math.abs(ts) > online.shareTime){
-                if(this._shareCb)this._shareCb();
-            }else{
-                if(this._shareCb){
-                    this.showTips("分享到群才行哦");
+            if(!this.isTestMode()){
+                let ts = this.getDiffFromNow(this.getItem("shareTs"));
+                if(Math.abs(ts) > online.shareTime){
+                    if(this._shareCb)this._shareCb();
+                }else{
+                    if(this._shareCb){
+                        this.showTips("分享到群才行哦");
+                    }
                 }
             }
         }
-       
     },
     onAppHide(){
         
+    },
+
+    isTestMode(){
+        return online.isTestMode();
     },
     
     //时间戳方法
