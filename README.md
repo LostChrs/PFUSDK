@@ -67,6 +67,17 @@ properties: {
         rightSprite:cc.Sprite,
     },
 ```
+
+### 先分享后显示视频
+>用来判断当前应该显示分享领取按钮还是视频领取按钮
+```
+pfuSdk.Instance.isShowShareBtn();//当前是否显示分享按钮,true显示分享/false显示视频
+```
+>可以通过简单调用以下接口自动判断显示视频还是分享
+```
+pfuSdk.Instance.showShareOrVideo(cb,videoPlacement,shareParmas);//cb成功回调，videoPlacement视频点ID(可选),shareParmas分享参数(可选)
+```
+
 ### 分享
 ```
 pfuSdk.Instance.showShare(()=>{console.log("分享成功")},params);

@@ -52,6 +52,8 @@ var PfuSdk = cc.Class({
         this._bannerHideState = false;
         this._startShare = false;
         this._shareNum = 0;
+        this._preShareCountMax = 5;//视频前分享成功次数
+        this._successShareCount = 0;//已经分享成功次数
         this._inviteFriendInfoList = this.getItem("inviteFriendInfoList");
         if (!this._inviteFriendInfoList) {
             this._inviteFriendInfoList = [];
@@ -74,6 +76,9 @@ var PfuSdk = cc.Class({
     resetDailyTask(){
         this._shareNum = 0;
         this.setItem("pfuSdkShareNum",0);
+
+        this._successShareCount = 0;
+        this.setItem("pfuSdkSuccessShareCount",0);
     },
     
     //刘海屏
@@ -83,6 +88,10 @@ var PfuSdk = cc.Class({
     //普通全面屏
     isFullScreen(){
         return 1.789 < PfuSdk.mScreenRatio && PfuSdk.mScreenRatio < 19 / 9;
+    },
+    //是否显示分享按钮
+    isShowShareBtn(){
+        return this._successShareCount < this._preShareCountMax;
     },
     onAppShow(launchOptions) {
         let self = this;
@@ -114,6 +123,7 @@ var PfuSdk = cc.Class({
                  this.resetDailyTask();
              } else {
                 this._shareNum = this.getItem("pfuSdkShareNum",0);
+                this._successShareCount = this.getItem("pfuSdkSuccessShareCount",0);
              }
          } else {
              let date = new Date();
@@ -122,8 +132,6 @@ var PfuSdk = cc.Class({
  
              this.resetDailyTask();
          }
-
-
 
         if(this._startShare){
             this._startShare = false;
@@ -134,7 +142,10 @@ var PfuSdk = cc.Class({
                 if(Math.abs(ts) > needTime){
                     if(this._shareCb){
                         this._shareCb();
+                        this._successShareCount++;
                         this._shareNum++;
+                        this.setItem("pfuSdkShareNum",this._shareNum);
+                        this.setItem("pfuSdkSuccessShareCount",this._successShareCount);
                     }
                 }else{
                     if(this._shareCb){
@@ -143,7 +154,6 @@ var PfuSdk = cc.Class({
                         }else{
                             this.showTips("请分享到不同的群哦~");
                         }
-                        
                     }
                 }
             }
@@ -252,6 +262,7 @@ var PfuSdk = cc.Class({
         online.initData(() => {
             self.showOpenAds();
             this.log("requestOnlineParams:"+JSON.stringify(online.wechatparam));
+            self._preShareCountMax = parseInt(online.wechatparam.pfuSdkShareCount);
             if (self._onlineParamsCallback) self._onlineParamsCallback(online.wechatparam);
         });
     },
@@ -344,6 +355,14 @@ var PfuSdk = cc.Class({
                     }
                 }
             })
+        }
+    },
+
+    showShareOrVideo(cb,videoPlacement,shareParmas){
+        if(this.isShowShareBtn()){
+            this.showShare(cb,shareParmas);
+        }else{
+            this.showVideo(cb,null,null,videoPlacement);
         }
     },
 
