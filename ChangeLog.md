@@ -1,3 +1,6 @@
+### v0.0.7
+* 增加了自动判断显示分享还是显示视频的接口`isShowShareBtn()`,和`showShareOrVideo(cb,videoPlacement,shareParmas)`
+
 ### v0.0.6
 * 分享接口增加了自定义标题和图片的参数 `showShare(cb,parmas,title,imageUrl)`
 * 增加了分享来源统计
