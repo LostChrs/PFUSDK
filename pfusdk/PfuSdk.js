@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.0.7";
+const VERSION = "0.0.6";
 var online = require("PfuOnline");
 var config = require("PfuConfig");
 
@@ -54,6 +54,9 @@ var PfuSdk = cc.Class({
         this._shareNum = 0;
         this._preShareCountMax = 5;//视频前分享成功次数
         this._successShareCount = 0;//已经分享成功次数
+
+        this._shareTitle1 = "分享到群才行哦";
+        this._shareTitle2 = "请分享到不同的群哦~";
         this._inviteFriendInfoList = this.getItem("inviteFriendInfoList");
         if (!this._inviteFriendInfoList) {
             this._inviteFriendInfoList = [];
@@ -154,9 +157,9 @@ var PfuSdk = cc.Class({
                 }else{
                     if(this._shareCb){
                         if(this._shareNum == 0){
-                            this.showTips("分享到群才行哦");
+                            this.showTips(this._shareTitle1);
                         }else{
-                            this.showTips("请分享到不同的群哦~");
+                            this.showTips(this._shareTitle2);
                         }
                     }
                 }
@@ -267,6 +270,8 @@ var PfuSdk = cc.Class({
             self.showOpenAds();
             this.log("requestOnlineParams:"+JSON.stringify(online.wechatparam));
             self._preShareCountMax = parseInt(online.wechatparam.pfuSdkShareCount);
+            self._shareTitle1 = online.wechatparam.pfuSdkShare1;
+            self._shareTitle2 = online.wechatparam.pfuSdkShare2;
             if (self._onlineParamsCallback) self._onlineParamsCallback(online.wechatparam);
         });
     },
@@ -432,7 +437,7 @@ var PfuSdk = cc.Class({
         online.moregame.forEach(item => {
             //过滤
             configList.forEach(wxId => {
-                if(item.wechatgameid == wxId){
+                if(item.boxId == wxId){
                     if (item.position === "0") {
                         this._moreGameListLeft.push(item);
                     } else {
