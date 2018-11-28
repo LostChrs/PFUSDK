@@ -818,9 +818,7 @@ var PfuSdk = cc.Class({
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
         } else {
-            if (online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1") {
-                this.showShare();
-            }
+           
 
             if(placementId){
                 this.showAdsPlacement(placementId);
@@ -857,6 +855,9 @@ var PfuSdk = cc.Class({
                     }
                 })
                 PfuSdk.videoAd.load().then(()=>{
+                    if (online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1") {
+                        self.showShare();
+                    }
                     PfuSdk.videoAd.show().then(() => {
                         //隐藏banner
                         if (PfuSdk.bannerAd) {
