@@ -31,9 +31,9 @@ cc.Class({
                 self.iconSp.spriteFrame = sp;
                 
                 if(self.lbName){
-                    self.resetSize(self.iconSp.node,sp,110);
-                }else{
                     self.resetSize(self.iconSp.node,sp,82);
+                }else{
+                    self.resetSize(self.iconSp.node,sp,110);
                 }
             };
         }

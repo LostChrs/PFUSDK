@@ -91,6 +91,10 @@ var PfuSdk = cc.Class({
     },
     //是否显示分享按钮
     isShowShareBtn(){
+        if(this.isTestMode())
+        {
+            return false;
+        }
         return this._successShareCount < this._preShareCountMax;
     },
     onAppShow(launchOptions) {
@@ -113,13 +117,13 @@ var PfuSdk = cc.Class({
 
 
          //检测新日期
-         var recordDate = Helper.getItem("recordDate");
+         var recordDate = this.getItem("recordDate");
          if (recordDate) {
              let date = new Date();
              let d = date.getUTCDate();
              if (d != recordDate) {
                  console.log("----检查每日登陆:"+d+"->"+recordDate);
-                 Helper.setItem("recordDate", d);
+                 this.setItem("recordDate", d);
                  this.resetDailyTask();
              } else {
                 this._shareNum = this.getItem("pfuSdkShareNum",0);
@@ -128,7 +132,7 @@ var PfuSdk = cc.Class({
          } else {
              let date = new Date();
              let d = date.getUTCDate();
-             Helper.setItem("recordDate", d);
+             this.setItem("recordDate", d);
  
              this.resetDailyTask();
          }
@@ -703,7 +707,7 @@ var PfuSdk = cc.Class({
             }
         }
 
-        Helper.setItem("inviteFriendInfoList", this._inviteFriendInfoList);
+        this.setItem("inviteFriendInfoList", this._inviteFriendInfoList);
         if (this._inviteChangeCallback) this._inviteChangeCallback();
     },
 
