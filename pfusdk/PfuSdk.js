@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.0.6";
+const VERSION = "0.0.8";
 var online = require("PfuOnline");
 var config = require("PfuConfig");
 
@@ -922,9 +922,11 @@ var PfuSdk = cc.Class({
     },
     //截取md5值
     getGAID(picUrl){
-        let temp = picUrl.split("/");
-        let temp1 = temp[temp.length-1].split(".");
-        return temp1[0];
+        // let temp = picUrl.split("/");
+        // let temp1 = temp[temp.length-1].split(".");
+        // return temp1[0];
+
+        return picUrl;
     },
     log(str){
         console.log("[PFUSDK] "+str);

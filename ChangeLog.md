@@ -1,3 +1,7 @@
+### v0.0.8
+* 优化了更多游戏列表的风格
+* 修改了底层的一些统计规则
+
 ### v0.0.7
 * 增加了自动判断显示分享还是显示视频的接口`isShowShareBtn()`,和`showShareOrVideo(cb,videoPlacement,shareParmas)`
 
