@@ -75,6 +75,8 @@ var PfuSdk = cc.Class({
             });
         }
 
+
+        this._shareFlag = false;//看完视频重置
     },
     resetDailyTask(){
         this._shareNum = 0;
@@ -120,7 +122,6 @@ var PfuSdk = cc.Class({
             }
         }
 
-
          //检测新日期
          var recordDate = this.getItem("recordDate");
          if (recordDate) {
@@ -151,6 +152,7 @@ var PfuSdk = cc.Class({
                 if(Math.abs(ts) > needTime){
                     if(this._shareCb){
                         this._shareCb();
+                        this._shareFlag = true;
                         this._successShareCount++;
                         this._shareNum++;
                         this.setItem("pfuSdkShareNum",this._shareNum);
@@ -837,6 +839,8 @@ var PfuSdk = cc.Class({
                             PfuSdk.videoAdSuccessCb();
                             PfuSdk.videoAdSuccessCb = null;
                         }
+
+                        self._shareFlag = false;
                     }
                     else {
                         // 播放中途退出，不下发游戏奖励
@@ -857,7 +861,7 @@ var PfuSdk = cc.Class({
                     }
                 })
                 PfuSdk.videoAd.load().then(()=>{
-                    if (online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1") {
+                    if (online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
                         self.showShare(()=>{
                             PfuSdk.videoAd.show().then(() => {
                                 //隐藏banner
