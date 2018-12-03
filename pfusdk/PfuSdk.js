@@ -491,11 +491,17 @@ var PfuSdk = cc.Class({
             let jumpId = info.wechatgameid;
             if(info.boxId && info.boxId != ""){
                 jumpId = info.boxId;
+                wx.navigateToMiniProgram({
+                    appId: jumpId,
+                    path: path
+                })
+            }else{
+                if (info.qrcodelink){
+                    wx.previewImage({
+                      urls:[info.qrcodelink]
+                    });
+                  }
             }
-            wx.navigateToMiniProgram({
-                appId: jumpId,
-                path: path
-            })
         }
         
     },
