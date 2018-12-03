@@ -94,6 +94,8 @@ var PfuSdk = cc.Class({
     },
     //是否显示分享按钮
     isShowShareBtn(){
+        //永远显示视频
+        return false;
         if(this.isTestMode())
         {
             return false;
@@ -144,7 +146,7 @@ var PfuSdk = cc.Class({
             this._startShare = false;
             if(!this.isTestMode()){
                 let ts = this.getDiffFromNow(this.getItem("shareTs"));
-                let needTime = (online.shareTime/1000 + this._shareNum);
+                let needTime = (online.shareTime/1000);
                 if(needTime >=5 )needTime = 5;
                 if(Math.abs(ts) > needTime){
                     if(this._shareCb){
@@ -856,14 +858,23 @@ var PfuSdk = cc.Class({
                 })
                 PfuSdk.videoAd.load().then(()=>{
                     if (online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1") {
-                        self.showShare();
+                        self.showShare(()=>{
+                            PfuSdk.videoAd.show().then(() => {
+                                //隐藏banner
+                                if (PfuSdk.bannerAd) {
+                                    PfuSdk.bannerAd.hide();
+                                }
+                            });
+                        });
+                    }else{
+                        PfuSdk.videoAd.show().then(() => {
+                            //隐藏banner
+                            if (PfuSdk.bannerAd) {
+                                PfuSdk.bannerAd.hide();
+                            }
+                        });
                     }
-                    PfuSdk.videoAd.show().then(() => {
-                        //隐藏banner
-                        if (PfuSdk.bannerAd) {
-                            PfuSdk.bannerAd.hide();
-                        }
-                    });
+                    
                 });
             }
         }
