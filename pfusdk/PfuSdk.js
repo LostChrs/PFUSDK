@@ -794,7 +794,9 @@ var PfuSdk = cc.Class({
         if (PfuSdk.bannerAd != null) {
             PfuSdk.bannerAd.destroy();
         }
-        let needWidth = config.bannerSize == 1?750:200;
+       // let needWidth = config.bannerSize == 1?750:200;
+       let designSizeW = this._wxWidth / (cc.winSize.width/2) * 104;
+
         let offY = 0;
         if(this.isIphoneX()){
             offY = 1;
@@ -807,12 +809,15 @@ var PfuSdk = cc.Class({
             style: {
                 left: 0,
                 top: 0,
-                width: self._wxRatio * needWidth,
+                width:this._wxWidth
             }
         });
-        bannerAd.onResize(res => {
-            bannerAd.style.top = self._wxHeight - res.height - offY;
-            bannerAd.style.left = self._wxWidth / 2 - res.width / 2;
+        bannerAd.onResize(size => {
+            if (designSizeW <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width)
+            bannerAd.style.width = this._wxWidth * designSizeW / size.height;
+
+            bannerAd.style.top = self._wxHeight - size.height - offY;
+            bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
         });
 
         bannerAd.onError(err => {
