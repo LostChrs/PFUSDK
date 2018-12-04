@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.0.8";
+const VERSION = "0.0.9";
 var online = require("PfuOnline");
 var config = require("PfuConfig");
 
@@ -276,6 +276,8 @@ var PfuSdk = cc.Class({
             self._preShareCountMax = parseInt(online.wechatparam.pfuSdkShareCount);
             self._shareTitle1 = online.wechatparam.pfuSdkShare1;
             self._shareTitle2 = online.wechatparam.pfuSdkShare2;
+            let refreshBannerTime = parseInt(online.wechatparam.pfuSdkRefresh);
+            self.schedule(self.createBanner, refreshBannerTime, cc.macro.REPEAT_FOREVER);
             if (self._onlineParamsCallback) self._onlineParamsCallback(online.wechatparam);
         });
     },
@@ -818,9 +820,11 @@ var PfuSdk = cc.Class({
         })
 
         PfuSdk.bannerAd = bannerAd;
-        bannerAd.show().catch(err => {
-            self.scheduleOnce(self.createBanner, 5);
-        })
+        // bannerAd.show().catch(err => {
+        //     self.scheduleOnce(self.createBanner, 5);
+        // })
+
+        this._resetBannerState();
     },
 
     showVideo(cb, failCb, closeCb,placementId) {
