@@ -884,7 +884,7 @@ var PfuSdk = cc.Class({
                     }
                 })
                 PfuSdk.videoAd.load().then(()=>{
-                    if (online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
+                    if (!this.isTestMode() && online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
                         self.showShare(()=>{
                             PfuSdk.videoAd.show().then(() => {
                                 //隐藏banner
