@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.0.9";
+const VERSION = "0.0.10";
 var online = require("PfuOnline");
 var config = require("PfuConfig");
 
@@ -794,8 +794,8 @@ var PfuSdk = cc.Class({
         if (PfuSdk.bannerAd != null) {
             PfuSdk.bannerAd.destroy();
         }
-       // let needWidth = config.bannerSize == 1?750:200;
-       let designSizeW = this._wxWidth / (cc.winSize.width/2) * 104;
+       let targetHeight = config.bannerHeight;
+       let designSizeH = this._wxWidth / (cc.winSize.width) * targetHeight;
 
         let offY = 0;
         if(this.isIphoneX()){
@@ -813,8 +813,8 @@ var PfuSdk = cc.Class({
             }
         });
         bannerAd.onResize(size => {
-            if (designSizeW <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width)
-            bannerAd.style.width = this._wxWidth * designSizeW / size.height;
+            if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width)
+            bannerAd.style.width = this._wxWidth * designSizeH / size.height;
 
             bannerAd.style.top = self._wxHeight - size.height - offY;
             bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
@@ -825,9 +825,7 @@ var PfuSdk = cc.Class({
         })
 
         PfuSdk.bannerAd = bannerAd;
-        // bannerAd.show().catch(err => {
-        //     self.scheduleOnce(self.createBanner, 5);
-        // })
+
 
         this._resetBannerState();
     },

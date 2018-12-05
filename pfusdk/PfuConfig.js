@@ -7,7 +7,7 @@ let config = {
 
     wxVideoId:"adunit-c758250e9f75430c",//视频广告Id
     wxBannerId:"adunit-8c19e95d3c8e9a7a",//banner广告Id
-    bannerSize:2,//1为最大尺寸  2为最小尺寸
+    bannerHeight:170,//230-170   
     payAppId:"1450018202",//虚拟支付Id，当接入虚拟支付的时候需要填写
 
     openInviteListListner:true,//开启邀请用户的实时监听
