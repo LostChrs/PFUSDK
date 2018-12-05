@@ -173,7 +173,9 @@ var PfuSdk = cc.Class({
     onAppHide(){
         
     },
-
+    getOfficialAccount(){
+        return online.getOfficialAccount();
+    },
     isTestMode(){
         return online.isTestMode();
     },
@@ -441,16 +443,11 @@ var PfuSdk = cc.Class({
         this._moreGameListRight = [];
 
         online.moregame.forEach(item => {
-            //过滤
-            configList.forEach(wxId => {
-                if(item.boxId == wxId){
-                    if (item.position === "0") {
-                        this._moreGameListLeft.push(item);
-                    } else {
-                        this._moreGameListRight.push(item);
-                    }
-                }
-            });
+            if (item.position === "0") {
+                this._moreGameListLeft.push(item);
+            } else {
+                this._moreGameListRight.push(item);
+            }
         });
 
 
@@ -491,8 +488,10 @@ var PfuSdk = cc.Class({
         if (cc.sys.platform === cc.sys.WECHAT_GAME){
             let path = info.path ? info.path : "";
             let jumpId = info.wechatgameid;
-            if(info.boxId && info.boxId != ""){
+            if(cc.sys.os == cc.sys.OS_ANDROID){
                 jumpId = info.boxId;
+            }
+            if(jumpId && jumpId != "" && this.checkDirectJump(jumpId)){
                 wx.navigateToMiniProgram({
                     appId: jumpId,
                     path: path
@@ -506,6 +505,17 @@ var PfuSdk = cc.Class({
             }
         }
         
+    },
+
+    checkDirectJump(wxId){
+        let list = config.wxJumpAppIdList;
+        for(let i=0;i<list.length;i++){
+            if(list[i] == wxId){
+                return true;
+            }
+        }
+
+        return false;
     },
     getMoreGameAction() {
         let t = 0.4;

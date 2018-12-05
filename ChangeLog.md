@@ -1,6 +1,8 @@
 ### v0.0.10
+* 增加了获取公众号图片地址的方法`getOfficialAccount`
 * 增加了固定banner高度的参数`bannerHeight`，范围为cocos设计分辨率230-170
 * 删除了banner大小参数`bannerSize` 
+* 修改了更多游戏按钮的跳转规则
 ### v0.0.9
 * 增加了banner刷新时间后台参数
 * 修改了视频前弹分享的规则

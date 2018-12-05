@@ -87,6 +87,10 @@ var pfuOnline = {
         msg.send(obj,urlGetAdsList,cb);
     },
 
+    getOfficialAccount(){
+        return this.getImagePath(this.officialaccount.adverts[0].link);
+    },
+
     updateBannerLink(){
         this.bannerList = [];
         this.moregame.forEach(item => {
