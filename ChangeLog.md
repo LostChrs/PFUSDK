@@ -1,5 +1,5 @@
 ### v0.1.0
-* 修改了`showShare`和`showShareOrVideo`的参数传递方式，请查看[这里](#./README.md)
+* 修改了`showShare`和`showShareOrVideo`的参数传递方式，请查看[这里](#https://github.com/LostChrs/PFUSDK/blob/master/README.md)
 * 移除了单独显示视频的方法`showVideo`,请使用`showShareOrVideo`替换
 ### v0.0.10
 * 增加了获取公众号图片地址的方法`getOfficialAccount`
