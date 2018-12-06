@@ -166,8 +166,14 @@ var PfuSdk = cc.Class({
                             this.showTips(this._shareTitle2);
                         }
                     }
+
+                    if(this._shareFailCb){
+                        this._shareFailCb();
+                    }
                 }
             }
+            this._shareCb = null;
+            this._shareFailCb = null;
         }
     },
     onAppHide(){
@@ -374,18 +380,49 @@ var PfuSdk = cc.Class({
             })
         }
     },
+    /*
+    videoPlacement 广告位
+    shareParams 分享参数
+    success 成功回调
+    fail 失败回调
+    */
 
-    showShareOrVideo(cb,videoPlacement,shareParmas){
+    showShareOrVideo(obj){
+        let videoPlacement = obj.videoPlacement || null;
+        let shareParams = obj.shareParams || null;
+        let successCb = obj.success || null;
+        let failCb = obj.fail || null;
         if(this.isShowShareBtn()){
-            this.showShare(cb,shareParmas);
+            this.showShare({
+                shareParams:shareParams,
+                success:successCb,
+                fail:failCb
+            });
         }else{
-            this.showVideo(cb,null,null,videoPlacement);
+            this.showVideo({
+                placement:videoPlacement,
+                success:successCb,
+                fail:failCb
+            });
         }
     },
 
-    showShare(cb,parmas,title,imageUrl) {
-        this._shareCb = cb;
+    /*
+    shareParams 分享参数
+    title 分享标题
+    imageUrl 分享图片
+    success 成功回调
+    fail 失败回调
+    */
+    showShare(obj) {
+        let cb = obj.success || null;
+        let failCb = obj.fail || null;
+        let parmas = obj.shareParams || null;
+        let title = obj.title || null;
+        let imageUrl = obj.imageUrl || null;
 
+        this._shareCb = cb;
+        this._shareFailCb = failCb;
         let self = this;
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             this._startShare = true;
@@ -840,13 +877,22 @@ var PfuSdk = cc.Class({
         this._resetBannerState();
     },
 
-    showVideo(cb, failCb, closeCb,placementId) {
+    /*
+        placement 广告位ID
+        success  成功回调
+        fail 失败回调
+        close 中途关闭广告回调
+    */
+    showVideo(obj) {
         let self = this;
+        let cb = obj.success || null;
+        let failCb = obj.fail || null;
+        let closeCb = obj.close || null;
+        let placementId = obj.placement || null;
+
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
         } else {
-           
-
             if(placementId){
                 this.showAdsPlacement(placementId);
             }
@@ -878,21 +924,27 @@ var PfuSdk = cc.Class({
                     self._resetBannerState();
                     //非审核模式下播放视频失败，会走分享
                     if(!online.isTestMode()){
-                        self.showShare(cb);
+                        self.showShare({
+                            success:cb,
+                            fail:failCb
+                        });
                     }else{
                         if(failCb)failCb();
                     }
                 })
                 PfuSdk.videoAd.load().then(()=>{
                     if (!this.isTestMode() && online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
-                        self.showShare(()=>{
-                            PfuSdk.videoAd.show().then(() => {
-                                //隐藏banner
-                                if (PfuSdk.bannerAd) {
-                                    PfuSdk.bannerAd.hide();
-                                }
-                            });
-                        });
+                        self.showShare({
+                            success:()=>{
+                                PfuSdk.videoAd.show().then(() => {
+                                    //隐藏banner
+                                    if (PfuSdk.bannerAd) {
+                                        PfuSdk.bannerAd.hide();
+                                    }
+                                });
+                            },
+                            fail:failCb
+                        })
                     }else{
                         PfuSdk.videoAd.show().then(() => {
                             //隐藏banner
