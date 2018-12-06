@@ -61,6 +61,7 @@ properties: {
     },
 ```
 <div id="showShareOrVideo"></div>
+
 ### 显示视频
 >showShareOrVideo
 
@@ -84,6 +85,7 @@ properties: {
         })
 ```
 <div id="showShare"></div>
+
 ### 分享
 >showShare
 
