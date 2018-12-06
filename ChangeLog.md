@@ -1,3 +1,6 @@
+### v0.1.0
+* 修改了`showShare`和`showShareOrVideo`的参数传递方式，请查看[这里](#./README.md)
+* 移除了单独显示视频的方法`showVideo`,请使用`showShareOrVideo`替换
 ### v0.0.10
 * 增加了获取公众号图片地址的方法`getOfficialAccount`
 * 增加了固定banner高度的参数`bannerHeight`，范围为cocos设计分辨率230-170

@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.0.10";
+const VERSION = "0.1.0";
 var online = require("PfuOnline");
 var config = require("PfuConfig");
 
@@ -26,7 +26,7 @@ var PfuSdk = cc.Class({
         mScreenRatio:0,
     },
     properties: {
-
+        executionOrder: -1000
     },
     onLoad() {
         if (PfuSdk.Instance == null) {
@@ -34,7 +34,6 @@ var PfuSdk = cc.Class({
             cc.game.addPersistRootNode(this.node);
         } else {
             if (PfuSdk.Instance != this) {
-                this.log("切换场景后，重新走Load方法");
                 this.node.destroy();
                 return;
             }
@@ -43,12 +42,6 @@ var PfuSdk = cc.Class({
         this._inviteNum = 0;
         PfuSdk.mScreenRatio = cc.winSize.height / cc.winSize.width;
         this.log("Version:"+VERSION);
-        // cc.game.on(cc.game.EVENT_SHOW, function () {
-        //     self.onAppShow();
-        // });
-        // cc.game.on(cc.game.EVENT_HIDE, function () {
-        //     self.onAppHide();
-        // });
         this._bannerHideState = false;
         this._startShare = false;
         this._shareNum = 0;
@@ -70,7 +63,6 @@ var PfuSdk = cc.Class({
 
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             wx.onShow(res=>{
-                //this.log(JSON.stringify(res));
                 this.onAppShow(res);
             });
         }

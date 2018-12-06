@@ -1,31 +1,26 @@
-# PFUSDK V0.0.10
+# PFUSDK V0.1.0
 
 # 快速接入
-将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。`PfuSdk`为单例脚本，并且通过`cc.game.addPersistRootNode(this.node);`设置为常驻节点，切换场景时不会销毁，因此只需要将其挂载到主场景即可，注意不要挂载到Canvas下，应该挂载到根节点。
+将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。注意不要挂载到Canvas下，应该挂载到根节点。
 
-sdk会在启动后自动调用常用接口的初始化，如登录，分享（分享的图片和标题），显示开屏二维码广告，获取在线参数等等。用户无需关心实现逻辑。**用户所有调用接口都应该在脚本的start函数后。**
 >所有项目均会自动生成常用在线参数，如pfuSdkTestMode(审核模式),pfuSdkShowOpenAds(显示开屏广告)等。审核模式开启时将自动隐藏更多游戏列表，更多游戏按钮等功能。
 
 >注意：配置好PfuConfig参数后，请备份好此配置，防止更新SDK时覆盖了配置文件。
-### 参数配置 (*必接)
->以下参数均为示例，具体参数请联系嘉丰永道商务获取
-```
-let config = {
-    version:"1.0.0",//*必填  游戏参数版本号，用来控制运营后台参数
-    appId:1306246,//*必填  嘉丰永道appId
-    wxId:"wxc3ee0b459142bb1b",//*必填  微信小游戏Id
-    pfuPrivateKey:"bp11lflsecbme9itbbf",//*必填  嘉丰永道分配给合作方的私钥
+### Config.js中参数配置 (*必接)
 
-    wxVideoId:"adunit-c758250e9f75430c",//视频广告Id
-    wxBannerId:"adunit-8c19e95d3c8e9a7a",//banner广告Id
-    bannerHeight:170,//230-170 
-    
-    payAppId:"1450018202",//虚拟支付Id，当接入虚拟支付的时候需要填写
+| 参数 | 是否必填 | 含义 | 示例/默认值 |
+| :------| :------ | :------ | :------|
+|version|是|游戏参数版本号，用来控制运营后台参数|1.0.0|
+|appId|是| 嘉丰永道appId|1306246|
+|wxId|是|微信小游戏Id|wxc3ee0b459142bb1b|
+|pfuPrivateKey|是|嘉丰永道分配给合作方的私钥|bp11lflsecbme9itbbf|
+|wxVideoId|否|视频广告Id|adunit-c758250e9f75430c|
+|wxBannerId|否|banner广告Id|adunit-8c19e95d3c8e9a7a|
+|bannerHeight|否|banner高度，范围170~230|170|
+|payAppId|否|虚拟支付Id，当接入虚拟支付的时候需要填写|1450018202|
+|openInviteListListner|否|开启邀请用户的实时监听|false|
+|inviteListUpdateTime|否|更新一次邀请列表频率（秒）|180|
 
-    openInviteListListner:false,//开启邀请用户的实时监听
-    inviteListUpdateTime:180,//每180秒更新一次邀请列表
-};
-```
 >如果要使用更多游戏列表或更多游戏按钮，需要在发布的微信工程的game.json中添加如下配置
 
 ```
@@ -43,7 +38,6 @@ let config = {
   ]
 ```
 ### 获取在线参数(*必接)
-在脚本的`start()`函数中调用如下方法
 ```
  PfuSdk.Instance.setOnlineParamsCallback((obj)=>{});
 ```
