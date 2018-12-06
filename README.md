@@ -66,24 +66,49 @@ properties: {
         rightSprite:cc.Sprite,
     },
 ```
+### 显示视频
+>showShareOrVideo
 
-### 先分享后显示视频
->用来判断当前应该显示分享领取按钮还是视频领取按钮
+| 参数 | 含义 |
+| :------| :------ |
+|videoPlacement| 广告位|
+|shareParams| 分享参数|
+|success| 成功回调|
+|fail |失败回调|
+
 ```
-pfuSdk.Instance.isShowShareBtn();//当前是否显示分享按钮,true显示分享/false显示视频
-```
->可以通过简单调用以下接口自动判断显示视频还是分享
-```
-pfuSdk.Instance.showShareOrVideo(cb,videoPlacement,shareParmas);//cb成功回调，videoPlacement视频点ID(可选),shareParmas分享参数(可选)
+ PfuSdk.Instance.showShareOrVideo({
+            videoPlacement:"video",
+            shareParams:"level=10&coin=999",
+            success:()=>{
+                console.log("视频播放成功");
+            },
+            fail:()=>{
+                console.log("视频播放失败");
+            }
+        })
 ```
 
 ### 分享
-```
-pfuSdk.Instance.showShare(()=>{console.log("分享成功")},params);
-```
->分享时第二个参数为用户自定义参数，可不传。如"playerId=222&level=1"
+>showShare
 
-
+| 参数 | 含义 |
+| :------| :------ |
+|shareParams |分享参数
+|title |自定义分享标题
+|imageUrl |自定义分享图片
+|success |成功回调
+|fail |失败回调
+```
+PfuSdk.Instance.showShare({
+            success:()=>{
+                self.lbShare.string = "分享成功!";
+            },
+            fail:()=>{
+                self.lbShare.string = "分享失败!";
+            }
+        })
+```
 ### Banner广告
 配置`PfuConfig.js`中的`wxBannerId`，Banner广告即可自动创建和显示。配置`bannerHeight`可指定banner高度，对应cocos中的设计像素范围230-170。
 
@@ -91,18 +116,6 @@ pfuSdk.Instance.showShare(()=>{console.log("分享成功")},params);
 ```
 pfuSdk.Instance.HideBanner(true);//隐藏Banner
 pfuSdk.Instance.HideBanner(false);//显示Banner
-```
-### 看视频
->视频广告需要在`PfuConfig.js`中配置`wxVideoId`参数
-```
-pfuSdk.Instance.showVideo(successCb,failCb,closeCb,placementId);
-```
-其中3个参数分别代表成功回调，失败回调，视频未看完回调。3个参数均为可选参数。
-如果不同广告点有不同的广告Id,请传递placementId
-
-也可以提前检测是否有可播放的广告。
-```
-pfuSdk.Instance.loadAds(res=>{console.log("广告是否可播放:"+res)});
 ```
 
 ### 复活

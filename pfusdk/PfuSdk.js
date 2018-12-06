@@ -881,13 +881,11 @@ var PfuSdk = cc.Class({
         placement 广告位ID
         success  成功回调
         fail 失败回调
-        close 中途关闭广告回调
     */
     showVideo(obj) {
         let self = this;
         let cb = obj.success || null;
         let failCb = obj.fail || null;
-        let closeCb = obj.close || null;
         let placementId = obj.placement || null;
 
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
@@ -913,7 +911,7 @@ var PfuSdk = cc.Class({
                     }
                     else {
                         // 播放中途退出，不下发游戏奖励
-                        if (closeCb) closeCb();
+                        if(failCb)failCb();
                     }
     
                 });
