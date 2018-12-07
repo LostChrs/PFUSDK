@@ -465,20 +465,26 @@ var PfuSdk = cc.Class({
         this._moreGameSpriteLeft = spLeft;
         this._moreGameSpriteRight = spRight;
         this.unschedule(this.updateMoreGameBtn);
-        let configList = config.wxJumpAppIdList;
        
         //get list
         this._moreGameListLeft = [];
         this._moreGameListRight = [];
 
         online.moregame.forEach(item => {
-            if (item.position === "0") {
-                this._moreGameListLeft.push(item);
-            } else {
-                this._moreGameListRight.push(item);
+            let condition1 = this.checkDirectJump(item.wechatgameid);
+            let condition2 = this.checkDirectJump(item.boxId);
+            if(cc.sys.os == cc.sys.OS_IOS){
+                condition2 = false;
+            }
+            let condition3 = (item.link&&item.link != "");
+            if( condition1||condition2||condition3 ){
+                if (item.position === "0") {
+                    this._moreGameListLeft.push(item);
+                } else {
+                    this._moreGameListRight.push(item);
+                }
             }
         });
-
 
 
         if(spLeft){
@@ -526,9 +532,9 @@ var PfuSdk = cc.Class({
                     path: path
                 })
             }else{
-                if (info.qrcodelink){
+                if (info.link && info.link != ""){
                     wx.previewImage({
-                      urls:[info.qrcodelink]
+                      urls:[info.link]
                     });
                   }
             }
@@ -537,6 +543,7 @@ var PfuSdk = cc.Class({
     },
 
     checkDirectJump(wxId){
+        if(!wxId || wxId=="")return false;
         let list = config.wxJumpAppIdList;
         for(let i=0;i<list.length;i++){
             if(list[i] == wxId){
