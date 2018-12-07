@@ -1,3 +1,5 @@
+### v0.1.1
+* 修改了更多游戏按钮跳转规则
 ### v0.1.0
 * 修改了`showShare`和`showShareOrVideo`的参数传递方式，请查看[这里](https://github.com/LostChrs/PFUSDK/blob/master/README.md#showShare)
 * 移除了单独显示视频的方法`showVideo`,请使用`showShareOrVideo`替换

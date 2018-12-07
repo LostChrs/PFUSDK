@@ -1,4 +1,4 @@
-# PFUSDK V0.1.0
+# PFUSDK V0.1.1
 [点击这里查看版本更新日志](https://github.com/LostChrs/PFUSDK/blob/master/ChangeLog.md)
 # 快速接入
 将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。注意不要挂载到Canvas下，应该挂载到根节点。

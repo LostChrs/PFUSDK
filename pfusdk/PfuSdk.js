@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 var online = require("PfuOnline");
 var config = require("PfuConfig");
 
@@ -76,6 +76,8 @@ var PfuSdk = cc.Class({
 
         this._successShareCount = 0;
         this.setItem("pfuSdkSuccessShareCount",0);
+
+        this.setItem("pfuRedpacketGive",false);//每日简单的重置状态
     },
     
     //刘海屏
@@ -215,6 +217,7 @@ var PfuSdk = cc.Class({
             success: res => {
                 online.pfuLogin(res.code, data => {
                     if (data.state == 3) {
+                        this.log("SDK登录成功");
                         PfuSdk.sessionKey = data.sk;
                         PfuSdk.loginToken = data.loginToken;
                         PfuSdk.loginId = data.loginId;
@@ -232,6 +235,8 @@ var PfuSdk = cc.Class({
                         self.checkNewInviteUser();
                         //获取分享列表
                         self.getInviteList();
+                    }else{
+                        this.log("SDK登录错误："+data.state);
                     }
 
                 });
@@ -454,8 +459,8 @@ var PfuSdk = cc.Class({
     },
     //更多游戏图标自动更新，请在获取在线参数后调用,传入需要更新的sprite
     setMoreGame(spLeft, spRight) {
-        this.log("setMoreGame:"+spLeft+","+spRight+":pfuSdkMoreGame-->"+online.wechatparam.pfuSdkMoreGame);
         if (online.wechatparam.pfuSdkMoreGame && online.wechatparam.pfuSdkMoreGame == "0") {
+            this.log("隐藏更多游戏按钮");
             if(spLeft) spLeft.node.active = false;
             if(spRight) spRight.node.active = false;
             return;
@@ -471,13 +476,14 @@ var PfuSdk = cc.Class({
         this._moreGameListRight = [];
 
         online.moregame.forEach(item => {
-            let condition1 = this.checkDirectJump(item.wechatgameid);
-            let condition2 = this.checkDirectJump(item.boxId);
+            let condition1 = false; 
             if(cc.sys.os == cc.sys.OS_IOS){
-                condition2 = false;
+                condition1 = this.checkDirectJump(item.wxid);
+            }else{
+                condition1 = this.checkDirectJump(item.boxId);
             }
-            let condition3 = (item.link&&item.link != "");
-            if( condition1||condition2||condition3 ){
+            let condition2 = (item.link&&item.link != "");
+            if( condition1||condition2){
                 if (item.position === "0") {
                     this._moreGameListLeft.push(item);
                 } else {
@@ -522,7 +528,7 @@ var PfuSdk = cc.Class({
         online.pfuGAClick(GAType.MoreGame,gaid,PfuSdk.loginToken);
         if (cc.sys.platform === cc.sys.WECHAT_GAME){
             let path = info.path ? info.path : "";
-            let jumpId = info.wechatgameid;
+            let jumpId = info.wxid;
             if(cc.sys.os == cc.sys.OS_ANDROID){
                 jumpId = info.boxId;
             }
@@ -626,7 +632,10 @@ var PfuSdk = cc.Class({
 
     //获取邀请玩家列表
     checkNewInviteUser() {
-        if (!this._isLogin) return;
+        if (!this._isLogin){
+            this.log("checkNewInviteUser-->请先登录");
+            return;
+        } 
 
         let isNewUser = this.getItem("HaveAccount");
         if (!isNewUser) {
@@ -783,7 +792,6 @@ var PfuSdk = cc.Class({
         let self = this;
         //视频广告
         if (config.wxVideoId != "") {
-
             let videoAd = wx.createRewardedVideoAd({
                 adUnitId: config.wxVideoId
             });
@@ -798,7 +806,6 @@ var PfuSdk = cc.Class({
     showAdsPlacement(placementId,cb){
         let self = this;
         if(placementId){
-
              let videoAd = wx.createRewardedVideoAd({
                 adUnitId: placementId
             });
@@ -962,7 +969,7 @@ var PfuSdk = cc.Class({
     HideBanner(hide) {
         //这里记录banner状态
         this._bannerHideState = hide;
-        this.log("HideBanner-->"+hide+"-->"+PfuSdk.bannerAd);
+        this.log("HideBanner-->"+hide);
         if (PfuSdk.bannerAd) {
             if (hide) {
                 PfuSdk.bannerAd.hide();
