@@ -852,9 +852,7 @@ var PfuSdk = cc.Class({
 
         let offY = 0;
         if(this.isIphoneX()){
-            offY = 1;
-        }else if(this.isFullScreen()){
-            offY = 10;
+            offY = 12;
         }
         
         let bannerAd = wx.createBannerAd({
