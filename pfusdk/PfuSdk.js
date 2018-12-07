@@ -534,7 +534,7 @@ var PfuSdk = cc.Class({
             }else{
                 if (info.link && info.link != ""){
                     wx.previewImage({
-                      urls:[info.link]
+                      urls:[online.getImagePath(info.link)]
                     });
                   }
             }
