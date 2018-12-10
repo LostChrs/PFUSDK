@@ -4,10 +4,10 @@ var online = require("PfuOnline");
 var config = require("PfuConfig");
 
 var GAType = cc.Enum({
-    MoreGame:5,
-    GameList:6,
-    VideoFinished:7,
-    ShareNum:8
+    MoreGame: 5,
+    GameList: 6,
+    VideoFinished: 7,
+    ShareNum: 8
 });
 
 var PfuSdk = cc.Class({
@@ -19,11 +19,11 @@ var PfuSdk = cc.Class({
         loginId: "",
         uid: "",
         pfuUserInfo: null,
-        bannerAd:null,
-        videoAd:null,
-        videoAdSuccessCb:null,
-        reliveCb:null,
-        mScreenRatio:0,
+        bannerAd: null,
+        videoAd: null,
+        videoAdSuccessCb: null,
+        reliveCb: null,
+        mScreenRatio: 0,
     },
     properties: {
         executionOrder: -1000
@@ -41,7 +41,7 @@ var PfuSdk = cc.Class({
         let self = this;
         this._inviteNum = 0;
         PfuSdk.mScreenRatio = cc.winSize.height / cc.winSize.width;
-        this.log("Version:"+VERSION);
+        this.log("Version:" + VERSION);
         this._bannerHideState = false;
         this._startShare = false;
         this._shareNum = 0;
@@ -62,7 +62,7 @@ var PfuSdk = cc.Class({
         this.initShare();
 
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
-            wx.onShow(res=>{
+            wx.onShow(res => {
                 this.onAppShow(res);
             });
         }
@@ -70,30 +70,29 @@ var PfuSdk = cc.Class({
 
         this._shareFlag = false;//看完视频重置
     },
-    resetDailyTask(){
+    resetDailyTask() {
         this._shareNum = 0;
-        this.setItem("pfuSdkShareNum",0);
+        this.setItem("pfuSdkShareNum", 0);
 
         this._successShareCount = 0;
-        this.setItem("pfuSdkSuccessShareCount",0);
+        this.setItem("pfuSdkSuccessShareCount", 0);
 
-        this.setItem("pfuRedpacketGive",false);//每日简单的重置状态
+        this.setItem("pfuRedpacketGive", false);//每日简单的重置状态
     },
-    
+
     //刘海屏
-    isIphoneX(){
+    isIphoneX() {
         return PfuSdk.mScreenRatio >= 19 / 9;
     },
     //普通全面屏
-    isFullScreen(){
+    isFullScreen() {
         return 1.789 < PfuSdk.mScreenRatio && PfuSdk.mScreenRatio < 19 / 9;
     },
     //是否显示分享按钮
-    isShowShareBtn(){
+    isShowShareBtn() {
         //永远显示视频
         return false;
-        if(this.isTestMode())
-        {
+        if (this.isTestMode()) {
             return false;
         }
         return this._successShareCount < this._preShareCountMax;
@@ -107,8 +106,8 @@ var PfuSdk = cc.Class({
             if (launchOptions.referrerInfo && launchOptions.referrerInfo.extraData) {
                 //this.log("支付结果:" + launchOptions.referrerInfo.extraData.result);
                 //复活
-                if(PfuSdk.reliveCb){
-                    if(launchOptions.referrerInfo.extraData.relive){
+                if (PfuSdk.reliveCb) {
+                    if (launchOptions.referrerInfo.extraData.relive) {
                         PfuSdk.reliveCb();
                         PfuSdk.reliveCb = null;
                     }
@@ -116,52 +115,52 @@ var PfuSdk = cc.Class({
             }
         }
 
-         //检测新日期
-         var recordDate = this.getItem("recordDate");
-         if (recordDate) {
-             let date = new Date();
-             let d = date.getUTCDate();
-             if (d != recordDate) {
-                 console.log("----检查每日登陆:"+d+"->"+recordDate);
-                 this.setItem("recordDate", d);
-                 this.resetDailyTask();
-             } else {
-                this._shareNum = this.getItem("pfuSdkShareNum",0);
-                this._successShareCount = this.getItem("pfuSdkSuccessShareCount",0);
-             }
-         } else {
-             let date = new Date();
-             let d = date.getUTCDate();
-             this.setItem("recordDate", d);
- 
-             this.resetDailyTask();
-         }
+        //检测新日期
+        var recordDate = this.getItem("recordDate");
+        if (recordDate) {
+            let date = new Date();
+            let d = date.getUTCDate();
+            if (d != recordDate) {
+                console.log("----检查每日登陆:" + d + "->" + recordDate);
+                this.setItem("recordDate", d);
+                this.resetDailyTask();
+            } else {
+                this._shareNum = this.getItem("pfuSdkShareNum", 0);
+                this._successShareCount = this.getItem("pfuSdkSuccessShareCount", 0);
+            }
+        } else {
+            let date = new Date();
+            let d = date.getUTCDate();
+            this.setItem("recordDate", d);
 
-        if(this._startShare){
+            this.resetDailyTask();
+        }
+
+        if (this._startShare) {
             this._startShare = false;
-            if(!this.isTestMode()){
+            if (!this.isTestMode()) {
                 let ts = this.getDiffFromNow(this.getItem("shareTs"));
-                let needTime = (online.shareTime/1000);
-                if(needTime >=5 )needTime = 5;
-                if(Math.abs(ts) > needTime){
-                    if(this._shareCb){
+                let needTime = (online.shareTime / 1000);
+                if (needTime >= 5) needTime = 5;
+                if (Math.abs(ts) > needTime) {
+                    if (this._shareCb) {
                         this._shareCb();
                         this._shareFlag = true;
                         this._successShareCount++;
                         this._shareNum++;
-                        this.setItem("pfuSdkShareNum",this._shareNum);
-                        this.setItem("pfuSdkSuccessShareCount",this._successShareCount);
+                        this.setItem("pfuSdkShareNum", this._shareNum);
+                        this.setItem("pfuSdkSuccessShareCount", this._successShareCount);
                     }
-                }else{
-                    if(this._shareCb){
-                        if(this._shareNum == 0){
+                } else {
+                    if (this._shareCb) {
+                        if (this._shareNum == 0) {
                             this.showTips(this._shareTitle1);
-                        }else{
+                        } else {
                             this.showTips(this._shareTitle2);
                         }
                     }
 
-                    if(this._shareFailCb){
+                    if (this._shareFailCb) {
                         this._shareFailCb();
                     }
                 }
@@ -170,16 +169,16 @@ var PfuSdk = cc.Class({
             this._shareFailCb = null;
         }
     },
-    onAppHide(){
-        
+    onAppHide() {
+
     },
-    getOfficialAccount(){
+    getOfficialAccount() {
         return online.getOfficialAccount();
     },
-    isTestMode(){
+    isTestMode() {
         return online.isTestMode();
     },
-    
+
     //时间戳方法
     getNowTimestamp() {
         //毫秒000
@@ -206,7 +205,7 @@ var PfuSdk = cc.Class({
         });
     },
     start() {
-        
+
     },
     //登录
     login() {
@@ -235,8 +234,8 @@ var PfuSdk = cc.Class({
                         self.checkNewInviteUser();
                         //获取分享列表
                         self.getInviteList();
-                    }else{
-                        this.log("SDK登录错误："+data.state);
+                    } else {
+                        this.log("SDK登录错误：" + data.state);
                     }
 
                 });
@@ -277,7 +276,7 @@ var PfuSdk = cc.Class({
         let self = this;
         online.initData(() => {
             self.showOpenAds();
-            this.log("requestOnlineParams:"+JSON.stringify(online.wechatparam));
+            this.log("requestOnlineParams:" + JSON.stringify(online.wechatparam));
             self._preShareCountMax = parseInt(online.wechatparam.pfuSdkShareCount);
             self._shareTitle1 = online.wechatparam.pfuSdkShare1;
             self._shareTitle2 = online.wechatparam.pfuSdkShare2;
@@ -312,30 +311,30 @@ var PfuSdk = cc.Class({
         }
 
     },
-    payAndroid(pName,pPrice){
+    payAndroid(pName, pPrice) {
         this.log("安卓支付");
     },
 
     //跳转盒子复活
-    jumpGameboxForRelive(cb){
+    jumpGameboxForRelive(cb) {
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             PfuSdk.reliveCb = cb;
             let jumpId = "wx3e33fef689f472b1";
-            if(online.wechatparam.pfuSdkBoxRelive){
+            if (online.wechatparam.pfuSdkBoxRelive) {
                 jumpId = online.wechatparam.pfuSdkBoxRelive;
             }
             wx.navigateToMiniProgram({
                 appId: jumpId,
-                path: "pages/index/index?pfukey="+config.wxId+"&pfuRelive=true",
+                path: "pages/index/index?pfukey=" + config.wxId + "&pfuRelive=true",
                 success(res) {
-                    
+
                 },
                 fail(res) {
                     PfuSdk.reliveCb = null;
                 }
             })
-        }else{
-            if(cb)cb();
+        } else {
+            if (cb) cb();
         }
     },
 
@@ -384,22 +383,22 @@ var PfuSdk = cc.Class({
     fail 失败回调
     */
 
-    showShareOrVideo(obj){
+    showShareOrVideo(obj) {
         let videoPlacement = obj.videoPlacement || null;
         let shareParams = obj.shareParams || null;
         let successCb = obj.success || null;
         let failCb = obj.fail || null;
-        if(this.isShowShareBtn()){
+        if (this.isShowShareBtn()) {
             this.showShare({
-                shareParams:shareParams,
-                success:successCb,
-                fail:failCb
+                shareParams: shareParams,
+                success: successCb,
+                fail: failCb
             });
-        }else{
+        } else {
             this.showVideo({
-                placement:videoPlacement,
-                success:successCb,
-                fail:failCb
+                placement: videoPlacement,
+                success: successCb,
+                fail: failCb
             });
         }
     },
@@ -423,20 +422,20 @@ var PfuSdk = cc.Class({
         let self = this;
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             this._startShare = true;
-            this.setItem("shareTs",this.getNowTimestamp());
+            this.setItem("shareTs", this.getNowTimestamp());
 
             let queryData = "fromUid=" + PfuSdk.uid;
-            if(parmas){
-                queryData += "&"+parmas;
+            if (parmas) {
+                queryData += "&" + parmas;
             }
             if (!online.isTestMode()) {
                 let shareInfo = online.getShareInfo();
                 let gaid = this.getGAID(shareInfo.shareLink);
-                online.pfuGAClick(GAType.ShareNum,gaid,PfuSdk.loginToken);
-                
-                queryData += "&shareImage="+gaid;
-                let shareTitle = title? title :  shareInfo.desc;
-                let shareImage = imageUrl?imageUrl : online.getImagePath(shareInfo.shareLink);
+                online.pfuGAClick(GAType.ShareNum, gaid, PfuSdk.loginToken);
+
+                queryData += "&shareImage=" + gaid;
+                let shareTitle = title ? title : shareInfo.desc;
+                let shareImage = imageUrl ? imageUrl : online.getImagePath(shareInfo.shareLink);
                 wx.shareAppMessage({
                     title: shareTitle,
                     imageUrl: shareImage,
@@ -444,8 +443,8 @@ var PfuSdk = cc.Class({
                     withShareTicket: true,
                 });
             } else {
-                let shareTitle = title? title :  "快来和我一起玩吧~";
-              
+                let shareTitle = title ? title : "快来和我一起玩吧~";
+
                 wx.shareAppMessage({
                     title: shareTitle,
                     query: queryData,
@@ -457,33 +456,231 @@ var PfuSdk = cc.Class({
             if (cb) cb();
         }
     },
+
+    //广告
+    initAds() {
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
+        let self = this;
+        //视频广告
+        if (config.wxVideoId != "") {
+            let videoAd = wx.createRewardedVideoAd({
+                adUnitId: config.wxVideoId
+            });
+            PfuSdk.videoAd = videoAd;
+            PfuSdk.videoAd.load();
+            PfuSdk.videoAd.onError(err => {
+                self.log("ShowVideo onError:" + JSON.stringify(err));
+            })
+        }
+    },
+
+    showAdsPlacement(placementId, cb) {
+        let self = this;
+        if (placementId) {
+            let videoAd = wx.createRewardedVideoAd({
+                adUnitId: placementId
+            });
+            videoAd.load()
+                .then(() => {
+                    if (cb) cb(true);
+                }).catch(err => {
+                    if (cb) cb(false);
+                });
+            PfuSdk.videoAd = videoAd;
+        }
+    },
+
+    loadAds(cb, placementId) {
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) {
+            if (cb) cb(true);
+            return;
+        }
+        if (placementId) {
+            this.showAdsPlacement(placementId, cb);
+        } else {
+            if (PfuSdk.videoAd) {
+                PfuSdk.videoAd.load()
+                    .then(() => {
+                        if (cb) cb(true);
+                    }).catch(err => {
+                        if (cb) cb(false);
+                    });
+            } else {
+                if (cb) cb(false);
+            }
+
+        }
+
+    },
+
+    createBanner() {
+        let self = this;
+        if (PfuSdk.bannerAd != null) {
+            PfuSdk.bannerAd.destroy();
+        }
+        let targetHeight = config.bannerHeight;
+        let designSizeH = this._wxWidth / (cc.winSize.width) * targetHeight;
+
+        let offY = 0;
+        if (this.isIphoneX()) {
+            offY = 12;
+        }
+
+        let bannerAd = wx.createBannerAd({
+            adUnitId: config.wxBannerId,
+            style: {
+                left: 0,
+                top: 0,
+                width: this._wxWidth
+            }
+        });
+        bannerAd.onResize(size => {
+            if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width)
+                bannerAd.style.width = this._wxWidth * designSizeH / size.height;
+
+            bannerAd.style.top = self._wxHeight - size.height - offY;
+            bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
+        });
+
+        bannerAd.onError(err => {
+            this.log("Banner onError:" + JSON.stringify(err));
+        })
+
+        PfuSdk.bannerAd = bannerAd;
+
+
+        this._resetBannerState();
+    },
+
+    /*
+        placement 广告位ID
+        success  成功回调
+        fail 失败回调
+    */
+    showVideo(obj) {
+        let self = this;
+        let cb = obj.success || null;
+        let failCb = obj.fail || null;
+        let placementId = obj.placement || null;
+        let justWatch = obj.justWatch || false;
+
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) {
+            if (cb) cb();
+        } else {
+            if (placementId) {
+                this.showAdsPlacement(placementId);
+            }
+
+            if (PfuSdk.videoAd) {
+                PfuSdk.videoAdSuccessCb = cb;
+                PfuSdk.videoAd.onClose(res => {
+                    self._resetBannerState();
+                    if (res && res.isEnded) {
+                        // 正常播放结束，可以下发游戏奖励
+                        online.pfuGAVideo(GAType.VideoFinished, PfuSdk.loginToken);
+                        if (PfuSdk.videoAdSuccessCb) {
+                            PfuSdk.videoAdSuccessCb();
+                            PfuSdk.videoAdSuccessCb = null;
+                        }
+
+                        self._shareFlag = false;
+                    }
+                    else {
+                        // 播放中途退出，不下发游戏奖励
+                        if (failCb) failCb();
+                    }
+
+                });
+
+                PfuSdk.videoAd.onError(err => {
+                    self.log("ShowVideo onError:" + JSON.stringify(err));
+
+                    self._resetBannerState();
+                    //非审核模式下播放视频失败，会走分享
+                    if (!online.isTestMode()) {
+                        self.showShare({
+                            success: cb,
+                            fail: failCb
+                        });
+                    } else {
+                        if (failCb) failCb();
+                    }
+                })
+                PfuSdk.videoAd.load().then(() => {
+                    if (!justWatch && !this.isTestMode() && online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
+                        self.showShare({
+                            success: () => {
+                                PfuSdk.videoAd.show().then(() => {
+                                    //隐藏banner
+                                    if (PfuSdk.bannerAd) {
+                                        PfuSdk.bannerAd.hide();
+                                    }
+                                });
+                            },
+                            fail: failCb
+                        })
+                    } else {
+                        PfuSdk.videoAd.show().then(() => {
+                            //隐藏banner
+                            if (PfuSdk.bannerAd) {
+                                PfuSdk.bannerAd.hide();
+                            }
+                        });
+                    }
+
+                });
+            }
+        }
+    },
+    _resetBannerState() {
+        this.HideBanner(this._bannerHideState);
+    },
+
+    HideBanner(hide) {
+        //这里记录banner状态
+        this._bannerHideState = hide;
+        this.log("HideBanner-->" + hide);
+        if (PfuSdk.bannerAd) {
+            if (hide) {
+                PfuSdk.bannerAd.hide();
+            } else {
+                PfuSdk.bannerAd.show();
+            }
+        }
+    },
+   
+
+    /*
+    * 更多游戏START
+    */
+
     //更多游戏图标自动更新，请在获取在线参数后调用,传入需要更新的sprite
     setMoreGame(spLeft, spRight) {
         if (online.wechatparam.pfuSdkMoreGame && online.wechatparam.pfuSdkMoreGame == "0") {
             this.log("隐藏更多游戏按钮");
-            if(spLeft) spLeft.node.active = false;
-            if(spRight) spRight.node.active = false;
+            if (spLeft) spLeft.node.active = false;
+            if (spRight) spRight.node.active = false;
             return;
         }
 
-       
+
         this._moreGameSpriteLeft = spLeft;
         this._moreGameSpriteRight = spRight;
         this.unschedule(this.updateMoreGameBtn);
-       
+
         //get list
         this._moreGameListLeft = [];
         this._moreGameListRight = [];
 
         online.moregame.forEach(item => {
-            let condition1 = false; 
-            if(cc.sys.os == cc.sys.OS_IOS){
+            let condition1 = false;
+            if (cc.sys.os == cc.sys.OS_IOS) {
                 condition1 = this.checkDirectJump(item.wxid);
-            }else{
+            } else {
                 condition1 = this.checkDirectJump(item.boxId);
             }
-            let condition2 = (item.link&&item.link != "");
-            if( condition1||condition2){
+            let condition2 = (item.link && item.link != "");
+            if (condition1 || condition2) {
                 if (item.position === "0") {
                     this._moreGameListLeft.push(item);
                 } else {
@@ -493,9 +690,9 @@ var PfuSdk = cc.Class({
         });
 
 
-        if(spLeft){
-            this.addButtonClick(spLeft.node,this.onMoreGameClick.bind(this));
-             //left
+        if (spLeft) {
+            this.addButtonClick(spLeft.node, this.onMoreGameClick.bind(this));
+            //left
             if (this._moreGameListLeft.length > 0) {
                 this._moreGameSpriteLeft.node.active = true;
                 this._moreGameSpriteLeft.node.stopAllActions();
@@ -506,9 +703,9 @@ var PfuSdk = cc.Class({
             }
         }
 
-        if(spRight){
-            this.addButtonClick(spRight.node,this.onMoreGameClick.bind(this));
-                //right
+        if (spRight) {
+            this.addButtonClick(spRight.node, this.onMoreGameClick.bind(this));
+            //right
             if (this._moreGameListRight.length > 0) {
                 this._moreGameSpriteRight.node.active = true;
                 this._moreGameSpriteRight.node.stopAllActions();
@@ -521,38 +718,38 @@ var PfuSdk = cc.Class({
         this.updateMoreGameBtn();
         this.schedule(this.updateMoreGameBtn, 10, cc.macro.REPEAT_FOREVER, 0);
     },
-    onMoreGameClick(event,node){
-        this.log("onMoreGameClick:"+JSON.stringify(node.gameInfo));
+    onMoreGameClick(event, node) {
+        this.log("onMoreGameClick:" + JSON.stringify(node.gameInfo));
         let info = node.gameInfo;
         let gaid = this.getGAID(info.iconlink);
-        online.pfuGAClick(GAType.MoreGame,gaid,PfuSdk.loginToken);
-        if (cc.sys.platform === cc.sys.WECHAT_GAME){
+        online.pfuGAClick(GAType.MoreGame, gaid, PfuSdk.loginToken);
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             let path = info.path ? info.path : "";
             let jumpId = info.wxid;
-            if(cc.sys.os == cc.sys.OS_ANDROID){
+            if (cc.sys.os == cc.sys.OS_ANDROID) {
                 jumpId = info.boxId;
             }
-            if(jumpId && jumpId != "" && this.checkDirectJump(jumpId)){
+            if (jumpId && jumpId != "" && this.checkDirectJump(jumpId)) {
                 wx.navigateToMiniProgram({
                     appId: jumpId,
                     path: path
                 })
-            }else{
-                if (info.link && info.link != ""){
+            } else {
+                if (info.link && info.link != "") {
                     wx.previewImage({
-                      urls:[online.getImagePath(info.link)]
+                        urls: [online.getImagePath(info.link)]
                     });
-                  }
+                }
             }
         }
-        
+
     },
 
-    checkDirectJump(wxId){
-        if(!wxId || wxId=="")return false;
+    checkDirectJump(wxId) {
+        if (!wxId || wxId == "") return false;
         let list = config.wxJumpAppIdList;
-        for(let i=0;i<list.length;i++){
-            if(list[i] == wxId){
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] == wxId) {
                 return true;
             }
         }
@@ -569,15 +766,15 @@ var PfuSdk = cc.Class({
     },
     updateMoreGameBtn() {
         let self = this;
-        if(this._moreGameSpriteLeft && !cc.isValid(this._moreGameSpriteLeft.node)){
+        if (this._moreGameSpriteLeft && !cc.isValid(this._moreGameSpriteLeft.node)) {
             this._moreGameSpriteLeft = null;
         }
 
-        if(this._moreGameSpriteRight && !cc.isValid(this._moreGameSpriteRight.node)){
+        if (this._moreGameSpriteRight && !cc.isValid(this._moreGameSpriteRight.node)) {
             this._moreGameSpriteRight = null;
         }
 
-        if(this._moreGameSpriteLeft == null && this._moreGameSpriteRight == null){
+        if (this._moreGameSpriteLeft == null && this._moreGameSpriteRight == null) {
             this.unschedule(this.updateMoreGameBtn);
             return;
         }
@@ -591,7 +788,7 @@ var PfuSdk = cc.Class({
             self._moreGameSpriteLeft.node.gameInfo = info;
             if (info.iconlink != "" && info.iconlink != null) {
                 let url = online.getImagePath(info.iconlink);
-                
+
                 this.getSpriteFrameByUrl(url, function (sp) {
                     self._moreGameSpriteLeft.spriteFrame = sp;
                 });
@@ -615,6 +812,21 @@ var PfuSdk = cc.Class({
         }
     },
 
+    setSpriteByUrl(sprite, url) {
+        let self = this;
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            let image = wx.createImage();
+            image.src = url;
+            image.onload = res => {
+                self._texture = new cc.Texture2D();
+                self._texture.initWithElement(image);
+                self._texture.handleLoadedTexture();
+                let sp = new cc.SpriteFrame(self._texture);
+                sprite.spriteFrame = sp;
+            };
+        }
+
+    },
     getSpriteFrameByUrl(url, cb) {
         let self = this;
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
@@ -630,12 +842,24 @@ var PfuSdk = cc.Class({
         }
     },
 
-    //获取邀请玩家列表
+    addButtonClick(btnNode, callback) {
+        btnNode.on(cc.Node.EventType.TOUCH_START, function (event) {
+            if (callback) callback(event, btnNode);
+        }, this);
+    },
+
+    /*
+    * 更多游戏END
+    */
+
+    /*
+    * 邀请START
+    */
     checkNewInviteUser() {
-        if (!this._isLogin){
+        if (!this._isLogin) {
             this.log("checkNewInviteUser-->请先登录");
             return;
-        } 
+        }
 
         let isNewUser = this.getItem("HaveAccount");
         if (!isNewUser) {
@@ -646,7 +870,7 @@ var PfuSdk = cc.Class({
             let shareTicket = launchOptions.shareTicket;
             let fromUid = launchOptions.query.fromUid;
             // this.log("检测是否从分享进入:"+JSON.stringify(shareTicket)+",quary:"+JSON.stringify(fromUid));
-             //用户从分享卡片进入
+            //用户从分享卡片进入
             if (fromUid && fromUid != "") {
                 online.pfuCommonShare(fromUid, PfuSdk.loginToken, (data) => {
                     this.log("邀请好友成功:" + JSON.stringify(data));
@@ -786,252 +1010,44 @@ var PfuSdk = cc.Class({
     listenInviteChange(cb) {
         this._inviteChangeCallback = cb;
     },
-    //广告
-    initAds() {
-        if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
-        let self = this;
-        //视频广告
-        if (config.wxVideoId != "") {
-            let videoAd = wx.createRewardedVideoAd({
-                adUnitId: config.wxVideoId
-            });
-            PfuSdk.videoAd = videoAd;
-            PfuSdk.videoAd.load();
-            PfuSdk.videoAd.onError(err => {
-                self.log("ShowVideo onError:"+JSON.stringify(err));
-            })
-        }
-    },
-
-    showAdsPlacement(placementId,cb){
-        let self = this;
-        if(placementId){
-             let videoAd = wx.createRewardedVideoAd({
-                adUnitId: placementId
-            });
-            videoAd.load()
-            .then(() => {
-                if (cb) cb(true);
-            }).catch(err => {
-                if (cb) cb(false);
-            });
-            PfuSdk.videoAd = videoAd;
-        }
-    },
-
-    loadAds(cb,placementId) {
-        if (cc.sys.platform != cc.sys.WECHAT_GAME) {
-            if (cb) cb(true);
-            return;
-        }
-        if(placementId){
-            this.showAdsPlacement(placementId,cb);
-        }else{
-            if(PfuSdk.videoAd){
-                PfuSdk.videoAd.load()
-                .then(() => {
-                    if (cb) cb(true);
-                }).catch(err => {
-                    if (cb) cb(false);
-                });
-            }else{
-                if (cb) cb(false);
-            }
-            
-        }
-       
-    },
-
-    createBanner() {
-        let self = this;
-        if (PfuSdk.bannerAd != null) {
-            PfuSdk.bannerAd.destroy();
-        }
-       let targetHeight = config.bannerHeight;
-       let designSizeH = this._wxWidth / (cc.winSize.width) * targetHeight;
-
-        let offY = 0;
-        if(this.isIphoneX()){
-            offY = 12;
-        }
-        
-        let bannerAd = wx.createBannerAd({
-            adUnitId: config.wxBannerId,
-            style: {
-                left: 0,
-                top: 0,
-                width:this._wxWidth
-            }
-        });
-        bannerAd.onResize(size => {
-            if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width)
-            bannerAd.style.width = this._wxWidth * designSizeH / size.height;
-
-            bannerAd.style.top = self._wxHeight - size.height - offY;
-            bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
-        });
-
-        bannerAd.onError(err => {
-            this.log("Banner onError:"+JSON.stringify(err));
-        })
-
-        PfuSdk.bannerAd = bannerAd;
-
-
-        this._resetBannerState();
-    },
-
     /*
-        placement 广告位ID
-        success  成功回调
-        fail 失败回调
+    * 邀请END
     */
-    showVideo(obj) {
-        let self = this;
-        let cb = obj.success || null;
-        let failCb = obj.fail || null;
-        let placementId = obj.placement || null;
-        let justWatch = obj.justWatch || false;
-
-        if (cc.sys.platform != cc.sys.WECHAT_GAME) {
-            if (cb) cb();
-        } else {
-            if(placementId){
-                this.showAdsPlacement(placementId);
-            }
-            
-            if(PfuSdk.videoAd){
-                PfuSdk.videoAdSuccessCb = cb;
-                PfuSdk.videoAd.onClose(res => {
-                    self._resetBannerState();
-                    if (res && res.isEnded) {
-                        // 正常播放结束，可以下发游戏奖励
-                        online.pfuGAVideo(GAType.VideoFinished,PfuSdk.loginToken);
-                        if(PfuSdk.videoAdSuccessCb){
-                            PfuSdk.videoAdSuccessCb();
-                            PfuSdk.videoAdSuccessCb = null;
-                        }
-
-                        self._shareFlag = false;
-                    }
-                    else {
-                        // 播放中途退出，不下发游戏奖励
-                        if(failCb)failCb();
-                    }
-    
-                });
-    
-                PfuSdk.videoAd.onError(err => {
-                    self.log("ShowVideo onError:"+JSON.stringify(err));
-                   
-                    self._resetBannerState();
-                    //非审核模式下播放视频失败，会走分享
-                    if(!online.isTestMode()){
-                        self.showShare({
-                            success:cb,
-                            fail:failCb
-                        });
-                    }else{
-                        if(failCb)failCb();
-                    }
-                })
-                PfuSdk.videoAd.load().then(()=>{
-                    if (!justWatch && !this.isTestMode() && online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
-                        self.showShare({
-                            success:()=>{
-                                PfuSdk.videoAd.show().then(() => {
-                                    //隐藏banner
-                                    if (PfuSdk.bannerAd) {
-                                        PfuSdk.bannerAd.hide();
-                                    }
-                                });
-                            },
-                            fail:failCb
-                        })
-                    }else{
-                        PfuSdk.videoAd.show().then(() => {
-                            //隐藏banner
-                            if (PfuSdk.bannerAd) {
-                                PfuSdk.bannerAd.hide();
-                            }
-                        });
-                    }
-                    
-                });
-            }
-        }
-    },
-    _resetBannerState(){
-        this.HideBanner(this._bannerHideState);
-    },
-  
-    HideBanner(hide) {
-        //这里记录banner状态
-        this._bannerHideState = hide;
-        this.log("HideBanner-->"+hide);
-        if (PfuSdk.bannerAd) {
-            if (hide) {
-                PfuSdk.bannerAd.hide();
-            } else {
-                PfuSdk.bannerAd.show();
-            }
-        }
-    },
-    setSpriteByUrl(sprite,url){
-        let self = this;
-        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
-            let image = wx.createImage();
-            image.src = url;
-            image.onload = res =>{
-                self._texture = new cc.Texture2D();
-                self._texture.initWithElement(image);
-                self._texture.handleLoadedTexture();
-                let sp = new cc.SpriteFrame(self._texture);
-                sprite.spriteFrame = sp;
-            };
-        }
-
-    },
     setItem(key, value) {
         cc.sys.localStorage.setItem(key, JSON.stringify(value));
     },
-    getItem(key,defaultValue) {
+    getItem(key, defaultValue) {
         let rt = cc.sys.localStorage.getItem(key);
         if (rt) {
             return JSON.parse(rt);
         } else {
-            if(defaultValue){
-                this.setItem(key,defaultValue);
+            if (defaultValue) {
+                this.setItem(key, defaultValue);
                 return defaultValue;
-            }else{
+            } else {
                 return null;
             }
         }
     },
-    addButtonClick(btnNode,callback){
-        btnNode.on(cc.Node.EventType.TOUCH_START, function (event) {
-            if(callback)callback(event,btnNode);
-        }, this);
-    },
     //截取md5值
-    getGAID(picUrl){
+    getGAID(picUrl) {
         // let temp = picUrl.split("/");
         // let temp1 = temp[temp.length-1].split(".");
         // return temp1[0];
 
         return picUrl;
     },
-    log(str){
-        console.log("[PFUSDK] "+str);
+    log(str) {
+        console.log("[PFUSDK] " + str);
     },
-    showTips(str){
-        if(cc.sys.platform == cc.sys.WECHAT_GAME){
+    showTips(str) {
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
             wx.showToast({
                 title: str,
                 icon: 'none',
                 duration: 2000
-              })
+            })
         }
-        
+
     }
 });
