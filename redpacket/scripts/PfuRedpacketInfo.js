@@ -55,7 +55,7 @@ cc.Class({
         const self = this;
         const type = this._type;
         const finish = ()=>{
-            PfuRedpacket.Instance.addOwnMoney(this._num);
+            PfuRedpacket.Instance.addOwnMoney(this._num,true);
             this.show(PageType.OPEN,this._num);
         };
 

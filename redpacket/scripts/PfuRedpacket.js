@@ -1,6 +1,6 @@
 var PfuEvent = require("PfuEventSystem").Event;
 var EventType = require("PfuEventSystem").Type;
-const moneyList = [0.64,0.75,0.79,0.84,0.89,0.91,1.04];
+const moneyList = [1.15,1.3,1.5,0.4,0.95,0.2,0.5];
 var PfuRedpacket = cc.Class({
     extends: cc.Component,
     statics:{
@@ -25,6 +25,9 @@ var PfuRedpacket = cc.Class({
         }
         this.setItem("pfuRedpacketGive",false);
         this._ownMoney = parseFloat(this.getItem("pfuRedpacketMoney",0)) ;
+
+        //单独记录主动弹出红包金额，不能大于8元
+        this._randomMoney = parseFloat(this.getItem("pfuRandomMoney",0));
         cc.game.on(cc.game.EVENT_SHOW, function () {
             self.onAppShow();
         });
@@ -61,9 +64,8 @@ var PfuRedpacket = cc.Class({
         const des = obj.des || "";
         if(this._canShowRedpacket()){
             //随机金额
-            const limitNum = 19.5 - this._ownMoney;
-            const max = Math.min(1,limitNum) - 0.5;
-            let money = Math.random()*max + 0.5;
+            let money = Math.random()*0.5;
+            if(money<0.1)money = 0.12;
             money = money.toFixed(2);
 
             this.showRedpacketInfo(type,money);
@@ -71,7 +73,7 @@ var PfuRedpacket = cc.Class({
     },
     //检查当前是否可以显示红包
     _canShowRedpacket(){
-        return this._ownMoney <= 19;
+        return this._randomMoney <= 0.75;
     },
     //当前领到了第几天
     getDay(){
@@ -98,7 +100,7 @@ var PfuRedpacket = cc.Class({
 
     evtRedpacketBtnClick(self){
         let isGive = self.getItem("pfuRedpacketGive",false);
-        if(isGive || !self._canShowRedpacket() || self.getDay() > 7){
+        if(isGive || self.getDay() > 7){
             //显示红包当前余额
             self.showRedpacketInfo("Open");
         }else{
@@ -133,9 +135,15 @@ var PfuRedpacket = cc.Class({
     },
     //event
 
-    addOwnMoney(num){
+    addOwnMoney(num,isRandom){
         this._ownMoney += parseFloat(num);
         this.setItem("pfuRedpacketMoney",this._ownMoney);
+
+        if(isRandom){
+            this._randomMoney += parseFloat(num);
+            this.setItem("pfuRandomMoney",this._randomMoney);
+        }
+
         this.msgStateChange();
     },
     //获取当前余额数
