@@ -61,24 +61,23 @@ var PfuSdk = cc.Class({
         this.initAds();
         this.initShare();
 
+        //用户时长
+        this._userPlayTime = parseInt(this.getItem("pfuSdkUserPlayTime",1));//sec
+
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             wx.onShow(res => {
                 this.onAppShow(res);
+            });
+
+            wx.onHide(res=>{
+                this.onAppHide();
             });
         }
 
 
         this._shareFlag = false;//看完视频重置
     },
-    resetDailyTask() {
-        this._shareNum = 0;
-        this.setItem("pfuSdkShareNum", 0);
-
-        this._successShareCount = 0;
-        this.setItem("pfuSdkSuccessShareCount", 0);
-
-        this.setItem("pfuRedpacketGive", false);//每日简单的重置状态
-    },
+   
 
     //刘海屏
     isIphoneX() {
@@ -96,6 +95,26 @@ var PfuSdk = cc.Class({
             return false;
         }
         return this._successShareCount < this._preShareCountMax;
+    },
+    resetDailyTask() {
+        this._shareNum = 0;
+        this.setItem("pfuSdkShareNum", 0);
+
+        this._successShareCount = 0;
+        this.setItem("pfuSdkSuccessShareCount", 0);
+
+        this.setItem("pfuRedpacketGive", false);//每日简单的重置状态
+
+        this._bannerRefreshCount = 0;//每日banner刷新次数
+        this.setItem("pfuBannerRefreshCount",0);
+    },
+    onAppHide(launchOptions){
+        //记录一次游玩的时间
+        const playTime = this.getDiffFromNow(this._playTimeTs);
+        if(playTime > 10){
+            this._userPlayTime += Math.abs(playTime);
+            this.setItem("pfuSdkUserPlayTime",this._userPlayTime);
+        }
     },
     onAppShow(launchOptions) {
         let self = this;
@@ -115,6 +134,8 @@ var PfuSdk = cc.Class({
             }
         }
 
+        this._playTimeTs = this.getNowTimestamp();
+
         //检测新日期
         var recordDate = this.getItem("recordDate");
         if (recordDate) {
@@ -127,6 +148,7 @@ var PfuSdk = cc.Class({
             } else {
                 this._shareNum = this.getItem("pfuSdkShareNum", 0);
                 this._successShareCount = this.getItem("pfuSdkSuccessShareCount", 0);
+                this._bannerRefreshCount = this.getItem("pfuBannerRefreshCount",0);
             }
         } else {
             let date = new Date();
@@ -214,7 +236,7 @@ var PfuSdk = cc.Class({
         let self = this;
         wx.login({
             success: res => {
-                online.pfuLogin(res.code, data => {
+                online.pfuLogin(res.code, this._userPlayTime , data => {
                     if (data.state == 3) {
                         this.log("SDK登录成功");
                         PfuSdk.sessionKey = data.sk;
@@ -270,6 +292,7 @@ var PfuSdk = cc.Class({
     //获取微信在线参数
     getOnlineParams() {
         if (online.wechatparam) return online.wechatparam;
+        this.log("缺少在线参数");
         return null;
     },
     requestOnlineParams() {
@@ -605,27 +628,33 @@ var PfuSdk = cc.Class({
                     } else {
                         if (failCb) failCb();
                     }
-                })
+                });
+                const playVideo = ()=>{
+                    PfuSdk.videoAd.show().then(() => {
+                        //隐藏banner
+                        if (PfuSdk.bannerAd) {
+                            PfuSdk.bannerAd.hide();
+                        }
+                    });
+                };
+
+                const state = online.wechatparam.pfuSdkVideoShare ? parseInt(online.wechatparam.pfuSdkVideoShare) : 0;
                 PfuSdk.videoAd.load().then(() => {
-                    if (!justWatch && !this.isTestMode() && online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
-                        self.showShare({
-                            success: () => {
-                                PfuSdk.videoAd.show().then(() => {
-                                    //隐藏banner
-                                    if (PfuSdk.bannerAd) {
-                                        PfuSdk.bannerAd.hide();
-                                    }
-                                });
-                            },
-                            fail: failCb
-                        })
+                    if (!justWatch && !this.isTestMode() && self._shareFlag == false && state != 0) {
+                        if(state == 1){
+                            self.showShare({
+                                success: () => {
+                                    playVideo();
+                                },
+                                fail: failCb
+                            })
+                        }else if(state == 2){
+                            self.showShare();
+                            playVideo();
+                        }
+                        
                     } else {
-                        PfuSdk.videoAd.show().then(() => {
-                            //隐藏banner
-                            if (PfuSdk.bannerAd) {
-                                PfuSdk.bannerAd.hide();
-                            }
-                        });
+                        playVideo();
                     }
 
                 });

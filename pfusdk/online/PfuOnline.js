@@ -193,12 +193,13 @@ var pfuOnline = {
         return needShow;
     },
 
-    pfuLogin(code,cb){
+    pfuLogin(code,playTime,cb){
         let launchOptions = wx.getLaunchOptionsSync();
         let data = {
             Channel:"weixin",
             ext3:code,
-            selfid:wxId
+            selfid:wxId,
+            onlineTime:playTime
         };
         let appid = null;
         if (launchOptions.referrerInfo){
