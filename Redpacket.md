@@ -1,5 +1,5 @@
 # PfuRedpacket
-
+>请确保PfuSdk版本不小于v0.1.2
 ### 导入资源
 将`redpacket`文件夹拖入场景中，把`redpacket/prefabs/PfuRedpacket.prefab`拖放到场景根节点，如下图所示:
 

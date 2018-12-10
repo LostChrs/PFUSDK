@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 var online = require("PfuOnline");
 var config = require("PfuConfig");
 
@@ -891,6 +891,7 @@ var PfuSdk = cc.Class({
         let cb = obj.success || null;
         let failCb = obj.fail || null;
         let placementId = obj.placement || null;
+        let justWatch = obj.justWatch || false;
 
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
@@ -935,7 +936,7 @@ var PfuSdk = cc.Class({
                     }
                 })
                 PfuSdk.videoAd.load().then(()=>{
-                    if (!this.isTestMode() && online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
+                    if (!justWatch && !this.isTestMode() && online.wechatparam.pfuSdkVideoShare && online.wechatparam.pfuSdkVideoShare == "1" && self._shareFlag == false) {
                         self.showShare({
                             success:()=>{
                                 PfuSdk.videoAd.show().then(() => {

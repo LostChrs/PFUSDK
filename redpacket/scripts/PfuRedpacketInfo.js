@@ -61,6 +61,7 @@ cc.Class({
 
         if(type == PageType.WATCH){
             PfuSdk.Instance.showVideo({
+                justWatch:true,
                 success:()=>{
                     finish();
                 }

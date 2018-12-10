@@ -1,3 +1,5 @@
+### v0.1.2
+* 增加了红包功能，请查看[这里](https://github.com/LostChrs/PFUSDK/blob/master/Redpacket.md)
 ### v0.1.1
 * 修改了更多游戏按钮跳转规则
 ### v0.1.0
