@@ -80,9 +80,11 @@ properties: {
 >isShareCheckbox 判断当前是否要显示分享勾选框
 
 ```
+ //进入界面时设置分享勾选框是否可见
  shareTrigger.node.active = PfuSdk.Instance.isShareCheckbox();
+ //播放视频时可以把分享框勾选状态传递进去
  PfuSdk.Instance.showVideo({
-            justWatch:!shareTrigger.checked,
+            justWatch:!shareTrigger.isChecked,
             success:()=>{
                 console.log("视频播放成功");
             },
