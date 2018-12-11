@@ -571,6 +571,17 @@ var PfuSdk = cc.Class({
             }
         }
     },
+    /*
+    * 是否显示界面的 分享勾选框
+    */
+    isShareCheckbox(){
+        const state = this.getShareState();
+        if(state == 1 || state == 2){
+            return true;
+        }else{
+            return false;
+        }
+    },
 
     /*
         justWatch 直接看视频(跳过所有参数控制)
@@ -636,7 +647,7 @@ var PfuSdk = cc.Class({
                     });
                 };
 
-                const state = online.wechatparam.pfuSdkVideoShare ? parseInt(online.wechatparam.pfuSdkVideoShare) : 0;
+                const state = this.getShareState();
                 PfuSdk.videoAd.load().then(() => {
                     if (!justWatch && !this.isTestMode() && self._shareFlag == false && state != 0) {
                         if(state == 1){
@@ -658,6 +669,10 @@ var PfuSdk = cc.Class({
                 });
             }
         }
+    },
+    getShareState(){
+        if(!online.wechatparam)return 0;
+        return online.wechatparam.pfuSdkVideoShare ? parseInt(online.wechatparam.pfuSdkVideoShare) : 0
     },
     _resetBannerState() {
         this.HideBanner(this._bannerHideState);

@@ -68,7 +68,7 @@ properties: {
 <div id="showShareOrVideo"></div>
 
 ### 显示视频
->showShare
+>showVideo
 
 | 参数 | 含义 |
 | :------| :------ |
@@ -77,10 +77,12 @@ properties: {
 |success| 成功回调|
 |fail |失败回调|
 
+>isShareCheckbox 判断当前是否要显示分享勾选框
+
 ```
- PfuSdk.Instance.showShareOrVideo({
-            videoPlacement:"video",
-            shareParams:"level=10&coin=999",
+ shareTrigger.node.active = PfuSdk.Instance.isShareCheckbox();
+ PfuSdk.Instance.showVideo({
+            justWatch:!shareTrigger.checked,
             success:()=>{
                 console.log("视频播放成功");
             },
