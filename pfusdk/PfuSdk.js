@@ -501,12 +501,14 @@ var PfuSdk = cc.Class({
             let videoAd = wx.createRewardedVideoAd({
                 adUnitId: placementId
             });
-            videoAd.load()
+            if(cb){
+                videoAd.load()
                 .then(() => {
                     if (cb) cb(true);
                 }).catch(err => {
                     if (cb) cb(false);
                 });
+            }
             PfuSdk.videoAd = videoAd;
         }
     },
@@ -613,6 +615,8 @@ var PfuSdk = cc.Class({
             if (cb) cb();
         } else {
             if (placementId) {
+                //销毁之前的videoAd
+                PfuSdk.videoAd = null;
                 this.showAdsPlacement(placementId);
             }
 
