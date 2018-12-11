@@ -68,12 +68,12 @@ properties: {
 <div id="showShareOrVideo"></div>
 
 ### 显示视频
->showShareOrVideo
+>showShare
 
 | 参数 | 含义 |
 | :------| :------ |
 |videoPlacement| 广告位|
-|shareParams| 分享参数|
+|justWatch| 直接看视频(跳过所有参数控制)|
 |success| 成功回调|
 |fail |失败回调|
 

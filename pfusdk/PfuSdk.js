@@ -26,7 +26,8 @@ var PfuSdk = cc.Class({
         mScreenRatio: 0,
     },
     properties: {
-        executionOrder: -1000
+        executionOrder: -1000,
+        pbBannerRelive:cc.Prefab,
     },
     onLoad() {
         if (PfuSdk.Instance == null) {
@@ -397,32 +398,6 @@ var PfuSdk = cc.Class({
             })
         }
     },
-    /*
-    videoPlacement 广告位
-    shareParams 分享参数
-    success 成功回调
-    fail 失败回调
-    */
-
-    showShareOrVideo(obj) {
-        let videoPlacement = obj.videoPlacement || null;
-        let shareParams = obj.shareParams || null;
-        let successCb = obj.success || null;
-        let failCb = obj.fail || null;
-        if (this.isShowShareBtn()) {
-            this.showShare({
-                shareParams: shareParams,
-                success: successCb,
-                fail: failCb
-            });
-        } else {
-            this.showVideo({
-                placement: videoPlacement,
-                success: successCb,
-                fail: failCb
-            });
-        }
-    },
 
     /*
     shareParams 分享参数
@@ -501,14 +476,12 @@ var PfuSdk = cc.Class({
             let videoAd = wx.createRewardedVideoAd({
                 adUnitId: placementId
             });
-            if(cb){
-                videoAd.load()
+            videoAd.load()
                 .then(() => {
                     if (cb) cb(true);
                 }).catch(err => {
                     if (cb) cb(false);
                 });
-            }
             PfuSdk.videoAd = videoAd;
         }
     },
@@ -600,7 +573,8 @@ var PfuSdk = cc.Class({
     },
 
     /*
-        placement 广告位ID
+        justWatch 直接看视频(跳过所有参数控制)
+        videoPlacement 广告位ID
         success  成功回调
         fail 失败回调
     */
@@ -608,15 +582,13 @@ var PfuSdk = cc.Class({
         let self = this;
         let cb = obj.success || null;
         let failCb = obj.fail || null;
-        let placementId = obj.placement || null;
+        let placementId = obj.videoPlacement || null;
         let justWatch = obj.justWatch || false;
 
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
         } else {
             if (placementId) {
-                //销毁之前的videoAd
-                PfuSdk.videoAd = null;
                 this.showAdsPlacement(placementId);
             }
 
