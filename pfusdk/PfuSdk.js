@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.1.2";
+const VERSION = "0.1.3";
 var online = require("PfuOnline");
 var config = require("PfuConfig");
 
@@ -47,6 +47,8 @@ var PfuSdk = cc.Class({
         this._shareNum = 0;
         this._preShareCountMax = 5;//视频前分享成功次数
         this._successShareCount = 0;//已经分享成功次数
+
+        this._maxBannerRefreshCount = 5;
 
         this._shareTitle1 = "分享到群才行哦";
         this._shareTitle2 = "请分享到不同的群哦~";
@@ -281,10 +283,27 @@ var PfuSdk = cc.Class({
         }
     },
 
+    /*
+    * 红包
+    */
+   isHideRedpacket(){
+        if(this.isTestMode())return true;
+
+        if(online.wechatparam.pfuSdkRed && online.wechatparam.pfuSdkRed == "1"){
+            return false;
+        }
+        return true;
+   },
+   setRedpacketCallback(cb){
+        this._redpacketCallback = cb;
+        if (online.wechatparam) {
+            if (this._redpacketCallback) this._redpacketCallback();
+        }
+   },
+
     //在线参数回调
     setOnlineParamsCallback(cb) {
         this._onlineParamsCallback = cb;
-        //this.log("setOnlineParamsCallback:"+online.wechatparam);
         if (online.wechatparam) {
             if (this._onlineParamsCallback) this._onlineParamsCallback(online.wechatparam);
         }
@@ -295,6 +314,7 @@ var PfuSdk = cc.Class({
         this.log("缺少在线参数");
         return null;
     },
+
     requestOnlineParams() {
         let self = this;
         online.initData(() => {
@@ -303,40 +323,18 @@ var PfuSdk = cc.Class({
             self._preShareCountMax = parseInt(online.wechatparam.pfuSdkShareCount);
             self._shareTitle1 = online.wechatparam.pfuSdkShare1;
             self._shareTitle2 = online.wechatparam.pfuSdkShare2;
-            let refreshBannerTime = parseInt(online.wechatparam.pfuSdkRefresh);
-            self.schedule(self.createBanner, refreshBannerTime, cc.macro.REPEAT_FOREVER);
+            self._maxBannerRefreshCount = parseInt(online.wechatparam.pfuSdkBannerCount);
+            self._minBannerRefreshTime = parseInt(online.wechatparam.pfuSdkBannerMin);//sec
+            self._controlPlayTime = parseInt(online.wechatparam.pfuSdkPlayTime);//min 控制某些功能开关
+            self._bannerRelive = parseInt(online.wechatparam.pfuSdkBannerRelive);
+            self._refreshBannerTime = parseInt(online.wechatparam.pfuSdkRefresh);
+            self.scheduleOnce(self.createBanner, self._refreshBannerTime);
             if (self._onlineParamsCallback) self._onlineParamsCallback(online.wechatparam);
+            if (self._redpacketCallback) self._redpacketCallback();
         });
     },
 
-    //支付
-    payIos(pName, pPrice) {
-        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
-            var orderId = new Date().getTime();
-            this._payOrder = orderId;
-            //透传字段
-            var attach = {
-                uid: PfuSdk.uid,
-                openid: PfuSdk.loginId,
-                appid: config.wxId,
-                productName: pName
-            };
-            wx.navigateToMiniProgram({
-                appId: "wxb82f826b0d650def",
-                path: "pages/pay/index?gameId=" + config.appId + "&productName=" + pName + "&productPrice=" + pPrice + "&orderId=" + orderId + "&attach=" + JSON.stringify(attach),
-                success(res) {
-
-                },
-                fail(res) {
-
-                }
-            })
-        }
-
-    },
-    payAndroid(pName, pPrice) {
-        this.log("安卓支付");
-    },
+    
 
     //跳转盒子复活
     jumpGameboxForRelive(cb) {
@@ -535,12 +533,31 @@ var PfuSdk = cc.Class({
         }
 
     },
+    /*
+    * 进入界面时主动刷新banner,能否刷新成功由函数内部判断
+    */
+    refreshBanner(){
+        if(PfuSdk.bannerAd == null)return;
+        if(this._bannerRefreshCount > this._maxBannerRefreshCount)return;
+
+        let sec = this.getDiffFromNow(this._bannerLastTs);
+        if(Math.abs(sec) >= this._minBannerRefreshTime){
+            this.createBanner();
+        }
+    },
 
     createBanner() {
         let self = this;
         if (PfuSdk.bannerAd != null) {
             PfuSdk.bannerAd.destroy();
+            //banner隐藏时不增加刷新次数
+            if(!this._bannerHideState){
+                this._bannerRefreshCount+=1;
+                this.getItem("pfuBannerRefreshCount",this._bannerRefreshCount);
+            }
         }
+        this._bannerLastTs = this.getNowTimestamp();
+        
         let targetHeight = config.bannerHeight;
         let designSizeH = this._wxWidth / (cc.winSize.width) * targetHeight;
 
@@ -571,8 +588,13 @@ var PfuSdk = cc.Class({
 
         PfuSdk.bannerAd = bannerAd;
 
-
         this._resetBannerState();
+        if(this._refreshBannerTime){
+            this.unschedule(this.createBanner);
+            if(this._bannerRefreshCount <= this._maxBannerRefreshCount){
+                this.scheduleOnce(this.createBanner, this._refreshBannerTime);
+            }
+        }
     },
 
     /*
@@ -649,7 +671,7 @@ var PfuSdk = cc.Class({
                                 fail: failCb
                             })
                         }else if(state == 2){
-                            self.showShare();
+                            self.showShare({success:()=>{}});
                             playVideo();
                         }
                         
@@ -678,6 +700,35 @@ var PfuSdk = cc.Class({
         }
     },
    
+
+    //支付
+    payIos(pName, pPrice) {
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            var orderId = new Date().getTime();
+            this._payOrder = orderId;
+            //透传字段
+            var attach = {
+                uid: PfuSdk.uid,
+                openid: PfuSdk.loginId,
+                appid: config.wxId,
+                productName: pName
+            };
+            wx.navigateToMiniProgram({
+                appId: "wxb82f826b0d650def",
+                path: "pages/pay/index?gameId=" + config.appId + "&productName=" + pName + "&productPrice=" + pPrice + "&orderId=" + orderId + "&attach=" + JSON.stringify(attach),
+                success(res) {
+
+                },
+                fail(res) {
+
+                }
+            })
+        }
+
+    },
+    payAndroid(pName, pPrice) {
+        this.log("安卓支付");
+    },
 
     /*
     * 更多游戏START

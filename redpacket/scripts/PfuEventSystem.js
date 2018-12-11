@@ -1,7 +1,8 @@
 
 const EventType = {
     RedpacketStateChange:"msg_redpacket_state_change",
-    RedpacketBtnClick:"msg_redpacket_btn_click"
+    RedpacketBtnClick:"msg_redpacket_btn_click",
+    RedpacketBtnHide:"msg_redpacket_hide"
 }
 var _pfuEventSystem = cc.Class({
     extends: cc.Class,

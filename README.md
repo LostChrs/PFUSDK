@@ -1,4 +1,4 @@
-# PFUSDK V0.1.2
+# PFUSDK V0.1.3
 
 ## 红包功能
 [点击这里查看红包功能接入文档](https://github.com/LostChrs/PFUSDK/blob/master/Redpacket.md)

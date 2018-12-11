@@ -1,3 +1,6 @@
+### v0.1.3
+* 增加了红包在线参数，审核模式和关闭红包时，红包按钮隐藏
+* 修改banner刷新相关规则
 ### v0.1.2
 * 增加了红包功能，请查看[这里](https://github.com/LostChrs/PFUSDK/blob/master/Redpacket.md)
 ### v0.1.1

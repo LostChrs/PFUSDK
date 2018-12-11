@@ -1,5 +1,6 @@
-var PfuEvent = require("PfuEventSystem").Event;
-var EventType = require("PfuEventSystem").Type;
+const PfuSdk = require("PfuSdk");
+const PfuEvent = require("PfuEventSystem").Event;
+const EventType = require("PfuEventSystem").Type;
 const moneyList = [1.15,1.3,1.5,0.4,0.95,0.2,0.5];
 var PfuRedpacket = cc.Class({
     extends: cc.Component,
@@ -45,6 +46,13 @@ var PfuRedpacket = cc.Class({
         for(let i=0;i<7;i++){
             moneyList[i] *= this._loginGiftInfo[i];
         }
+
+        PfuSdk.Instance.setRedpacketCallback(()=>{
+            //根据在线参数隐藏功能
+            if(PfuSdk.Instance.isHideRedpacket()){
+                PfuEvent.send(EventType.RedpacketBtnHide);
+            }
+        });
     },
     onAppShow(){
 
