@@ -81,6 +81,9 @@ var PfuRedpacket = cc.Class({
     },
     //检查当前是否可以显示红包
     _canShowRedpacket(){
+        if(PfuSdk.Instance.isHideRedpacket()){
+            return false;
+        }
         return this._randomMoney <= 0.75;
     },
     //当前领到了第几天
