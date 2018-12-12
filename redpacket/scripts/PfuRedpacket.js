@@ -150,7 +150,7 @@ var PfuRedpacket = cc.Class({
         if(root){
             let ui = cc.instantiate(pb);
             ui.parent = root;
-            ui.zOrder = 2000;
+            ui.zIndex = 2000;
             return ui;
         }else{
             this.log("错误：未到找Canvas");
