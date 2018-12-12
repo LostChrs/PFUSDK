@@ -440,7 +440,6 @@ var PfuSdk = cc.Class({
                 });
             } else {
                 let shareTitle = title ? title : "快来和我一起玩吧~";
-
                 wx.shareAppMessage({
                     title: shareTitle,
                     query: queryData,
@@ -743,21 +742,27 @@ var PfuSdk = cc.Class({
         this._moreGameListLeft = [];
         this._moreGameListRight = [];
 
+        const selfId = config.wxId;
+
         online.moregame.forEach(item => {
-            let condition1 = false;
-            if (cc.sys.os == cc.sys.OS_IOS) {
-                condition1 = this.checkDirectJump(item.wxid);
-            } else {
-                condition1 = this.checkDirectJump(item.boxId);
-            }
-            let condition2 = (item.link && item.link != "");
-            if (condition1 || condition2) {
-                if (item.position === "0") {
-                    this._moreGameListLeft.push(item);
+            //首先过滤自己的id
+            if(item.wxid != selfId && item.boxId != selfId){
+                let condition1 = false;
+                if (cc.sys.os == cc.sys.OS_IOS) {
+                    condition1 = this.checkDirectJump(item.wxid);
                 } else {
-                    this._moreGameListRight.push(item);
+                    condition1 = this.checkDirectJump(item.boxId);
+                }
+                let condition2 = (item.link && item.link != "");
+                if (condition1 || condition2) {
+                    if (item.position === "0") {
+                        this._moreGameListLeft.push(item);
+                    } else {
+                        this._moreGameListRight.push(item);
+                    }
                 }
             }
+           
         });
 
 
