@@ -8,6 +8,8 @@ cc.Class({
         listNode:cc.Node,
         spClose:cc.SpriteFrame,
         spOpen:cc.SpriteFrame,
+        btnShare:cc.Node,
+        btnOk:cc.Node,
     },
 
     show(moneyList){
@@ -28,6 +30,17 @@ cc.Class({
                 item.sp.spriteFrame = this.spClose;
             }
         }
+
+        this.btnShare.runAction(this.getShareAction());
+        this.btnOk.opacity = 0;
+        this.btnOk.runAction(cc.fadeIn(2));
+    },
+
+    getShareAction(){
+        let t = 1;
+        let s1 = cc.scaleTo(t,1.1);
+        let s2 = cc.scaleTo(t,1);
+        return cc.sequence(s1,s2).repeatForever();
     },
 
     onShare(){

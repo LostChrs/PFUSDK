@@ -8,6 +8,7 @@ var PfuRedpacket = cc.Class({
         Instance:null,
     },
     properties: {
+        isRoot:false,
         pbRedpacketLoginGift:cc.Prefab,
         pbRedpacketInfo:cc.Prefab,
         executionOrder: -900
@@ -24,7 +25,6 @@ var PfuRedpacket = cc.Class({
                 return;
             }
         }
-        this.setItem("pfuRedpacketGive",false);
         this._ownMoney = parseFloat(this.getItem("pfuRedpacketMoney",0)) ;
 
         //单独记录主动弹出红包金额，不能大于8元
@@ -147,6 +147,9 @@ var PfuRedpacket = cc.Class({
     },
     createUI(pb){
         let root = cc.find("Canvas");
+        if(this.isRoot){
+            root = this.node.parent;
+        }
         if(root){
             let ui = cc.instantiate(pb);
             ui.parent = root;
