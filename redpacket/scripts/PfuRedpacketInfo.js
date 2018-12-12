@@ -75,6 +75,7 @@ cc.Class({
         }
     },
     onClose(){
+        PfuRedpacket.Instance.onInfoPageClose();
         this.node.destroy();
     }
 });

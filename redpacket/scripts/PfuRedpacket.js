@@ -53,30 +53,39 @@ var PfuRedpacket = cc.Class({
                 PfuEvent.send(EventType.RedpacketBtnHide);
             }
         });
+
+        PfuEvent.register(EventType.RedpacketBtnClick,this.evtRedpacketBtnClick,this);
     },
     onAppShow(){
 
     },
 
     onEnable() {
-        PfuEvent.register(EventType.RedpacketBtnClick,this.evtRedpacketBtnClick,this);
+        
     },
 
 
     start () {
        
     },
-    //显示红包  type  des
-    showRedpacket(obj){
+    //显示红包  type  des pageOpen pageClose
+    showRedpacket(obj = {}){
         const type = obj.type || "Watch";
         const des = obj.des || "";
+        const pageOpen = obj.pageOpen || null;
+        this._pageCloseCb = obj.pageClose || null;
         if(this._canShowRedpacket()){
             //随机金额
             let money = Math.random()*0.5;
             if(money<0.1)money = 0.12;
             money = money.toFixed(2);
-
+            if(pageOpen)pageOpen();
             this.showRedpacketInfo(type,money);
+        }
+    },
+    onInfoPageClose(){
+        if(this._pageCloseCb){
+            this._pageCloseCb();
         }
     },
     //检查当前是否可以显示红包
