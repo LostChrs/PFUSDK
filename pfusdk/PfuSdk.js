@@ -406,7 +406,7 @@ var PfuSdk = cc.Class({
     success 成功回调
     fail 失败回调
     */
-    showShare(obj) {
+    showShare(obj = {}) {
         let cb = obj.success || null;
         let failCb = obj.fail || null;
         let parmas = obj.shareParams || null;
@@ -522,7 +522,6 @@ var PfuSdk = cc.Class({
     },
 
     createBanner() {
-        if(cc.sys.platform != cc.sys.WECHAT_GAME) return;
         let self = this;
         if (PfuSdk.bannerAd != null) {
             PfuSdk.bannerAd.destroy();
@@ -539,7 +538,7 @@ var PfuSdk = cc.Class({
 
         let offY = 0;
         if (this.isIphoneX()) {
-            offY = 12;
+            offY = 1;
         }
 
         let bannerAd = wx.createBannerAd({
@@ -590,7 +589,7 @@ var PfuSdk = cc.Class({
         success  成功回调
         fail 失败回调
     */
-    showVideo(obj) {
+    showVideo(obj = {}) {
         let self = this;
         let cb = obj.success || null;
         let failCb = obj.fail || null;
@@ -821,6 +820,8 @@ var PfuSdk = cc.Class({
         if (!wxId || wxId == "") return false;
         let list = config.wxJumpAppIdList;
         for (let i = 0; i < list.length; i++) {
+            if(wxId == config.wxId)return false;
+
             if (list[i] == wxId) {
                 return true;
             }
