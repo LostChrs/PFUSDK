@@ -83,6 +83,10 @@ var PfuRedpacket = cc.Class({
             this.showRedpacketInfo(type,money);
         }
     },
+    //是否可以显示红包
+    IsRedpacket(){
+        return this._canShowRedpacket();
+    },
     onInfoPageClose(){
         if(this._pageCloseCb){
             this._pageCloseCb();
