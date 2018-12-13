@@ -77,6 +77,7 @@ var PfuSdk = cc.Class({
             });
         }
 
+        this.onAppShow();
 
         this._shareFlag = false;//看完视频重置
     },
@@ -122,21 +123,24 @@ var PfuSdk = cc.Class({
     },
     onAppShow(launchOptions) {
         let self = this;
-        this.log("场景值:" + launchOptions.scene);
-        //验证支付
-        // this.checkOrderList();
-        if (launchOptions.scene == 1037 || launchOptions.scene == 1038) {
-            if (launchOptions.referrerInfo && launchOptions.referrerInfo.extraData) {
-                //this.log("支付结果:" + launchOptions.referrerInfo.extraData.result);
-                //复活
-                if (PfuSdk.reliveCb) {
-                    if (launchOptions.referrerInfo.extraData.relive) {
-                        PfuSdk.reliveCb();
-                        PfuSdk.reliveCb = null;
+        if(launchOptions){
+            this.log("场景值:" + launchOptions.scene);
+            //验证支付
+            // this.checkOrderList();
+            if (launchOptions.scene == 1037 || launchOptions.scene == 1038) {
+                if (launchOptions.referrerInfo && launchOptions.referrerInfo.extraData) {
+                    //this.log("支付结果:" + launchOptions.referrerInfo.extraData.result);
+                    //复活
+                    if (PfuSdk.reliveCb) {
+                        if (launchOptions.referrerInfo.extraData.relive) {
+                            PfuSdk.reliveCb();
+                            PfuSdk.reliveCb = null;
+                        }
                     }
                 }
             }
         }
+       
 
         this._playTimeTs = this.getNowTimestamp();
 
