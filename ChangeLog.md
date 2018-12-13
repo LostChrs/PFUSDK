@@ -1,3 +1,6 @@
+### v0.1.4
+* 增加了点击banner复活的功能(集成在`showVideo`中，用户无需关心),用户需要将PfuSdk.prefab拖到根节点下（移除原来场景中的PfuSdk节点）
+* 为了避免困惑，将`showShareOrVideo`接口移除，改为`showVideo`。并且增加了新的参数`justWatch`,用来指定是否跳过参数控制直接播放视频
 ### v0.1.3
 * 增加了红包在线参数，审核模式和关闭红包时，红包按钮隐藏
 * 修改banner刷新相关规则,增加了主动刷新banner的接口`refreshBanner`
