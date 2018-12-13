@@ -239,6 +239,10 @@ var pfuOnline = {
     },
 
     pfuCommonShare(shareUid,loginToken,cb){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
         let data = {
             shareUid:Number(shareUid),
             rinviteGameid:parseInt(appId),
@@ -250,11 +254,19 @@ var pfuOnline = {
     },
 
     pfuGetInviteList(loginToken,cb){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
         let data = {};
         msg.sendCommonShare(data,urlInviteList,loginToken,cb);
     },
 
     pfuGetUserInfoList(uids,loginToken,cb){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
         let data = {
             uids:uids,
         };
@@ -262,6 +274,10 @@ var pfuOnline = {
     },
 
     pfuCheckIOSOrder(orderId,loginToken,cb){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
         let url = "https://weixinpay.jfydgame.com/"+config.appId+"/pay/checkPaySucc.jsp";
         let data = {
             orderId:orderId,
@@ -272,6 +288,10 @@ var pfuOnline = {
     },
 
     pfuGetUserOrderList(loginId,loginToken,cb){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
         let url = "https://weixinpay.jfydgame.com/"+config.appId+"/pay/getPayList.jsp";
         let data = {
             openId:loginId,
@@ -283,6 +303,10 @@ var pfuOnline = {
 
 
     pfuUploadUserInfo(nickName,userImage,loginToken,cb){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
         let data = {
             name:nickName,
             sex:-1,
@@ -298,6 +322,10 @@ var pfuOnline = {
     },
 
     pfuGAClick(type,picId,loginToken){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
         let data ={
             type:type,
             picId:picId
@@ -306,6 +334,10 @@ var pfuOnline = {
     },
 
     pfuGAVideo(type,loginToken){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
         let data ={
             type:type
         };
@@ -317,6 +349,12 @@ var pfuOnline = {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
           });
+    },
+    errorNoLogin(){
+        this.log("没有登录");
+    },
+    log(str){
+        console.log("[PFU SDK ONLINE] "+str);
     }
 }
 
