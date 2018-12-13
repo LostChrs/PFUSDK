@@ -100,6 +100,7 @@ var PfuSdk = cc.Class({
         return this._successShareCount < this._preShareCountMax;
     },
     resetDailyTask() {
+        this.log("重置每日信息===============");
         this._shareNum = 0;
         this.setItem("pfuSdkShareNum", 0);
 

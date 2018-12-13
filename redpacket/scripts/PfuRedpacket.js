@@ -108,8 +108,6 @@ var PfuRedpacket = cc.Class({
     onGetReward(num){
         this.setItem("pfuRedpacketGive",true);
        
-
-
         const day = this.getDay();
         const money = moneyList[day-1] * num;
         this.addOwnMoney(money);
@@ -125,6 +123,7 @@ var PfuRedpacket = cc.Class({
 
     evtRedpacketBtnClick(self){
         let isGive = self.getItem("pfuRedpacketGive",false);
+        self.log("七天已经领取:"+isGive+",当前领取天数："+self.getDay());
         if(isGive || self.getDay() > 7){
             //显示红包当前余额
             self.showRedpacketInfo("Open");
@@ -147,17 +146,14 @@ var PfuRedpacket = cc.Class({
         }
     },
     createUI(pb){
-        let root = cc.find("Canvas");
-        if(this.isRoot){
-            root = this.node.parent;
-        }
+        let root = this.node.parent;
         if(root){
             let ui = cc.instantiate(pb);
             ui.parent = root;
             ui.zIndex = 2000;
             return ui;
         }else{
-            this.log("错误：未到找Canvas");
+            this.log("错误：未到找根节点");
             return null;
         }
     },
