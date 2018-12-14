@@ -293,6 +293,7 @@ var PfuSdk = cc.Class({
     * 红包
     */
    isHideRedpacket(){
+        if(!online.wechatparam)return true;
         if(this.isTestMode())return true;
 
         if(online.wechatparam.pfuSdkRed && online.wechatparam.pfuSdkRed == "1"){

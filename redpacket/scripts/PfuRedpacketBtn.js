@@ -1,6 +1,7 @@
-var PfuRedpacket = require("PfuRedpacket");
-var PfuEvent = require("PfuEventSystem").Event;
-var EventType = require("PfuEventSystem").Type;
+const PfuRedpacket = require("PfuRedpacket");
+const PfuEvent = require("PfuEventSystem").Event;
+const EventType = require("PfuEventSystem").Type;
+const PfuSdk = require("PfuSdk");
 cc.Class({
     extends: cc.Component,
 
@@ -10,7 +11,9 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {},
+    onLoad () {
+        this.node.active =  PfuSdk.Instance.isHideRedpacket();
+    },
 
     start() {
         this._str = "hahahhahah";
