@@ -526,6 +526,7 @@ var PfuSdk = cc.Class({
     },
 
     createBanner() {
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         let self = this;
         if (PfuSdk.bannerAd != null) {
             PfuSdk.bannerAd.destroy();
