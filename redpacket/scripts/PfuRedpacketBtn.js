@@ -33,7 +33,7 @@ cc.Class({
     onEnable() {
         PfuEvent.register(EventType.RedpacketStateChange,this.evtRedpacketChange,this);
         PfuEvent.register(EventType.RedpacketBtnHide,(self)=>{
-            this.node.active = false;
+            self.node.active = false;
         },this);
     }
 });
