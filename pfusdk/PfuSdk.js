@@ -579,6 +579,7 @@ var PfuSdk = cc.Class({
     * 是否显示界面的 分享勾选框
     */
     isShareCheckbox(){
+        if(this.isTestMode())return false;
         const state = this.getShareState();
         if(state == 1 || state == 2){
             return true;
