@@ -124,6 +124,7 @@ var PfuSdk = cc.Class({
         let self = this;
         if(launchOptions){
             this.log("场景值:" + launchOptions.scene);
+
             if (launchOptions.scene == 1037 || launchOptions.scene == 1038) {
                 if (launchOptions.referrerInfo && launchOptions.referrerInfo.extraData) {
                     //复活
@@ -136,7 +137,7 @@ var PfuSdk = cc.Class({
                 }
             }
         }
-        
+
         this._playTimeTs = this.getNowTimestamp();
 
         //检测新日期
@@ -348,8 +349,10 @@ var PfuSdk = cc.Class({
     /*
     * 红包
     */
-    isHideRedpacket() {
-        if (this.isTestMode()) return true;
+
+   isHideRedpacket(){
+        if(!online.wechatparam)return true;
+        if(this.isTestMode())return true;
 
         if (online.wechatparam.pfuSdkRed && online.wechatparam.pfuSdkRed == "1") {
             return false;
@@ -583,6 +586,7 @@ var PfuSdk = cc.Class({
 
     createBanner() {
         if (config.bannerId == "") return;
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         let self = this;
         if (PfuSdk.bannerAd != null) {
             PfuSdk.bannerAd.destroy();
@@ -644,7 +648,9 @@ var PfuSdk = cc.Class({
     /*
     * 是否显示界面的 分享勾选框
     */
-    isShareCheckbox() {
+
+    isShareCheckbox(){
+        if(this.isTestMode())return false;
         const state = this.getShareState();
         if (state == 1 || state == 2) {
             return true;

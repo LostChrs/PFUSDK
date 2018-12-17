@@ -1,6 +1,7 @@
-var PfuRedpacket = require("PfuRedpacket");
-var PfuEvent = require("PfuEventSystem").Event;
-var EventType = require("PfuEventSystem").Type;
+const PfuRedpacket = require("PfuRedpacket");
+const PfuEvent = require("PfuEventSystem").Event;
+const EventType = require("PfuEventSystem").Type;
+const PfuSdk = require("PfuSdk");
 cc.Class({
     extends: cc.Component,
 
@@ -10,11 +11,14 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {},
+    onLoad () {
+
+    },
 
     start() {
         this._str = "hahahhahah";
         this.updateMoney();
+        this.node.active =  !PfuSdk.Instance.isHideRedpacket();
     },
 
     onRedpacketBtnClick(){
@@ -33,7 +37,7 @@ cc.Class({
     onEnable() {
         PfuEvent.register(EventType.RedpacketStateChange,this.evtRedpacketChange,this);
         PfuEvent.register(EventType.RedpacketBtnHide,(self)=>{
-            this.node.active = false;
+            self.node.active = false;
         },this);
     }
 });
