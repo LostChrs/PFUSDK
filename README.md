@@ -1,4 +1,4 @@
-# PFUSDK V0.1.3
+# PFUSDK V0.2.0
 
 ## 红包功能
 [点击这里查看红包功能接入文档](https://github.com/LostChrs/PFUSDK/blob/master/Redpacket.md)
@@ -6,7 +6,7 @@
 ## 更新日志
 [点击这里查看版本更新日志](https://github.com/LostChrs/PFUSDK/blob/master/ChangeLog.md)
 # 快速接入
-将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`PfuSdk.js`直接拖入游戏场景中，或挂载到任意空节点上。注意不要挂载到Canvas下，应该挂载到根节点。
+将pfusdk文件夹整个拖入cocoscreator工程中，`PfuSdk.js`中包含所有Sdk对外提供的接口，`PfuConfig.js`用来配置Sdk所需参数。将`pfusdk/prefabs/PfuSdk.prefab`直接拖入游戏根节点。注意不要挂载到Canvas下，应该挂载到根节点。
 
 >所有项目均会自动生成常用在线参数，如pfuSdkTestMode(审核模式),pfuSdkShowOpenAds(显示开屏广告)等。审核模式开启时将自动隐藏更多游戏列表，更多游戏按钮等功能。
 

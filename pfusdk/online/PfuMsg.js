@@ -57,7 +57,7 @@ var msg = {
     
       var result = "";
       if(loginToken){
-        var token = md5(loginToken + config.pfuPrivateKey);
+        var token = md5(loginToken + config.privateKey);
         result =  "sign=" + md5Str +"&content=" + baseStr +"&p="+token;
       }else{
         result =  "sign=" + md5Str +"&content=" + baseStr;

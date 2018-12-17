@@ -1,16 +1,16 @@
 //PfuSdk 
-const VERSION = "0.1.3";
-var online = require("PfuOnline");
-var config = require("PfuConfig");
+const VERSION = "0.2.0";
+const online = require("PfuOnline");
+const config = require("PfuConfig");
 
-var GAType = cc.Enum({
+const GAType = cc.Enum({
     MoreGame: 5,
     GameList: 6,
     VideoFinished: 7,
     ShareNum: 8
 });
 
-var PfuSdk = cc.Class({
+const PfuSdk = cc.Class({
     extends: cc.Component,
     statics: {
         Instance: null,
@@ -27,7 +27,7 @@ var PfuSdk = cc.Class({
     },
     properties: {
         executionOrder: -1000,
-        pbBannerRelive:cc.Prefab,
+        pbBannerRelive: cc.Prefab,
     },
     onLoad() {
         if (PfuSdk.Instance == null) {
@@ -60,29 +60,28 @@ var PfuSdk = cc.Class({
         }
 
         this.requestOnlineParams();
+        this._loginCount = 0;//尝试登录次数
         this.login();
         this.initAds();
         this.initShare();
 
         //用户时长
-        this._userPlayTime = parseInt(this.getItem("pfuSdkUserPlayTime",1));//sec
+        this._userPlayTime = parseInt(this.getItem("pfuSdkUserPlayTime", 1));//sec
 
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            this.log("用户时长：" + this._userPlayTime);
             wx.onShow(res => {
                 this.onAppShow(res);
             });
 
-            wx.onHide(res=>{
+            wx.onHide(res => {
                 this.onAppHide();
             });
         }
 
         this.onAppShow();
-
         this._shareFlag = false;//看完视频重置
     },
-   
-
     //刘海屏
     isIphoneX() {
         return PfuSdk.mScreenRatio >= 19 / 9;
@@ -111,25 +110,22 @@ var PfuSdk = cc.Class({
         this.setItem("pfuRedpacketGive", false);//每日简单的重置状态
 
         this._bannerRefreshCount = 0;//每日banner刷新次数
-        this.setItem("pfuBannerRefreshCount",0);
+        this.setItem("pfuBannerRefreshCount", 0);
     },
-    onAppHide(launchOptions){
+    onAppHide(launchOptions) {
         //记录一次游玩的时间
         const playTime = this.getDiffFromNow(this._playTimeTs);
-        if(playTime > 10){
+        if (playTime > 10) {
             this._userPlayTime += Math.abs(playTime);
-            this.setItem("pfuSdkUserPlayTime",this._userPlayTime);
+            this.setItem("pfuSdkUserPlayTime", this._userPlayTime);
         }
     },
     onAppShow(launchOptions) {
         let self = this;
-        if(launchOptions){
+        if (launchOptions) {
             this.log("场景值:" + launchOptions.scene);
-            //验证支付
-            // this.checkOrderList();
             if (launchOptions.scene == 1037 || launchOptions.scene == 1038) {
                 if (launchOptions.referrerInfo && launchOptions.referrerInfo.extraData) {
-                    //this.log("支付结果:" + launchOptions.referrerInfo.extraData.result);
                     //复活
                     if (PfuSdk.reliveCb) {
                         if (launchOptions.referrerInfo.extraData.relive) {
@@ -140,12 +136,31 @@ var PfuSdk = cc.Class({
                 }
             }
         }
-       
+
+        if(cc.sys.platform === cc.sys.WECHAT_GAME){
+            if (typeof wx.getUpdateManager === 'function') {
+                const updateManager = wx.getUpdateManager()
+        
+                updateManager.onCheckForUpdate(function (res) {
+                  // 请求完新版本信息的回调
+                  console.log(res.hasUpdate)
+                })
+        
+                updateManager.onUpdateReady(function () {
+                  // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+                  updateManager.applyUpdate()
+                })
+        
+                updateManager.onUpdateFailed(function () {
+                  // 新的版本下载失败
+                })
+              }
+        }
 
         this._playTimeTs = this.getNowTimestamp();
 
         //检测新日期
-        var recordDate = this.getItem("recordDate");
+        const recordDate = this.getItem("recordDate");
         if (recordDate) {
             let date = new Date();
             let d = date.getUTCDate();
@@ -156,7 +171,7 @@ var PfuSdk = cc.Class({
             } else {
                 this._shareNum = this.getItem("pfuSdkShareNum", 0);
                 this._successShareCount = this.getItem("pfuSdkSuccessShareCount", 0);
-                this._bannerRefreshCount = this.getItem("pfuBannerRefreshCount",0);
+                this._bannerRefreshCount = this.getItem("pfuBannerRefreshCount", 0);
             }
         } else {
             let date = new Date();
@@ -212,7 +227,7 @@ var PfuSdk = cc.Class({
     //时间戳方法
     getNowTimestamp() {
         //毫秒000
-        var time = Date.parse(new Date());
+        const time = Date.parse(new Date());
         return time;
     },
     //当前时间经过一定sec后的时间戳
@@ -241,10 +256,17 @@ var PfuSdk = cc.Class({
     login() {
         //微信登录
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
+        if (this._isLogin) return;
+
+        if (this._loginCount > 3) {
+            this.log("已到达最大尝试登录次数！请检查参数配置是否正确！");
+            return;
+        }
+        this._loginCount++;
         let self = this;
         wx.login({
             success: res => {
-                online.pfuLogin(res.code, this._userPlayTime , data => {
+                online.pfuLogin(res.code, this._userPlayTime, data => {
                     if (data.state == 3) {
                         this.log("SDK登录成功");
                         PfuSdk.sessionKey = data.sk;
@@ -264,16 +286,20 @@ var PfuSdk = cc.Class({
                         self.checkNewInviteUser();
                         //获取分享列表
                         self.getInviteList();
+
+                        if (config.openInviteListListner) {
+                            self.schedule(this.getInviteList, config.inviteListUpdateTime, cc.macro.REPEAT_FOREVER);
+                        }
                     } else {
                         this.log("SDK登录错误：" + data.state);
+                        this.unschedule(this.login);
+                        this.scheduleOnce(this.login, 1);
                     }
 
                 });
             }
         })
-        if (config.openInviteListListner) {
-            self.schedule(this.getInviteList, config.inviteListUpdateTime, cc.macro.REPEAT_FOREVER);
-        }
+
     },
 
     getUserInfo() {
@@ -290,23 +316,73 @@ var PfuSdk = cc.Class({
     },
 
     /*
+    * Banner复活
+    * success 成功回调
+    * fail 失败回调
+    */
+    showBannerRelive(obj) {
+        let ui = this.createUI(this.pbBannerRelive);
+        if (ui) {
+            ui.getComponent("PfuBannerRelive").show(obj);
+            if (PfuSdk.bannerAd) {
+                const bannerBgY = 60 * this._wxRatio;
+                let prestyle = {
+                    top: PfuSdk.bannerAd.style.top,
+                    left: PfuSdk.bannerAd.style.left,
+                    width: PfuSdk.bannerAd.style.width
+                }
+                this._bannerPreStyle = prestyle;
+                PfuSdk.bannerAd.style.left = 1;
+                PfuSdk.bannerAd.style.top = this._wxHeight / 2 + bannerBgY;
+                PfuSdk.bannerAd.style.width = this._wxWidth - 2;
+                PfuSdk.bannerAd.show();
+                this.unschedule(this.createBanner);
+            }
+
+        }
+    },
+
+    resetBannerPos() {
+        if (this._bannerPreStyle) {
+            //console.log("resetBannerPos");
+            PfuSdk.bannerAd.style.left = this._bannerPreStyle.left;
+            PfuSdk.bannerAd.style.top = this._bannerPreStyle.top;
+            PfuSdk.bannerAd.style.width = this._bannerPreStyle.width;
+            this._resetBannerState();
+            this.tryRefreshBanner();
+        }
+    },
+    createUI(pb) {
+        let root = this.node.parent;
+        if (root) {
+            let ui = cc.instantiate(pb);
+            ui.parent = root;
+            ui.zIndex = 2000;
+            return ui;
+        } else {
+            this.log("错误：未到找根节点");
+            return null;
+        }
+    },
+
+    /*
     * 红包
     */
-   isHideRedpacket(){
+    isHideRedpacket() {
         if(!online.wechatparam)return true;
-        if(this.isTestMode())return true;
+        if (this.isTestMode()) return true;
 
-        if(online.wechatparam.pfuSdkRed && online.wechatparam.pfuSdkRed == "1"){
+        if (online.wechatparam.pfuSdkRed && online.wechatparam.pfuSdkRed == "1") {
             return false;
         }
         return true;
-   },
-   setRedpacketCallback(cb){
+    },
+    setRedpacketCallback(cb) {
         this._redpacketCallback = cb;
         if (online.wechatparam) {
             if (this._redpacketCallback) this._redpacketCallback();
         }
-   },
+    },
 
     //在线参数回调
     setOnlineParamsCallback(cb) {
@@ -341,7 +417,7 @@ var PfuSdk = cc.Class({
         });
     },
 
-    
+
 
     //跳转盒子复活
     jumpGameboxForRelive(cb) {
@@ -376,7 +452,7 @@ var PfuSdk = cc.Class({
                     let r = res.windowWidth / cc.winSize.width;
                     self._wxRatio = r;
                     self._wxHeight = r * cc.winSize.height;
-                    if (config.wxBannerId != "") {
+                    if (config.bannerId != "") {
                         self.createBanner();
                     }
                 }
@@ -463,9 +539,9 @@ var PfuSdk = cc.Class({
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         let self = this;
         //视频广告
-        if (config.wxVideoId != "") {
+        if (config.videoId != "") {
             let videoAd = wx.createRewardedVideoAd({
-                adUnitId: config.wxVideoId
+                adUnitId: config.videoId
             });
             PfuSdk.videoAd = videoAd;
             PfuSdk.videoAd.load();
@@ -516,39 +592,40 @@ var PfuSdk = cc.Class({
     /*
     * 进入界面时主动刷新banner,能否刷新成功由函数内部判断
     */
-    refreshBanner(){
-        if(PfuSdk.bannerAd == null)return;
-        if(this._bannerRefreshCount > this._maxBannerRefreshCount)return;
+    refreshBanner() {
+        if (PfuSdk.bannerAd == null) return;
+        if (this._bannerRefreshCount > this._maxBannerRefreshCount) return;
 
         let sec = this.getDiffFromNow(this._bannerLastTs);
-        if(Math.abs(sec) >= this._minBannerRefreshTime){
+        if (Math.abs(sec) >= this._minBannerRefreshTime) {
             this.createBanner();
         }
     },
 
     createBanner() {
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
+        if (config.bannerId == "") return;
         let self = this;
         if (PfuSdk.bannerAd != null) {
             PfuSdk.bannerAd.destroy();
             //banner隐藏时不增加刷新次数
-            if(!this._bannerHideState){
-                this._bannerRefreshCount+=1;
-                this.getItem("pfuBannerRefreshCount",this._bannerRefreshCount);
+            if (!this._bannerHideState) {
+                this._bannerRefreshCount += 1;
+                this.getItem("pfuBannerRefreshCount", this._bannerRefreshCount);
             }
         }
         this._bannerLastTs = this.getNowTimestamp();
-        
+
         let targetHeight = config.bannerHeight;
         let designSizeH = this._wxWidth / (cc.winSize.width) * targetHeight;
 
         let offY = 0;
         if (this.isIphoneX()) {
-            offY = 1;
+            offY = config.bannerOffYForIpx ? config.bannerOffYForIpx : 1;
         }
 
         let bannerAd = wx.createBannerAd({
-            adUnitId: config.wxBannerId,
+            adUnitId: config.bannerId,
             style: {
                 left: 0,
                 top: 0,
@@ -556,8 +633,13 @@ var PfuSdk = cc.Class({
             }
         });
         bannerAd.onResize(size => {
-            if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width)
+            if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
                 bannerAd.style.width = this._wxWidth * designSizeH / size.height;
+
+            } else {
+                bannerAd.offResize();
+            }
+
 
             bannerAd.style.top = self._wxHeight - size.height - offY;
             bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
@@ -570,9 +652,13 @@ var PfuSdk = cc.Class({
         PfuSdk.bannerAd = bannerAd;
 
         this._resetBannerState();
-        if(this._refreshBannerTime){
+        this.tryRefreshBanner();
+    },
+
+    tryRefreshBanner() {
+        if (this._refreshBannerTime) {
             this.unschedule(this.createBanner);
-            if(this._bannerRefreshCount <= this._maxBannerRefreshCount){
+            if (this._bannerRefreshCount <= this._maxBannerRefreshCount) {
                 this.scheduleOnce(this.createBanner, this._refreshBannerTime);
             }
         }
@@ -580,12 +666,12 @@ var PfuSdk = cc.Class({
     /*
     * 是否显示界面的 分享勾选框
     */
-    isShareCheckbox(){
+    isShareCheckbox() {
         if(this.isTestMode())return false;
         const state = this.getShareState();
-        if(state == 1 || state == 2){
+        if (state == 1 || state == 2) {
             return true;
-        }else{
+        } else {
             return false;
         }
     },
@@ -645,7 +731,7 @@ var PfuSdk = cc.Class({
                         if (failCb) failCb();
                     }
                 });
-                const playVideo = ()=>{
+                const playVideo = () => {
                     PfuSdk.videoAd.show().then(() => {
                         //隐藏banner
                         if (PfuSdk.bannerAd) {
@@ -657,18 +743,18 @@ var PfuSdk = cc.Class({
                 const state = this.getShareState();
                 PfuSdk.videoAd.load().then(() => {
                     if (!justWatch && !this.isTestMode() && self._shareFlag == false && state != 0) {
-                        if(state == 1){
+                        if (state == 1) {
                             self.showShare({
                                 success: () => {
                                     playVideo();
                                 },
                                 fail: failCb
                             })
-                        }else if(state == 2){
-                            self.showShare({success:()=>{}});
+                        } else if (state == 2) {
+                            self.showShare({ success: () => { } });
                             playVideo();
                         }
-                        
+
                     } else {
                         playVideo();
                     }
@@ -677,8 +763,8 @@ var PfuSdk = cc.Class({
             }
         }
     },
-    getShareState(){
-        if(!online.wechatparam)return 0;
+    getShareState() {
+        if (!online.wechatparam) return 0;
         return online.wechatparam.pfuSdkVideoShare ? parseInt(online.wechatparam.pfuSdkVideoShare) : 0
     },
     _resetBannerState() {
@@ -688,7 +774,7 @@ var PfuSdk = cc.Class({
     HideBanner(hide) {
         //这里记录banner状态
         this._bannerHideState = hide;
-        this.log("HideBanner-->" + hide);
+        //this.log("HideBanner-->" + hide);
         if (PfuSdk.bannerAd) {
             if (hide) {
                 PfuSdk.bannerAd.hide();
@@ -697,15 +783,15 @@ var PfuSdk = cc.Class({
             }
         }
     },
-   
+
 
     //支付
     payIos(pName, pPrice) {
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
-            var orderId = new Date().getTime();
+            const orderId = new Date().getTime();
             this._payOrder = orderId;
             //透传字段
-            var attach = {
+            const attach = {
                 uid: PfuSdk.uid,
                 openid: PfuSdk.loginId,
                 appid: config.wxId,
@@ -754,7 +840,7 @@ var PfuSdk = cc.Class({
 
         online.moregame.forEach(item => {
             //首先过滤自己的id
-            if(item.wxid != selfId && item.boxId != selfId){
+            if (item.wxid != selfId && item.boxId != selfId) {
                 let condition1 = false;
                 if (cc.sys.os == cc.sys.OS_IOS) {
                     condition1 = this.checkDirectJump(item.wxid);
@@ -770,7 +856,7 @@ var PfuSdk = cc.Class({
                     }
                 }
             }
-           
+
         });
 
 
@@ -831,9 +917,9 @@ var PfuSdk = cc.Class({
 
     checkDirectJump(wxId) {
         if (!wxId || wxId == "") return false;
-        let list = config.wxJumpAppIdList;
+        let list = config.navigateToMiniProgramAppIdList;
         for (let i = 0; i < list.length; i++) {
-            if(wxId == config.wxId)return false;
+            if (wxId == config.wxId) return false;
 
             if (list[i] == wxId) {
                 return true;

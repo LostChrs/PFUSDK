@@ -87,9 +87,9 @@ var PfuRedpacket = cc.Class({
     IsRedpacket(){
         return this._canShowRedpacket();
     },
-    onInfoPageClose(state){
+    onInfoPageClose(){
         if(this._pageCloseCb){
-            this._pageCloseCb(state);
+            this._pageCloseCb();
             this._pageCloseCb = null;
         }
     },

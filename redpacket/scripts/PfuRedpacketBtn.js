@@ -12,7 +12,7 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-
+        
     },
 
     start() {
