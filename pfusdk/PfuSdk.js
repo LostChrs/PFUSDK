@@ -603,6 +603,7 @@ const PfuSdk = cc.Class({
     },
 
     createBanner() {
+        if (config.bannerId == "") return;
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         if (config.bannerId == "") return;
         let self = this;
@@ -635,12 +636,11 @@ const PfuSdk = cc.Class({
         bannerAd.onResize(size => {
             if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
                 bannerAd.style.width = this._wxWidth * designSizeH / size.height;
-
-            } else {
+                
+            }else{
                 bannerAd.offResize();
             }
-
-
+                
             bannerAd.style.top = self._wxHeight - size.height - offY;
             bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
         });

@@ -1,22 +1,22 @@
 
 let config = {
-    version: "1.0.0",//*必填  游戏参数版本号，用来控制运营后台参数
+    version:"1.0.0",//*必填  游戏参数版本号，用来控制运营后台参数
 
-    bannerHeight: 170,//230-170   
-    bannerOffYForIpx: 1,//在ipx上banner的偏移量，因为不同引擎版本有所区别，所以提供了修改的接口。
-    payAppId: "1450018202",//虚拟支付Id，当接入虚拟支付的时候需要填写
-    openInviteListListner: false,//开启邀请用户的实时监听
-    inviteListUpdateTime: 180,//每180秒更新一次邀请列表
+    bannerHeight:170,//230-170   
+    bannerOffYForIpx:1,//在ipx上banner的偏移量，因为不同引擎版本有所区别，所以提供了修改的接口。
+    payAppId:"1450018202",//虚拟支付Id，当接入虚拟支付的时候需要填写
+    openInviteListListner:false,//开启邀请用户的实时监听
+
 
     /*
     * 以下参数为后台自动生成
     */
-    appId: 1306146,//*必填  嘉丰永道appId
-    wxId: "wxc3de0b459142bb1b",//*必填  微信小游戏Id
-    privateKey: "bp11lflsecbme9itsb4f",//*必填  嘉丰永道分配给合作方的私钥
-    videoId: "adunit-c758250e9f75430c",//视频广告Id
-    bannerId: "adunit-8c19e95d3c8e9a7a",//banner广告Id
-    navigateToMiniProgramAppIdList: [
+    appId:1306146,//*必填  嘉丰永道appId
+    wxId:"wxc3de0b459142bb1b",//*必填  微信小游戏Id
+    privateKey:"bp11lflsecbme9itsb4f",//*必填  嘉丰永道分配给合作方的私钥
+    videoId:"adunit-c758250e9f75430c",//视频广告Id
+    bannerId:"adunit-8c19e95d3c8e9a7a",//banner广告Id
+    navigateToMiniProgramAppIdList:[
         "wxe675b6aad9612c74",
         "wx2d47467291703ec7",
         "wx716b36314be3fe89",
