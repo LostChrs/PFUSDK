@@ -32,7 +32,7 @@ cc.Class({
     },
     getCanJumpList(list){
         let jumpList = [];
-        let configList = config.wxJumpAppIdList;
+        let configList = config.navigateToMiniProgramAppIdList;
         configList.forEach(wxId => {
             list.forEach(item => {
                 if(item.wechatGameid == wxId){
