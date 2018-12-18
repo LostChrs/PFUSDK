@@ -75,7 +75,8 @@ cc.Class({
         }
     },
     onClose(){
-        PfuRedpacket.Instance.onInfoPageClose();
+        const state = this._type == PageType.OPEN?0:1;
+        PfuRedpacket.Instance.onInfoPageClose(state);
         this.node.destroy();
     }
 });

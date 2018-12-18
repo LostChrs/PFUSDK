@@ -96,14 +96,16 @@ var PfuRedpacket = cc.Class({
     IsRedpacket(){
         return this._canShowRedpacket();
     },
-    onInfoPageClose(){
+    onInfoPageClose(state){
         if(this._pageCloseCb){
-            this._pageCloseCb();
+
+            this._pageCloseCb(state);
             this._pageCloseCb = null;
         }
     },
     //检查当前是否可以显示红包
     _canShowRedpacket(){
+        return true;
         if(PfuSdk.Instance.isHideRedpacket()){
             return false;
         }
