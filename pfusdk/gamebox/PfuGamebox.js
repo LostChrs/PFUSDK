@@ -1,5 +1,6 @@
-var online = require("PfuOnline");
-var config = require("PfuConfig");
+const online = require("PfuOnline");
+const config = require("PfuConfig");
+const PfuSdk = require("PfuSdk");
 cc.Class({
     extends: cc.Component,
 
@@ -11,6 +12,9 @@ cc.Class({
 
     start(){
         let self = this;
+        if(PfuSdk.Instance.isIphoneX()){
+            this.node.y = -cc.winSize.height/2 + 30;
+        }
         this.items = [];
         this.spacing = 10;
         this.isTouched = false;
