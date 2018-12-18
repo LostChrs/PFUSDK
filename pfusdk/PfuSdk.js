@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.2.0";
+const VERSION = "0.2.1";
 const online = require("PfuOnline");
 const config = require("PfuConfig");
 
@@ -109,6 +109,8 @@ const PfuSdk = cc.Class({
 
         this.setItem("pfuRedpacketGive", false);//每日简单的重置状态
 
+        this.setItem("bannerReliveCount",0);
+
         this._bannerRefreshCount = 0;//每日banner刷新次数
         this.setItem("pfuBannerRefreshCount", 0);
     },
@@ -172,6 +174,7 @@ const PfuSdk = cc.Class({
                 this._shareNum = this.getItem("pfuSdkShareNum", 0);
                 this._successShareCount = this.getItem("pfuSdkSuccessShareCount", 0);
                 this._bannerRefreshCount = this.getItem("pfuBannerRefreshCount", 0);
+                this._bannerReliveCount = this.getItem("bannerReliveCount",0);
             }
         } else {
             let date = new Date();
@@ -216,6 +219,10 @@ const PfuSdk = cc.Class({
     },
     onAppHide() {
 
+    },
+    bannerReliveSuccess(){
+        this._bannerReliveCount++;
+        this.setItem("bannerReliveCount",this._bannerReliveCount);
     },
     getOfficialAccount() {
         return online.getOfficialAccount();
@@ -314,6 +321,22 @@ const PfuSdk = cc.Class({
             online.showOpenAds();
         }
     },
+    //Banner复活剩余次数
+    getBannerReliveNum(){
+        let maxNum = this._bannerRelive?this._bannerRelive:0;
+        let curNum = this._bannerReliveCount;
+        let playTime = this._userPlayTime;
+        let limitPlayTime = this._controlPlayTime?this._controlPlayTime:200;
+        if(curNum >= maxNum){
+            return 0;
+        }
+
+        if(playTime > limitPlayTime*60){
+            return maxNum - curNum;
+        }
+
+        return 0;
+    },
 
     /*
     * Banner复活
@@ -321,6 +344,13 @@ const PfuSdk = cc.Class({
     * fail 失败回调
     */
     showBannerRelive(obj) {
+        const num = this.getBannerReliveNum();
+        if(num <=0 ){
+            this.log("没有Banner复活次数");
+            this.showVideo(obj);
+            return;
+        }
+
         let ui = this.createUI(this.pbBannerRelive);
         if (ui) {
             ui.getComponent("PfuBannerRelive").show(obj);

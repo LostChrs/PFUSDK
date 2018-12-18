@@ -1,7 +1,7 @@
 const PfuSdk = require("PfuSdk");
 const PfuEvent = require("PfuEventSystem").Event;
 const EventType = require("PfuEventSystem").Type;
-const moneyList = [1.15,1.3,1.5,0.4,0.95,0.2,0.5];
+const moneyList = [1.15,1.3,0.8,0.2,0.35,0.2,0.51];
 var PfuRedpacket = cc.Class({
     extends: cc.Component,
     statics:{
@@ -27,8 +27,10 @@ var PfuRedpacket = cc.Class({
         }
         this._ownMoney = parseFloat(this.getItem("pfuRedpacketMoney",0)) ;
 
-        //单独记录主动弹出红包金额，不能大于8元
+        //单独记录主动弹出红包金额，未领取双倍的奖励会返回奖金池
         this._randomMoney = parseFloat(this.getItem("pfuRandomMoney",0));
+        //记录获得的红包次数
+        this._gotRedNum = this.getItem("pfuGotRedNum",0);
         cc.game.on(cc.game.EVENT_SHOW, function () {
             self.onAppShow();
         });
@@ -46,8 +48,6 @@ var PfuRedpacket = cc.Class({
         for(let i=0;i<7;i++){
             moneyList[i] *= this._loginGiftInfo[i];
         }
-
-        
 
         PfuEvent.register(EventType.RedpacketBtnClick,this.evtRedpacketBtnClick,this);
     },
@@ -75,9 +75,18 @@ var PfuRedpacket = cc.Class({
         const pageOpen = obj.pageOpen || null;
         this._pageCloseCb = obj.pageClose || null;
         if(this._canShowRedpacket()){
+            let num = this._gotRedNum;
+            let money = 0;
+            if(num < 20){
+                money = Math.random()*0.4;
+                if(money<0.1)money = 0.12;
+            }else{
+                money = Math.random()*0.2;
+                if(money<0.03)money = 0.03;
+            }
             //随机金额
-            let money = Math.random()*0.5;
-            if(money<0.1)money = 0.12;
+            this._gotRedNum++;
+            this.setItem("pfuGotRedNum",this._gotRedNum);
             money = money.toFixed(2);
             if(pageOpen)pageOpen();
             this.showRedpacketInfo(type,money);
@@ -98,11 +107,22 @@ var PfuRedpacket = cc.Class({
         if(PfuSdk.Instance.isHideRedpacket()){
             return false;
         }
-        return this._randomMoney <= 7.5;
+        return this._ownMoney < this.getMaxNum();
     },
     //当前领到了第几天
     getDay(){
         return this.getItem("pfuRedpacketDay",1);
+    },
+
+    //计算可以领取的上限
+    getMaxNum(){
+        const day = this.getDay();//已经领取的天数
+        let remain = 0;//保留的钱
+        for(let i=day-1;i<7;i++){
+           remain += (moneyList[i]*2);
+        }
+
+        return 19.5 - remain;
     },
 
     onGetReward(num){

@@ -48,6 +48,7 @@ cc.Class({
         console.log("onClickBanner");
         this.scheduleOnce(()=>{
             if(this._successCb)this._successCb();
+            PfuSdk.Instance.bannerReliveSuccess();
             this.onClose();
         },1.5);
        

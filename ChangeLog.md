@@ -1,3 +1,7 @@
+### v0.2.1
+* banner复活增加了后台开关，关闭的时候会调用视频
+* 修改了红包的弹出规则
+
 ### v0.1.4
 * 增加了点击banner复活的功能(集成在`showVideo`中，用户无需关心),用户需要将PfuSdk.prefab拖到根节点下（移除原来场景中的PfuSdk节点）
 * 为了避免困惑，将`showShareOrVideo`接口移除，改为`showVideo`。并且增加了新的参数`justWatch`,用来指定是否跳过参数控制直接播放视频
