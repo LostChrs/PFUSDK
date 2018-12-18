@@ -47,12 +47,7 @@ var PfuRedpacket = cc.Class({
             moneyList[i] *= this._loginGiftInfo[i];
         }
 
-        PfuSdk.Instance.setRedpacketCallback(()=>{
-            //根据在线参数隐藏功能
-            if(PfuSdk.Instance.isHideRedpacket()){
-                PfuEvent.send(EventType.RedpacketBtnHide);
-            }
-        });
+        
 
         PfuEvent.register(EventType.RedpacketBtnClick,this.evtRedpacketBtnClick,this);
     },
@@ -66,7 +61,12 @@ var PfuRedpacket = cc.Class({
 
 
     start () {
-       
+        PfuSdk.Instance.setRedpacketCallback(()=>{
+            //根据在线参数隐藏功能
+            if(PfuSdk.Instance.isHideRedpacket()){
+                PfuEvent.send(EventType.RedpacketBtnHide);
+            }
+        });
     },
     //显示红包  type  des pageOpen pageClose
     showRedpacket(obj = {}){
