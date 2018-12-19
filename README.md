@@ -115,6 +115,24 @@ PfuSdk.Instance.showShare({
             }
         })
 ```
+
+### Banner复活
+>showBannerRelive
+
+| 参数 | 含义 |
+| :------| :------ |
+|success |成功回调
+|fail |失败回调
+```
+PfuSdk.Instance.showBannerRelive({
+            success:()=>{
+                //成功
+            },
+            fail:()=>{
+                //失败
+            }
+        })
+```
 ### Banner广告
 配置`PfuConfig.js`中的`wxBannerId`，Banner广告即可自动创建和显示。配置`bannerHeight`可指定banner高度，对应cocos中的设计像素范围230-170。
 主动刷新Banner，调用后不是必然会刷新，具体刷新规则由后台参数控制。
