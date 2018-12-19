@@ -10,10 +10,14 @@ cc.Class({
         itemTemplate: cc.Node,
     },
 
+    onLoad(){
+        this._initPos = this.node.position;
+    },
+
     start(){
         let self = this;
         if(PfuSdk.Instance.isIphoneX()){
-            this.node.y = -cc.winSize.height/2 + 30;
+            this.node.y = this._initPos.y + 30;
         }
         this.items = [];
         this.spacing = 10;
