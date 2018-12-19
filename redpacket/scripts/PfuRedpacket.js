@@ -105,7 +105,6 @@ var PfuRedpacket = cc.Class({
     },
     //检查当前是否可以显示红包
     _canShowRedpacket(){
-        return true;
         if(PfuSdk.Instance.isHideRedpacket()){
             return false;
         }
