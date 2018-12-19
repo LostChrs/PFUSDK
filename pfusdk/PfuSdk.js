@@ -300,7 +300,7 @@ const PfuSdk = cc.Class({
                     } else {
                         this.log("SDK登录错误：" + data.state);
                         this.unschedule(this.login);
-                        this.scheduleOnce(this.login, 1);
+                        this.scheduleOnce(this.login, 2);
                     }
 
                 });

@@ -24,6 +24,7 @@ var pfuOnline = {
     shareTitle1:"分享到群才行哦",
     shareTitle2:"请分享到不同的群哦~",
     onlineCbList:[],
+    canSend:true,//限制消息重复发送
     initData(callback){
         var self = this;
         this.getWeChatOnlineParameters(function(data){
@@ -194,6 +195,8 @@ var pfuOnline = {
     },
 
     pfuLogin(code,playTime,cb){
+        if(!this.canSend)return;
+        this.sendDelay();
         let launchOptions = wx.getLaunchOptionsSync();
         let data = {
             Channel:"weixin",
@@ -239,6 +242,7 @@ var pfuOnline = {
     },
 
     pfuCommonShare(shareUid,loginToken,cb){
+        
         if(loginToken == ""){
             this.errorNoLogin();
             return;
@@ -322,10 +326,12 @@ var pfuOnline = {
     },
 
     pfuGAClick(type,picId,loginToken){
+        if(!this.canSend)return;
         if(loginToken == ""){
             this.errorNoLogin();
             return;
         }
+        this.sendDelay();
         let data ={
             type:type,
             picId:picId
@@ -334,14 +340,23 @@ var pfuOnline = {
     },
 
     pfuGAVideo(type,loginToken){
+        if(!this.canSend)return;
         if(loginToken == ""){
             this.errorNoLogin();
             return;
         }
+        this.sendDelay();
         let data ={
             type:type
         };
         msg.sendCommonShare(data,urlGAVideo,loginToken);
+    },
+
+    sendDelay(){
+        this.canSend = false;
+        setTimeout(()=>{
+            this.canSend = true;
+        },1500);
     },
 
     getUid(){
