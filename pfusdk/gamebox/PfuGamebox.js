@@ -17,7 +17,7 @@ cc.Class({
     start(){
         let self = this;
         if(PfuSdk.Instance.isIphoneX()){
-            this.node.y = this._initPos.y + 30;
+            this.node.y = this._initPos.y + 60;
         }
         this.items = [];
         this.spacing = 10;

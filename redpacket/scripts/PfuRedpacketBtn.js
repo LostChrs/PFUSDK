@@ -18,6 +18,7 @@ cc.Class({
     start() {
         this._str = "hahahhahah";
         this.updateMoney();
+        this.node.active =  !PfuSdk.Instance.isHideRedpacket();
     },
 
     onRedpacketBtnClick(){
@@ -36,7 +37,7 @@ cc.Class({
     onEnable() {
         PfuEvent.register(EventType.RedpacketStateChange,this.evtRedpacketChange,this);
         PfuEvent.register(EventType.RedpacketBtnHide,(self)=>{
-            self.node.active = false;
+            self.node.active =  !PfuSdk.Instance.isHideRedpacket();
         },this);
     }
 });

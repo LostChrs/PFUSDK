@@ -63,9 +63,7 @@ var PfuRedpacket = cc.Class({
     start () {
         PfuSdk.Instance.setRedpacketCallback(()=>{
             //根据在线参数隐藏功能
-            if(PfuSdk.Instance.isHideRedpacket()){
-                PfuEvent.send(EventType.RedpacketBtnHide);
-            }
+            PfuEvent.send(EventType.RedpacketBtnHide);
         });
     },
     //显示红包  type  des pageOpen pageClose
