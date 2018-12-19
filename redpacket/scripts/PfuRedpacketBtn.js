@@ -18,7 +18,6 @@ cc.Class({
     start() {
         this._str = "hahahhahah";
         this.updateMoney();
-        this.node.active =  !PfuSdk.Instance.isHideRedpacket();
     },
 
     onRedpacketBtnClick(){
