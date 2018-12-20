@@ -21,6 +21,7 @@ cc.Class({
         }
 
         this.btnSkip.runAction(cc.fadeOut(0));
+        this._canClose = true;
     },
 
     onAppShow(){
@@ -28,11 +29,12 @@ cc.Class({
         this.onClickBanner();
     },
     onAppHide(){
-
+        this._canClose = false;
     },
 
     show(obj = {}){
         this._isOut = false;
+        this._flag = true;
         this._successCb = obj.success;
         this._failCb = obj.fail;
 
@@ -41,6 +43,7 @@ cc.Class({
         },2);
     },
     onSkip(){
+        if(!this._canClose)return;
         if(this._failCb)this._failCb();
         this.onClose();
     },
@@ -51,11 +54,14 @@ cc.Class({
             PfuSdk.Instance.bannerReliveSuccess();
             this.onClose();
         },1.5);
-       
     },
     onClose(){
-        //还原banner状态
-        PfuSdk.Instance.resetBannerPos();
-        this.node.destroy();
+        console.log("onClose---"+this._canClose);
+        if(this._flag){
+            this._flag = false;
+            //还原banner状态
+            PfuSdk.Instance.resetBannerPos();
+            this.node.destroy();
+        }
     }
 });
