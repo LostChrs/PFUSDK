@@ -77,6 +77,7 @@ const PfuSdk = cc.Class({
             wx.onHide(res => {
                 this.onAppHide();
             });
+
         }
 
         this.onAppShow();
@@ -116,8 +117,9 @@ const PfuSdk = cc.Class({
     },
     onAppHide(launchOptions) {
         //记录一次游玩的时间
-        const playTime = this.getDiffFromNow(this._playTimeTs);
-        if (playTime > 10) {
+        const playTime = Math.abs(this.getDiffFromNow(this._playTimeTs));
+        this.log("记录游玩时间--->"+playTime+",当前游玩总时长:"+this._userPlayTime);
+        if ( playTime > 5) {
             this._userPlayTime += Math.abs(playTime);
             this.setItem("pfuSdkUserPlayTime", this._userPlayTime);
         }
@@ -160,6 +162,7 @@ const PfuSdk = cc.Class({
         }
 
         this._playTimeTs = this.getNowTimestamp();
+        this.log("当前游玩总时长:"+this._userPlayTime);
 
         //检测新日期
         const recordDate = this.getItem("recordDate");
@@ -216,9 +219,6 @@ const PfuSdk = cc.Class({
             this._shareCb = null;
             this._shareFailCb = null;
         }
-    },
-    onAppHide() {
-
     },
     bannerReliveSuccess(){
         this._bannerReliveCount++;
@@ -327,6 +327,8 @@ const PfuSdk = cc.Class({
         let curNum = this._bannerReliveCount;
         let playTime = this._userPlayTime;
         let limitPlayTime = this._controlPlayTime?this._controlPlayTime:200;
+
+        this.log(`最大复活次数${maxNum},当前已复活次数${curNum},玩家游玩时间${playTime},限制时间${limitPlayTime*60}`);
         if(curNum >= maxNum){
             return 0;
         }
