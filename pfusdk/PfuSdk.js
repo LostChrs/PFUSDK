@@ -50,6 +50,7 @@ const PfuSdk = cc.Class({
         this._successShareCount = 0;//已经分享成功次数
 
         this._maxBannerRefreshCount = 5;
+        this._dailyPlayTimeLimit = 3;
 
         this._shareTitle1 = "分享到群才行哦";
         this._shareTitle2 = "请分享到不同的群哦~";
@@ -114,6 +115,13 @@ const PfuSdk = cc.Class({
 
         this._bannerRefreshCount = 0;//每日banner刷新次数
         this.setItem("pfuBannerRefreshCount", 0);
+        this._dailyTs = this.getNowTimestamp();
+        this.setItem("pfuDailyTs",this._dailyTs);
+    },
+    //今日游玩时间
+    getDailyPlayTime(){
+        const playTime = Math.abs(this.getDiffFromNow(this._dailyTs));
+        return playTime;
     },
     onAppHide(launchOptions) {
         //记录一次游玩的时间
@@ -178,6 +186,9 @@ const PfuSdk = cc.Class({
                 this._successShareCount = this.getItem("pfuSdkSuccessShareCount", 0);
                 this._bannerRefreshCount = this.getItem("pfuBannerRefreshCount", 0);
                 this._bannerReliveCount = this.getItem("bannerReliveCount",0);
+
+                //每日登陆时间戳
+                this._dailyTs = parseInt(this.getItem("pfuDailyTs",this._playTimeTs)); 
             }
         } else {
             let date = new Date();
@@ -327,13 +338,14 @@ const PfuSdk = cc.Class({
         let curNum = this._bannerReliveCount;
         let playTime = this._userPlayTime;
         let limitPlayTime = this._controlPlayTime?this._controlPlayTime:200;
-
-        this.log(`最大复活次数${maxNum},当前已复活次数${curNum},玩家游玩时间${playTime},限制时间${limitPlayTime*60}`);
+        
+        let dailyPlayTime = this.getDailyPlayTime();
+        this.log(`最大复活次数${maxNum},当前已复活次数${curNum},玩家游玩时间${playTime},限制时间${limitPlayTime*60},每日限制时间${this._dailyPlayTimeLimit},今日已玩时间${dailyPlayTime}`);
         if(curNum >= maxNum){
             return 0;
         }
 
-        if(playTime > limitPlayTime*60){
+        if(playTime > limitPlayTime*60 && dailyPlayTime > this._dailyPlayTimeLimit*60){
             return maxNum - curNum;
         }
 
@@ -441,6 +453,8 @@ const PfuSdk = cc.Class({
             self._maxBannerRefreshCount = parseInt(online.wechatparam.pfuSdkBannerCount);
             self._minBannerRefreshTime = parseInt(online.wechatparam.pfuSdkBannerMin);//sec
             self._controlPlayTime = parseInt(online.wechatparam.pfuSdkPlayTime);//min 控制某些功能开关
+            self._dailyPlayTimeLimit = parseInt(online.wechatparam.pfuSdkDailyTime);
+
             self._bannerRelive = parseInt(online.wechatparam.pfuSdkBannerRelive);
             self._refreshBannerTime = parseInt(online.wechatparam.pfuSdkRefresh);
             self.scheduleOnce(self.createBanner, self._refreshBannerTime);
