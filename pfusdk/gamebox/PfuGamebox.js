@@ -12,12 +12,14 @@ cc.Class({
 
     onLoad(){
         this._initPos = this.node.position;
+        this._widget = this.getComponent(cc.Widget);
     },
 
     start(){
         let self = this;
         if(PfuSdk.Instance.isIphoneX()){
-            this.node.y = this._initPos.y + 60;
+            //this.node.y = this._initPos.y + 60;
+            this._widget.bottom = 60;
         }
         this.items = [];
         this.spacing = 10;
