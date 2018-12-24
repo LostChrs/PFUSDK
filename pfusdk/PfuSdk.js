@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.2.1";
+const VERSION = "0.2.2";
 const online = require("PfuOnline");
 const config = require("PfuConfig");
 
@@ -215,19 +215,25 @@ const PfuSdk = cc.Class({
                     }
                 } else {
                     if (this._shareCb) {
-                        if (this._shareNum == 0) {
-                            this.showTips(this._shareTitle1);
-                        } else {
-                            this.showTips(this._shareTitle2);
-                        }
-                    }
-
-                    if (this._shareFailCb) {
-                        this._shareFailCb();
+                        // if (this._shareNum == 0) {
+                        //     this.showTips(this._shareTitle1);
+                        // } else {
+                        //     this.showTips(this._shareTitle2);
+                        // }
+                        this.showModel("领取奖励","分享到微信群即可领取奖励，领取奖励吗？","领取奖励","放弃奖励",()=>{
+                            this.showShare({
+                                success:this._shareCb,
+                                fail:this._shareFailCb
+                            })
+                        },()=>{
+                            if (this._shareFailCb) {
+                                this._shareFailCb();
+                            }
+                        });
                     }
                 }
             }
-            this._shareCb = null;
+           // this._shareCb = null;
             this._shareFailCb = null;
         }
     },
@@ -1267,5 +1273,23 @@ const PfuSdk = cc.Class({
             })
         }
 
+    },
+    showModel(title,content,confirmText,cancelText,confirm,cancel){
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            wx.showModal({
+                title: title,
+                content: content,
+                cancelText:cancelText,
+                confirmText:confirmText,
+                success(res) {
+                  if (res.confirm) {
+                    if(confirm)confirm();
+                  } else if (res.cancel) {
+                    if(cancel)cancel();
+                  }
+                }
+              })
+        }
+        
     }
 });
