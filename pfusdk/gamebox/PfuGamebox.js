@@ -34,11 +34,11 @@ cc.Class({
         online.addCb(()=>{
             online.getAdsList(res =>{
                 let list = res.adverts;
-                if(online.wechatparam.pfuSdkMoreGame && online.wechatparam.pfuSdkMoreGame == "0"){
+                if(!list || list.length <= 0){
                     self.content.active = false;
-                }else{
-                    self.initList(this.getCanJumpList(list));
+                    return;
                 }
+                self.initList(this.getCanJumpList(list));
                 
             });
         })
