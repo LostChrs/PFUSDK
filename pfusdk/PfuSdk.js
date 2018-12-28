@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.2.2";
+const VERSION = "0.2.3";
 const online = require("PfuOnline");
 const config = require("PfuConfig");
 
@@ -68,6 +68,10 @@ const PfuSdk = cc.Class({
 
         //用户时长
         this._userPlayTime = parseInt(this.getItem("pfuSdkUserPlayTime", 1));//sec
+        this._loginTs = this.getNowTimestamp();
+        this.schedule(() => {
+            this.recordPlayTime();
+        }, 120);
 
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             this.log("用户时长：" + this._userPlayTime);
@@ -111,26 +115,30 @@ const PfuSdk = cc.Class({
 
         this.setItem("pfuRedpacketGive", false);//每日简单的重置状态
 
-        this.setItem("bannerReliveCount",0);
+        this.setItem("bannerReliveCount", 0);
 
         this._bannerRefreshCount = 0;//每日banner刷新次数
         this.setItem("pfuBannerRefreshCount", 0);
         this._dailyTs = this.getNowTimestamp();
-        this.setItem("pfuDailyTs",this._dailyTs);
+        this.setItem("pfuDailyTs", this._dailyTs);
     },
     //今日游玩时间
-    getDailyPlayTime(){
+    getDailyPlayTime() {
         const playTime = Math.abs(this.getDiffFromNow(this._dailyTs));
         return playTime;
     },
     onAppHide(launchOptions) {
         //记录一次游玩的时间
+        //this.recordPlayTime();
+    },
+
+    recordPlayTime() {
         const playTime = Math.abs(this.getDiffFromNow(this._playTimeTs));
-        this.log("记录游玩时间--->"+playTime+",当前游玩总时长:"+this._userPlayTime);
-        if ( playTime > 5) {
-            this._userPlayTime += Math.abs(playTime);
-            this.setItem("pfuSdkUserPlayTime", this._userPlayTime);
-        }
+        //this.log("记录游玩时间--->" + playTime + ",当前游玩总时长:" + this._userPlayTime);
+        this._userPlayTime += playTime;
+        this.setItem("pfuSdkUserPlayTime", this._userPlayTime);
+
+        this._playTimeTs = this.getNowTimestamp();
     },
     onAppShow(launchOptions) {
         let self = this;
@@ -149,29 +157,33 @@ const PfuSdk = cc.Class({
             }
         }
 
-        if(cc.sys.platform === cc.sys.WECHAT_GAME){
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             if (typeof wx.getUpdateManager === 'function') {
                 const updateManager = wx.getUpdateManager()
-        
+
                 updateManager.onCheckForUpdate(function (res) {
-                  // 请求完新版本信息的回调
-                  console.log(res.hasUpdate)
+                    // 请求完新版本信息的回调
+                    console.log(res.hasUpdate)
                 })
-        
+
                 updateManager.onUpdateReady(function () {
-                  // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
-                  updateManager.applyUpdate()
+                    // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+                    updateManager.applyUpdate()
                 })
-        
+
                 updateManager.onUpdateFailed(function () {
-                  // 新的版本下载失败
+                    // 新的版本下载失败
                 })
-              }
+            }
         }
 
         this._playTimeTs = this.getNowTimestamp();
-        this.log("当前游玩总时长:"+this._userPlayTime);
+        this.log("当前游玩总时长:" + this._userPlayTime);
 
+        let loginTime = Math.abs(this.getDiffFromNow(this._loginTs));
+        if (loginTime > 3600) {
+            this.relogin();
+        }
         //检测新日期
         const recordDate = this.getItem("recordDate");
         if (recordDate) {
@@ -185,10 +197,11 @@ const PfuSdk = cc.Class({
                 this._shareNum = this.getItem("pfuSdkShareNum", 0);
                 this._successShareCount = this.getItem("pfuSdkSuccessShareCount", 0);
                 this._bannerRefreshCount = this.getItem("pfuBannerRefreshCount", 0);
-                this._bannerReliveCount = this.getItem("bannerReliveCount",0);
+                this._bannerReliveCount = this.getItem("bannerReliveCount", 0);
 
                 //每日登陆时间戳
-                this._dailyTs = parseInt(this.getItem("pfuDailyTs",this._playTimeTs)); 
+                this._dailyTs = parseInt(this.getItem("pfuDailyTs", this._playTimeTs));
+
             }
         } else {
             let date = new Date();
@@ -220,12 +233,12 @@ const PfuSdk = cc.Class({
                         // } else {
                         //     this.showTips(this._shareTitle2);
                         // }
-                        this.showModel("领取奖励","分享到微信群即可领取奖励，领取奖励吗？","领取奖励","放弃奖励",()=>{
+                        this.showModel("领取奖励", "分享到微信群即可领取奖励，领取奖励吗？", "领取奖励", "放弃奖励", () => {
                             this.showShare({
-                                success:this._shareCb,
-                                fail:this._shareFailCb
+                                success: this._shareCb,
+                                fail: this._shareFailCb
                             })
-                        },()=>{
+                        }, () => {
                             if (this._shareFailCb) {
                                 this._shareFailCb();
                             }
@@ -233,13 +246,13 @@ const PfuSdk = cc.Class({
                     }
                 }
             }
-           // this._shareCb = null;
+            // this._shareCb = null;
             this._shareFailCb = null;
         }
     },
-    bannerReliveSuccess(){
+    bannerReliveSuccess() {
         this._bannerReliveCount++;
-        this.setItem("bannerReliveCount",this._bannerReliveCount);
+        this.setItem("bannerReliveCount", this._bannerReliveCount);
     },
     getOfficialAccount() {
         return online.getOfficialAccount();
@@ -293,6 +306,7 @@ const PfuSdk = cc.Class({
                 online.pfuLogin(res.code, this._userPlayTime, data => {
                     if (data.state == 3) {
                         this.log("SDK登录成功");
+                        this._loginTs = this.getNowTimestamp();
                         PfuSdk.sessionKey = data.sk;
                         PfuSdk.loginToken = data.loginToken;
                         PfuSdk.loginId = data.loginId;
@@ -326,6 +340,18 @@ const PfuSdk = cc.Class({
 
     },
 
+    relogin() {
+        //重新登录
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
+        let self = this;
+        wx.login({
+            success: res => {
+                online.pfuLogin(res.code, this._userPlayTime);
+                this._loginTs = this.getNowTimestamp();
+            }
+        });
+    },
+
     getUserInfo() {
         this._wxUserInfo = this.getItem("wxUserInfo");
         return this._wxUserInfo;
@@ -339,19 +365,19 @@ const PfuSdk = cc.Class({
         }
     },
     //Banner复活剩余次数
-    getBannerReliveNum(){
-        let maxNum = this._bannerRelive?this._bannerRelive:0;
+    getBannerReliveNum() {
+        let maxNum = this._bannerRelive ? this._bannerRelive : 0;
         let curNum = this._bannerReliveCount;
         let playTime = this._userPlayTime;
-        let limitPlayTime = this._controlPlayTime?this._controlPlayTime:200;
-        
+        let limitPlayTime = this._controlPlayTime ? this._controlPlayTime : 200;
+
         let dailyPlayTime = this.getDailyPlayTime();
-        this.log(`最大复活次数${maxNum},当前已复活次数${curNum},玩家游玩时间${playTime},限制时间${limitPlayTime*60},每日限制时间${this._dailyPlayTimeLimit},今日已玩时间${dailyPlayTime}`);
-        if(curNum >= maxNum){
+        this.log(`最大复活次数${maxNum},当前已复活次数${curNum},玩家游玩时间${playTime},限制时间${limitPlayTime * 60},每日限制时间${this._dailyPlayTimeLimit},今日已玩时间${dailyPlayTime}`);
+        if (curNum >= maxNum) {
             return 0;
         }
 
-        if(playTime > limitPlayTime*60 && dailyPlayTime > this._dailyPlayTimeLimit*60){
+        if (playTime > limitPlayTime * 60 && dailyPlayTime > this._dailyPlayTimeLimit * 60) {
             return maxNum - curNum;
         }
 
@@ -365,7 +391,7 @@ const PfuSdk = cc.Class({
     */
     showBannerRelive(obj) {
         const num = this.getBannerReliveNum();
-        if(num <=0 ){
+        if (num <= 0) {
             this.log("没有Banner复活次数");
             this.showVideo(obj);
             return;
@@ -419,7 +445,7 @@ const PfuSdk = cc.Class({
     * 红包
     */
     isHideRedpacket() {
-        if(!online.wechatparam)return true;
+        if (!online.wechatparam) return true;
         if (this.isTestMode()) return true;
 
         if (online.wechatparam.pfuSdkRed && online.wechatparam.pfuSdkRed == "1") {
@@ -688,11 +714,11 @@ const PfuSdk = cc.Class({
         bannerAd.onResize(size => {
             if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
                 bannerAd.style.width = this._wxWidth * designSizeH / size.height;
-                
-            }else{
+
+            } else {
                 bannerAd.offResize();
             }
-                
+
             bannerAd.style.top = self._wxHeight - size.height - offY;
             bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
         });
@@ -719,7 +745,7 @@ const PfuSdk = cc.Class({
     * 是否显示界面的 分享勾选框
     */
     isShareCheckbox() {
-        if(this.isTestMode())return false;
+        if (this.isTestMode()) return false;
         const state = this.getShareState();
         if (state == 1 || state == 2) {
             return true;
@@ -1274,22 +1300,22 @@ const PfuSdk = cc.Class({
         }
 
     },
-    showModel(title,content,confirmText,cancelText,confirm,cancel){
+    showModel(title, content, confirmText, cancelText, confirm, cancel) {
         if (cc.sys.platform == cc.sys.WECHAT_GAME) {
             wx.showModal({
                 title: title,
                 content: content,
-                cancelText:cancelText,
-                confirmText:confirmText,
+                cancelText: cancelText,
+                confirmText: confirmText,
                 success(res) {
-                  if (res.confirm) {
-                    if(confirm)confirm();
-                  } else if (res.cancel) {
-                    if(cancel)cancel();
-                  }
+                    if (res.confirm) {
+                        if (confirm) confirm();
+                    } else if (res.cancel) {
+                        if (cancel) cancel();
+                    }
                 }
-              })
+            })
         }
-        
+
     }
 });
