@@ -771,7 +771,7 @@ const PfuSdk = cc.Class({
             if (cb) cb();
         } else {
             if(!placementId && config.videoId == ""){
-                this.log("视频暂未开放");
+                this.showTips("视频暂未开放");
                 return;
             }
             if (placementId) {
