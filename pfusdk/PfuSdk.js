@@ -770,6 +770,10 @@ const PfuSdk = cc.Class({
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
         } else {
+            if(!placementId && config.videoId == ""){
+                this.log("视频暂未开放");
+                return;
+            }
             if (placementId) {
                 this.showAdsPlacement(placementId);
             }
