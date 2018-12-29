@@ -71,7 +71,13 @@ cc.Class({
                     appId: info.wechatGameid,
                     path: path
                 })
-            }else{
+            }else if(this.checkDirectJump(info.jumpId)){
+                wx.navigateToMiniProgram({
+                    appId: info.jumpId,
+                    path: path
+                })
+            }
+            else{
                 if (info.qrcodelink){
                     wx.previewImage({
                       urls:[info.qrcodelink]

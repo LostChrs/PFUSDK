@@ -48,7 +48,8 @@ cc.Class({
         list.forEach(item => {
             let condition1 = this.checkDirectJump(item.wechatGameid);
             let condition2 = (item.qrcodelink&&item.qrcodelink != "");
-            if(condition1 || condition2){
+            let condition3 = this.checkDirectJump(item.jumpId);
+            if(condition1 || condition2 || condition3){
                 jumpList.push(item);
             }
         });

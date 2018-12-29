@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.2.3";
+const VERSION = "0.2.4";
 const online = require("PfuOnline");
 const config = require("PfuConfig");
 
@@ -100,10 +100,6 @@ const PfuSdk = cc.Class({
     isShowShareBtn() {
         //永远显示视频
         return false;
-        if (this.isTestMode()) {
-            return false;
-        }
-        return this._successShareCount < this._preShareCountMax;
     },
     resetDailyTask() {
         this.log("重置每日信息===============");
@@ -228,12 +224,13 @@ const PfuSdk = cc.Class({
                     }
                 } else {
                     if (this._shareCb) {
-                        // if (this._shareNum == 0) {
-                        //     this.showTips(this._shareTitle1);
-                        // } else {
-                        //     this.showTips(this._shareTitle2);
-                        // }
-                        this.showModel("领取奖励", "分享到微信群即可领取奖励，领取奖励吗？", "领取奖励", "放弃奖励", () => {
+                        let shareContent = "";
+                        if (this._successShareCount < this._preShareCountMax) {
+                            shareContent = this._shareTitle1;
+                        } else {
+                            shareContent = this._shareTitle2;
+                        }
+                        this.showModel("分享失败", shareContent, "继续", "放弃", () => {
                             this.showShare({
                                 success: this._shareCb,
                                 fail: this._shareFailCb
@@ -986,7 +983,8 @@ const PfuSdk = cc.Class({
                     appId: jumpId,
                     path: path
                 })
-            } else {
+            }
+            else {
                 if (info.link && info.link != "") {
                     wx.previewImage({
                         urls: [online.getImagePath(info.link)]

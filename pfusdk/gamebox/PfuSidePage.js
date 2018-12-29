@@ -32,15 +32,24 @@ cc.Class({
     },
     getCanJumpList(list){
         let jumpList = [];
-        let configList = config.navigateToMiniProgramAppIdList;
-        configList.forEach(wxId => {
-            list.forEach(item => {
-                if(item.wechatGameid == wxId){
-                    jumpList.push(item);
-                }
-            });
+        list.forEach(item => {
+            let condition1 = this.checkDirectJump(item.wechatGameid);
+            let condition2 = (item.qrcodelink&&item.qrcodelink != "");
+            let condition3 = this.checkDirectJump(item.jumpId);
+            if(condition1 || condition2 || condition3){
+                jumpList.push(item);
+            }
         });
         return jumpList;
+    },
+    checkDirectJump(wxId){
+        let list = config.navigateToMiniProgramAppIdList;
+        for(let i=0;i<list.length;i++){
+            if(list[i] == wxId){
+                return true;
+            }
+        }
+        return false;
     },
     initList(list){
 
