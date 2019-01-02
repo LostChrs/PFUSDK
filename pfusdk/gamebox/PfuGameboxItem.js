@@ -60,6 +60,7 @@ cc.Class({
         return false;
     },
     onBtnClick(){
+        if(!this._data)return;
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             let info = this._data;
             let gaid = PfuSdk.Instance.getGAID(info.link);

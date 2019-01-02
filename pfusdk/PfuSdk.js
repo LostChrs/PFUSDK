@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.2.4";
+const VERSION = "0.2.5";
 const online = require("PfuOnline");
 const config = require("PfuConfig");
 
@@ -20,7 +20,6 @@ const PfuSdk = cc.Class({
         uid: "",
         pfuUserInfo: null,
         bannerAd: null,
-        videoAd: null,
         videoAdSuccessCb: null,
         reliveCb: null,
         mScreenRatio: 0,
@@ -63,7 +62,6 @@ const PfuSdk = cc.Class({
         this.requestOnlineParams();
         this._loginCount = 0;//尝试登录次数
         this.login();
-        this.initAds();
         this.initShare();
 
         //用户时长
@@ -125,7 +123,6 @@ const PfuSdk = cc.Class({
     },
     onAppHide(launchOptions) {
         //记录一次游玩的时间
-        //this.recordPlayTime();
     },
 
     recordPlayTime() {
@@ -278,10 +275,6 @@ const PfuSdk = cc.Class({
     },
     checkOrderList() {
         return;
-        //支付列表
-        online.pfuGetUserOrderList(PfuSdk.loginId, PfuSdk.loginToken, (data) => {
-            this.log("支付列表:" + JSON.stringify(data));
-        });
     },
     start() {
 
@@ -609,60 +602,21 @@ const PfuSdk = cc.Class({
         }
     },
 
-    //广告
-    initAds() {
-        if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
-        let self = this;
-        //视频广告
-        if (config.videoId != "") {
-            let videoAd = wx.createRewardedVideoAd({
-                adUnitId: config.videoId
-            });
-            PfuSdk.videoAd = videoAd;
-            PfuSdk.videoAd.load();
-            PfuSdk.videoAd.onError(err => {
-                self.log("ShowVideo onError:" + JSON.stringify(err));
-            })
-        }
-    },
-
-    showAdsPlacement(placementId, cb) {
-        let self = this;
-        if (placementId) {
-            let videoAd = wx.createRewardedVideoAd({
-                adUnitId: placementId
-            });
-            videoAd.load()
-                .then(() => {
-                    if (cb) cb(true);
-                }).catch(err => {
-                    if (cb) cb(false);
-                });
-            PfuSdk.videoAd = videoAd;
-        }
-    },
-
     loadAds(cb, placementId) {
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb(true);
             return;
         }
-        if (placementId) {
-            this.showAdsPlacement(placementId, cb);
-        } else {
-            if (PfuSdk.videoAd) {
-                PfuSdk.videoAd.load()
-                    .then(() => {
-                        if (cb) cb(true);
-                    }).catch(err => {
-                        if (cb) cb(false);
-                    });
-            } else {
+
+        let videoAd = wx.createRewardedVideoAd({
+            adUnitId: placementId
+        });
+        videoAd.load()
+            .then(() => {
+                if (cb) cb(true);
+            }).catch(err => {
                 if (cb) cb(false);
-            }
-
-        }
-
+            });
     },
     /*
     * 进入界面时主动刷新banner,能否刷新成功由函数内部判断
@@ -678,7 +632,6 @@ const PfuSdk = cc.Class({
     },
 
     createBanner() {
-        if (config.bannerId == "") return;
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         if (config.bannerId == "") return;
         let self = this;
@@ -761,85 +714,84 @@ const PfuSdk = cc.Class({
         let self = this;
         let cb = obj.success || null;
         let failCb = obj.fail || null;
-        let placementId = obj.videoPlacement || null;
+        let placementId = obj.videoPlacement || config.videoId;
         let justWatch = obj.justWatch || false;
 
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
         } else {
-            if(!placementId && config.videoId == ""){
+            if (!placementId || placementId == "") {
                 this.showTips("视频暂未开放");
                 return;
             }
-            if (placementId) {
-                this.showAdsPlacement(placementId);
-            }
+            let videoAd = wx.createRewardedVideoAd({
+                adUnitId: placementId
+            });
 
-            if (PfuSdk.videoAd) {
-                PfuSdk.videoAdSuccessCb = cb;
-                PfuSdk.videoAd.onClose(res => {
-                    self._resetBannerState();
-                    if (res && res.isEnded) {
-                        // 正常播放结束，可以下发游戏奖励
-                        online.pfuGAVideo(GAType.VideoFinished, PfuSdk.loginToken);
-                        if (PfuSdk.videoAdSuccessCb) {
-                            PfuSdk.videoAdSuccessCb();
-                            PfuSdk.videoAdSuccessCb = null;
-                        }
-
-                        self._shareFlag = false;
+            PfuSdk.videoAdSuccessCb = cb;
+            videoAd.onClose(res => {
+                self._resetBannerState();
+                if (res && res.isEnded) {
+                    // 正常播放结束，可以下发游戏奖励
+                    online.pfuGAVideo(GAType.VideoFinished, PfuSdk.loginToken);
+                    if (PfuSdk.videoAdSuccessCb) {
+                        PfuSdk.videoAdSuccessCb();
+                        PfuSdk.videoAdSuccessCb = null;
                     }
-                    else {
-                        // 播放中途退出，不下发游戏奖励
-                        if (failCb) failCb();
-                    }
+                    self._shareFlag = false;
+                }
+                else {
+                    // 播放中途退出，不下发游戏奖励
+                    if (failCb) failCb();
+                }
 
-                });
+            });
 
-                PfuSdk.videoAd.onError(err => {
-                    self.log("ShowVideo onError:" + JSON.stringify(err));
+            videoAd.onError(err => {
+                self.log("ShowVideo onError:" + JSON.stringify(err));
 
-                    self._resetBannerState();
-                    //非审核模式下播放视频失败，会走分享
-                    if (!online.isTestMode()) {
-                        self.showShare({
-                            success: cb,
-                            fail: failCb
-                        });
-                    } else {
-                        if (failCb) failCb();
-                    }
-                });
-                const playVideo = () => {
-                    PfuSdk.videoAd.show().then(() => {
-                        //隐藏banner
-                        if (PfuSdk.bannerAd) {
-                            PfuSdk.bannerAd.hide();
-                        }
+                self._resetBannerState();
+                //非审核模式下播放视频失败，会走分享
+                if (!online.isTestMode()) {
+                    self.showShare({
+                        success: cb,
+                        fail: failCb
                     });
-                };
+                } else {
+                    if (failCb) failCb();
+                }
+            });
+            const playVideo = () => {
+                videoAd.show().then(() => {
+                    //隐藏banner
+                    if (PfuSdk.bannerAd) {
+                        PfuSdk.bannerAd.hide();
+                    }
+                });
+            };
 
-                const state = this.getShareState();
-                PfuSdk.videoAd.load().then(() => {
-                    if (!justWatch && !this.isTestMode() && self._shareFlag == false && state != 0) {
-                        if (state == 1) {
-                            self.showShare({
-                                success: () => {
-                                    playVideo();
-                                },
-                                fail: failCb
-                            })
-                        } else if (state == 2) {
-                            self.showShare({ success: () => { } });
-                            playVideo();
-                        }
-
-                    } else {
+            const state = this.getShareState();
+            videoAd.load().then(() => {
+                if (!justWatch && !this.isTestMode() && self._shareFlag == false && state != 0) {
+                    if (state == 1) {
+                        self.showShare({
+                            success: () => {
+                                playVideo();
+                            },
+                            fail: failCb
+                        })
+                    } else if (state == 2) {
+                        self.showShare({ success: () => { } });
                         playVideo();
                     }
 
-                });
-            }
+                } else {
+                    playVideo();
+                }
+
+            });
+
+
         }
     },
     getShareState() {

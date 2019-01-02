@@ -65,6 +65,7 @@ var pfuOnline = {
         }
     },
     isTestMode(){
+      if(!this.wechatparam)return true;
       return  this.wechatparam.pfuSdkTestMode && this.wechatparam.pfuSdkTestMode == "1";
     },
 
