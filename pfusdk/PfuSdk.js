@@ -516,10 +516,11 @@ const PfuSdk = cc.Class({
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             wx.getSystemInfo({
                 success: function (res) {
+                    console.log(JSON.stringify(res));
                     self._wxWidth = res.windowWidth;
                     let r = res.windowWidth / cc.winSize.width;
                     self._wxRatio = r;
-                    self._wxHeight = r * cc.winSize.height;
+                    self._wxHeight = res.windowHeight;
                     if (config.bannerId != "") {
                         self.createBanner();
                     }
