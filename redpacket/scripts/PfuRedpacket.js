@@ -1,7 +1,7 @@
 const PfuSdk = require("PfuSdk");
 const PfuEvent = require("PfuEventSystem").Event;
 const EventType = require("PfuEventSystem").Type;
-const moneyList = [1.15,1.3,0.8,0.2,0.35,0.2,0.51];
+const moneyList = [1.15,1.05,0.5,0.2,0.35,0.2,0.41];
 var PfuRedpacket = cc.Class({
     extends: cc.Component,
     statics:{
@@ -76,10 +76,10 @@ var PfuRedpacket = cc.Class({
             let num = this._gotRedNum;
             let money = 0;
             if(num < 20){
-                money = Math.random()*0.4;
+                money = Math.random()*0.3;
                 if(money<0.1)money = 0.12;
             }else{
-                money = Math.random()*0.2;
+                money = Math.random()*0.15;
                 if(money<0.03)money = 0.03;
             }
             //随机金额
