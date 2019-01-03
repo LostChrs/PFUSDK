@@ -878,7 +878,7 @@ const PfuSdk = cc.Class({
                 } else {
                     condition1 = this.checkDirectJump(item.boxId);
                 }
-                let condition2 = (item.link && item.link != "");
+                let condition2 = false;// (item.link && item.link != "");
                 if (condition1 || condition2) {
                     if (item.position === "0") {
                         this._moreGameListLeft.push(item);
