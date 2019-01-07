@@ -50,7 +50,9 @@ cc.Class({
             let condition2 = (item.qrcodelink&&item.qrcodelink != "");
             let condition3 = this.checkDirectJump(item.jumpId);
             if(condition1 || condition2 || condition3){
-                jumpList.push(item);
+                if(item.wechatGameid != config.wxId){
+                    jumpList.push(item);
+                }
             }
         });
         return jumpList;
