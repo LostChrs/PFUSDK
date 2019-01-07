@@ -125,6 +125,10 @@ const PfuSdk = cc.Class({
         //记录一次游玩的时间
     },
 
+    getPlayTime(){
+        return this._userPlayTime;
+    },
+
     recordPlayTime() {
         const playTime = Math.abs(this.getDiffFromNow(this._playTimeTs));
         //this.log("记录游玩时间--->" + playTime + ",当前游玩总时长:" + this._userPlayTime);
