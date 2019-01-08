@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.2.5";
+const VERSION = "0.2.6";
 const online = require("PfuOnline");
 const config = require("PfuConfig");
 
@@ -648,17 +648,17 @@ const PfuSdk = cc.Class({
     /*
     * 进入界面时主动刷新banner,能否刷新成功由函数内部判断
     */
-    refreshBanner() {
+    refreshBanner(failCb) {
         if (PfuSdk.bannerAd == null) return;
         if (this._bannerRefreshCount > this._maxBannerRefreshCount) return;
 
         let sec = this.getDiffFromNow(this._bannerLastTs);
         if (Math.abs(sec) >= this._minBannerRefreshTime) {
-            this.createBanner();
+            this.createBanner(failCb);
         }
     },
 
-    createBanner() {
+    createBanner(failCb) {
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         if (config.bannerId == "") return;
         let self = this;
@@ -702,6 +702,7 @@ const PfuSdk = cc.Class({
 
         bannerAd.onError(err => {
             this.log("Banner onError:" + JSON.stringify(err));
+            if(failCb)failCb();
         })
 
         PfuSdk.bannerAd = bannerAd;
