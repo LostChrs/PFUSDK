@@ -1,5 +1,6 @@
 ### v0.2.6
 * 增加了banner刷新失败的回调 `refreshBanner(failCb)`,用于处理没有Banner的情况
+* 增加了获取用户时长的接口 `getPlayTime`
 ### v0.2.4
 * 修改了交叉推广跳转逻辑
 * 添加了分享失败弹窗文字的后台控制
