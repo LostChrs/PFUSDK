@@ -208,6 +208,26 @@ const PfuSdk = cc.Class({
             this.resetDailyTask();
         }
 
+        const shareConfirm = ()=>{
+            this.showModel("提示", "有群友点击即可获得奖励，是否分享更多群？", "确定", "取消", () => {
+                this.showShare({
+                    success: this._shareCb,
+                    fail: this._shareFailCb
+                })
+            }, () => {
+                if (this._shareCb) {
+                    this._shareCb();
+                    this._hadShareFinish = false;
+                }
+            });
+        };
+
+        if(this._hadShareFinish && this._startShare){
+            this._startShare = false;
+            shareConfirm();
+            return;
+        }
+
         if (this._startShare) {
             this._startShare = false;
             if (!this.isTestMode()) {
@@ -216,7 +236,9 @@ const PfuSdk = cc.Class({
                 if (needTime >= 5) needTime = 5;
                 if (Math.abs(ts) > needTime) {
                     if (this._shareCb) {
-                        this._shareCb();
+                        this._hadShareFinish = true;
+                        shareConfirm();
+
                         this._shareFlag = true;
                         this._successShareCount++;
                         this._shareNum++;
@@ -245,7 +267,7 @@ const PfuSdk = cc.Class({
                 }
             }
             // this._shareCb = null;
-            this._shareFailCb = null;
+            // this._shareFailCb = null;
         }
     },
     bannerReliveSuccess() {
@@ -795,8 +817,6 @@ const PfuSdk = cc.Class({
                 }
 
             });
-
-
         }
     },
     getShareState() {
