@@ -53,6 +53,7 @@ const PfuSdk = cc.Class({
 
         this._shareTitle1 = "分享到群才行哦";
         this._shareTitle2 = "请分享到不同的群哦~";
+        this._shareTitle3 = "有群友点击即可获得奖励，是否分享更多群？";
         this._inviteFriendInfoList = this.getItem("inviteFriendInfoList");
         if (!this._inviteFriendInfoList) {
             this._inviteFriendInfoList = [];
@@ -209,7 +210,7 @@ const PfuSdk = cc.Class({
         }
 
         const shareConfirm = ()=>{
-            this.showModel("提示", "有群友点击即可获得奖励，是否分享更多群？", "确定", "取消", () => {
+            this.showModel("提示", this._shareTitle3, "确定", "取消", () => {
                 this.showShare({
                     success: this._shareCb,
                     fail: this._shareFailCb
@@ -248,12 +249,12 @@ const PfuSdk = cc.Class({
                 } else {
                     if (this._shareCb) {
                         let shareContent = "";
-                        if (this._successShareCount < this._preShareCountMax) {
+                        if (Math.abs(ts) < this._preShareCountMax) {
                             shareContent = this._shareTitle1;
                         } else {
                             shareContent = this._shareTitle2;
                         }
-                        this.showModel("分享失败", shareContent, "继续", "放弃", () => {
+                        this.showModel("提示", shareContent, "继续", "放弃", () => {
                             this.showShare({
                                 success: this._shareCb,
                                 fail: this._shareFailCb
@@ -498,6 +499,7 @@ const PfuSdk = cc.Class({
             self._preShareCountMax = parseInt(online.wechatparam.pfuSdkShareCount);
             self._shareTitle1 = online.wechatparam.pfuSdkShare1;
             self._shareTitle2 = online.wechatparam.pfuSdkShare2;
+            self._shareTitle3 = online.wechatparam.pfuSdkShare3;
             self._maxBannerRefreshCount = parseInt(online.wechatparam.pfuSdkBannerCount);
             self._minBannerRefreshTime = parseInt(online.wechatparam.pfuSdkBannerMin);//sec
             self._controlPlayTime = parseInt(online.wechatparam.pfuSdkPlayTime);//min 控制某些功能开关
