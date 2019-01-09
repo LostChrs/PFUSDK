@@ -445,6 +445,15 @@ const PfuSdk = cc.Class({
             this.tryRefreshBanner();
         }
     },
+    //从左上角为原点的cocos坐标值 y
+    getBannerTop(){
+        if(PfuSdk.bannerAd){
+            const y = PfuSdk.bannerAd.style.top / this._wxRatio;
+            return y;
+        }
+
+        return cc.winSize.height - 200;
+    },
     createUI(pb) {
         let root = this.node.parent;
         if (root) {
@@ -663,6 +672,7 @@ const PfuSdk = cc.Class({
     createBanner(failCb) {
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         if (config.bannerId == "") return;
+        this.log("创建banner....");
         let self = this;
         if (PfuSdk.bannerAd != null) {
             PfuSdk.bannerAd.destroy();
