@@ -16,11 +16,15 @@ cc.Class({
         desGetMoney:cc.Node,//已存入余额
         lbCloseDes:cc.Label,
         btnOpenNode:cc.Node,
+        lbDes:cc.Label,
     },
 
-    show(type,num){
+    show(type,num,des){
         this._type = type;
         this._num = num;
+        if(des){
+            this.lbDes.string = des;
+        }
 
         if(type == PageType.OPEN){
             this.openPage.active = true;

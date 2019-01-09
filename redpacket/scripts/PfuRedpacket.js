@@ -69,7 +69,7 @@ var PfuRedpacket = cc.Class({
     //显示红包  type  des pageOpen pageClose
     showRedpacket(obj = {}){
         const type = obj.type || "Watch";
-        const des = obj.des || "";
+        const des = obj.des || null;
         const pageOpen = obj.pageOpen || null;
         this._pageCloseCb = obj.pageClose || null;
         if(this._canShowRedpacket()){
@@ -87,7 +87,7 @@ var PfuRedpacket = cc.Class({
             this.setItem("pfuGotRedNum",this._gotRedNum);
             money = money.toFixed(2);
             if(pageOpen)pageOpen();
-            this.showRedpacketInfo(type,money);
+            this.showRedpacketInfo(type,money,des);
         }
     },
     //是否可以显示红包
@@ -158,10 +158,10 @@ var PfuRedpacket = cc.Class({
             ui.getComponent("PfuRedpacketLoginGift").show(moneyList);
         }
     },
-    showRedpacketInfo(type,num){
+    showRedpacketInfo(type,num,des){
         let ui = this.createUI(this.pbRedpacketInfo);
         if(ui){
-            ui.getComponent("PfuRedpacketInfo").show(type,num);
+            ui.getComponent("PfuRedpacketInfo").show(type,num,des);
         }
     },
     createUI(pb){
