@@ -453,7 +453,7 @@ const PfuSdk = cc.Class({
     //从左上角为原点的cocos坐标值 y
     getBannerTop(){
         
-        if(PfuSdk.bannerAd){
+        if(this._haveBanner){
             const r = this._wxHeight/cc.winSize.height;
             const y = PfuSdk.bannerAd.style.top / r;
             return y;
@@ -688,6 +688,8 @@ const PfuSdk = cc.Class({
             if (!this._bannerHideState) {
                 this._bannerRefreshCount += 1;
                 this.getItem("pfuBannerRefreshCount", this._bannerRefreshCount);
+            }else{
+                return;
             }
         }
         this._bannerLastTs = this.getNowTimestamp();
@@ -708,6 +710,7 @@ const PfuSdk = cc.Class({
                 width: this._wxWidth
             }
         });
+        this._haveBanner = true;
         bannerAd.onResize(size => {
             if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
                 bannerAd.style.width = this._wxWidth * designSizeH / size.height;
@@ -722,6 +725,7 @@ const PfuSdk = cc.Class({
 
         bannerAd.onError(err => {
             this.log("Banner onError:" + JSON.stringify(err));
+            this._haveBanner = false;
             if(failCb)failCb();
         })
 
