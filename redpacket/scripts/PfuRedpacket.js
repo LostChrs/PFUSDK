@@ -50,6 +50,8 @@ var PfuRedpacket = cc.Class({
             //根据在线参数隐藏功能
             PfuEvent.send(EventType.RedpacketBtnHide);
         });
+
+       // this.test();
     },
     //显示红包  type  des pageOpen pageClose
     showRedpacket(obj = {}){
@@ -82,6 +84,29 @@ var PfuRedpacket = cc.Class({
             if(pageOpen)pageOpen();
             this.showRedpacketInfo(type,money,des);
         }
+    },
+
+    test(){
+        let m = 0;
+        for(let day = 1;day <30;day++){
+            for(let count = 0;count<5;count++){
+                let max = 0.2;
+                let min = 0.01;
+                if(day < 6 && count == 0){
+                    //首次最大
+                    max = 1.4 - 0.1*day;
+                    min = max - 0.3;
+                }else if(day < 6 && count < 5){
+                    max = 0.5 - count*0.06;
+                    min = max - 0.1;
+                }else{
+                    max = 0.03;
+                    min = 0.01;
+                }
+                m += +this.getRandom(min,max);
+            }
+        }
+        console.log("测试:"+m);
     },
 
     getRandom(begin,end){
