@@ -1,5 +1,5 @@
 //PfuSdk 
-const VERSION = "0.2.6";
+const VERSION = "0.2.7";
 const online = require("PfuOnline");
 const config = require("PfuConfig");
 
@@ -109,6 +109,11 @@ const PfuSdk = cc.Class({
         this.setItem("pfuSdkSuccessShareCount", 0);
 
         this.setItem("pfuRedpacketGive", false);//每日简单的重置状态
+        //红包领取天数
+        let redDay = this.getItem("pfuRedpacketDay",0);
+        this.setItem("pfuRedpacketDay",redDay+1);
+        //每日领取次数
+        this.setItem("pfuRedpacketDailyCount",0);
 
         this.setItem("bannerReliveCount", 0);
 

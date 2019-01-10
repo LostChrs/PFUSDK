@@ -22,7 +22,6 @@ cc.Class({
     },
 
     onRedpacketBtnClick(){
-
         PfuEvent.send(EventType.RedpacketBtnClick);
     },
 

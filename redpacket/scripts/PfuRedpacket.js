@@ -27,27 +27,12 @@ var PfuRedpacket = cc.Class({
         }
         this._ownMoney = parseFloat(this.getItem("pfuRedpacketMoney",0)) ;
 
-        //单独记录主动弹出红包金额，未领取双倍的奖励会返回奖金池
-        this._randomMoney = parseFloat(this.getItem("pfuRandomMoney",0));
         //记录获得的红包次数
         this._gotRedNum = this.getItem("pfuGotRedNum",0);
         cc.game.on(cc.game.EVENT_SHOW, function () {
             self.onAppShow();
         });
-        //存储奖励倍数
-        this._loginGiftInfo = this.getItem("pfuRedpacketGiftInfo");
-        if(!this._loginGiftInfo){
-            this._loginGiftInfo = [];
-            for(let i=0;i<7;i++){
-                this._loginGiftInfo.push(1);
-            }
 
-            this.setItem("pfuRedpacketGiftInfo",this._loginGiftInfo);
-        }
-
-        for(let i=0;i<7;i++){
-            moneyList[i] *= this._loginGiftInfo[i];
-        }
 
         PfuEvent.register(EventType.RedpacketBtnClick,this.evtRedpacketBtnClick,this);
     },
@@ -73,23 +58,36 @@ var PfuRedpacket = cc.Class({
         const pageOpen = obj.pageOpen || null;
         this._pageCloseCb = obj.pageClose || null;
         if(this._canShowRedpacket()){
-            let num = this._gotRedNum;
-            let money = 0;
-            if(num < 20){
-                money = Math.random()*0.3;
-                if(money<0.1)money = 0.12;
+            let day = this.getCurDay();
+            let count = this.getDailyCount();
+            let max = 0.2;
+            let min = 0.01;
+            if(day < 4 && count == 0){
+                //首次最大
+                max = 1.4 - 0.2*day;
+                min = max - 0.3;
+            }else if(day < 4 && count < 5){
+                max = 0.5 - count*0.06;
+                min = max - 0.1;
             }else{
-                money = Math.random()*0.15;
-                if(money<0.03)money = 0.03;
+                max = 0.03;
+                min = 0.01;
             }
-            //随机金额
-            this._gotRedNum++;
-            this.setItem("pfuGotRedNum",this._gotRedNum);
-            money = money.toFixed(2);
+            this.log(min+","+max);
+            this.log("count:"+count+",day:"+day);
+            let money = this.getRandom(min,max);
+            if(count > 15){
+                money = 0.01;
+            }
             if(pageOpen)pageOpen();
             this.showRedpacketInfo(type,money,des);
         }
     },
+
+    getRandom(begin,end){
+        return (Math.random()*(end-begin) + begin).toFixed(2);
+    },
+
     //是否可以显示红包
     IsRedpacket(){
         return this._canShowRedpacket();
@@ -112,16 +110,16 @@ var PfuRedpacket = cc.Class({
     getDay(){
         return this.getItem("pfuRedpacketDay",1);
     },
-
+    //每天减1毛   
     //计算可以领取的上限
     getMaxNum(){
-        const day = this.getDay();//已经领取的天数
-        let remain = 0;//保留的钱
-        for(let i=day-1;i<7;i++){
-           remain += (moneyList[i]*2);
-        }
+        // const day = this.getDay();//已经领取的天数
+        // let remain = 0;//保留的钱
+        // for(let i=day-1;i<7;i++){
+        //    remain += (moneyList[i]*2);
+        // }
 
-        return 19.5 - remain;
+        return 19.5;
     },
 
     onGetReward(num){
@@ -141,15 +139,7 @@ var PfuRedpacket = cc.Class({
     },
 
     evtRedpacketBtnClick(self){
-        let isGive = self.getItem("pfuRedpacketGive",false);
-        self.log("七天已经领取:"+isGive+",当前领取天数："+self.getDay());
-        if(isGive || self.getDay() > 7){
-            //显示红包当前余额
-            self.showRedpacketInfo("Open");
-        }else{
-            //显示登录礼包
-            self.showRedpacketLoginGift();
-        }
+        self.showRedpacketInfo("Open");
     },
     //ui
     showRedpacketLoginGift(){
@@ -183,8 +173,8 @@ var PfuRedpacket = cc.Class({
         this.setItem("pfuRedpacketMoney",this._ownMoney);
 
         if(isRandom){
-            this._randomMoney += parseFloat(num);
-            this.setItem("pfuRandomMoney",this._randomMoney);
+            let count = this.getDailyCount();
+            this.setItem("pfuRedpacketDailyCount",count+1);
         }
 
         this.msgStateChange();
@@ -199,6 +189,13 @@ var PfuRedpacket = cc.Class({
     },
     msgStateChange(){
         PfuEvent.send(EventType.RedpacketStateChange);
+    },
+
+    getCurDay(){
+        return parseInt(this.getItem("pfuRedpacketDay",1));
+    },
+    getDailyCount(){
+        return parseInt(this.getItem("pfuRedpacketDailyCount",0));
     },
 
     //common

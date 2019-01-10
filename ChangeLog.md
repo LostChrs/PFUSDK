@@ -1,3 +1,6 @@
+### v0.2.7
+* 修改了红包的金额规则(去掉了登陆红包)
+* 提供了活动banner坐标的方法`getBannerTop`,用来适配UI紧贴Banner的情况
 ### v0.2.6
 * 增加了banner刷新失败的回调 `refreshBanner(failCb)`,用于处理没有Banner的情况
 * 增加了获取用户时长的接口 `getPlayTime`
