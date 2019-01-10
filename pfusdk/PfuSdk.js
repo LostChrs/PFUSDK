@@ -739,7 +739,7 @@ const PfuSdk = cc.Class({
     tryRefreshBanner() {
         if (this._refreshBannerTime) {
             this.unschedule(this.createBanner);
-            if (this._bannerRefreshCount <= this._maxBannerRefreshCount) {
+            if (this._bannerRefreshCount < this._maxBannerRefreshCount) {
                 this.scheduleOnce(this.createBanner, this._refreshBannerTime);
             }
         }
