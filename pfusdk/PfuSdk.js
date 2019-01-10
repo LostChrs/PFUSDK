@@ -447,8 +447,10 @@ const PfuSdk = cc.Class({
     },
     //从左上角为原点的cocos坐标值 y
     getBannerTop(){
+        
         if(PfuSdk.bannerAd){
-            const y = PfuSdk.bannerAd.style.top / this._wxRatio;
+            const r = this._wxHeight/cc.winSize.height;
+            const y = PfuSdk.bannerAd.style.top / r;
             return y;
         }
 
@@ -558,6 +560,7 @@ const PfuSdk = cc.Class({
                     let r = res.windowWidth / cc.winSize.width;
                     self._wxRatio = r;
                     self._wxHeight = res.windowHeight;
+                    self._wxHeightRation = res.windowHeight/cc.winSize.height;
                     if (config.bannerId != "") {
                         self.createBanner();
                     }
