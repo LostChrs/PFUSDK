@@ -669,7 +669,7 @@ const PfuSdk = cc.Class({
     */
     refreshBanner(failCb) {
         if (PfuSdk.bannerAd == null) return;
-        if (this._bannerRefreshCount > this._maxBannerRefreshCount) return;
+        if (this._bannerRefreshCount >= this._maxBannerRefreshCount) return;
 
         let sec = this.getDiffFromNow(this._bannerLastTs);
         if (Math.abs(sec) >= this._minBannerRefreshTime) {
@@ -683,9 +683,10 @@ const PfuSdk = cc.Class({
         this.log("创建banner....");
         let self = this;
         if (PfuSdk.bannerAd != null) {
-            PfuSdk.bannerAd.destroy();
+            
             //banner隐藏时不增加刷新次数
             if (!this._bannerHideState) {
+                PfuSdk.bannerAd.destroy();
                 this._bannerRefreshCount += 1;
                 this.getItem("pfuBannerRefreshCount", this._bannerRefreshCount);
             }else{
