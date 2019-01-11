@@ -669,10 +669,13 @@ const PfuSdk = cc.Class({
     */
     refreshBanner(failCb) {
         if (PfuSdk.bannerAd == null) return;
+
         if (this._bannerRefreshCount >= this._maxBannerRefreshCount) return;
 
         let sec = this.getDiffFromNow(this._bannerLastTs);
+        //this.log("refreshBanner...."+this._bannerRefreshCount+"/"+this._maxBannerRefreshCount+"==>sec:"+Math.abs(sec));
         if (Math.abs(sec) >= this._minBannerRefreshTime) {
+            
             this.createBanner(failCb);
         }
     },
@@ -680,7 +683,7 @@ const PfuSdk = cc.Class({
     createBanner(failCb) {
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         if (config.bannerId == "") return;
-        this.log("创建banner....");
+        
         let self = this;
         if (PfuSdk.bannerAd != null) {
             
@@ -688,7 +691,8 @@ const PfuSdk = cc.Class({
             if (!this._bannerHideState) {
                 PfuSdk.bannerAd.destroy();
                 this._bannerRefreshCount += 1;
-                this.getItem("pfuBannerRefreshCount", this._bannerRefreshCount);
+                //this.log("刷新Banner...."+this._bannerRefreshCount);
+                this.setItem("pfuBannerRefreshCount", this._bannerRefreshCount);
             }else{
                 return;
             }
@@ -702,7 +706,7 @@ const PfuSdk = cc.Class({
         if (this.isIphoneX()) {
             offY = config.bannerOffYForIpx ? config.bannerOffYForIpx : 1;
         }
-
+        this.log("重新创建了Banner");
         let bannerAd = wx.createBannerAd({
             adUnitId: config.bannerId,
             style: {
