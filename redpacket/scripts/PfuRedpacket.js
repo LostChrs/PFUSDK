@@ -64,20 +64,20 @@ var PfuRedpacket = cc.Class({
             let count = this.getDailyCount();
             let max = 0.2;
             let min = 0.01;
-            if(day < 4 && count == 0){
+            if(day < 6 && count == 0){
                 //首次最大
-                max = 1.4 - 0.2*day;
+                max = 1.4 - 0.1*day;
                 min = max - 0.3;
-            }else if(day < 4 && count < 5){
+            }else if(day < 6 && count < 5){
                 max = 0.5 - count*0.06;
                 min = max - 0.1;
             }else{
                 max = 0.03;
                 min = 0.01;
             }
-            this.log(min+","+max);
-            this.log("count:"+count+",day:"+day);
-            let money = this.getRandom(min,max);
+            // this.log(min+","+max);
+            // this.log("count:"+count+",day:"+day);
+            let money = +this.getRandom(min,max);
             if(count > 15){
                 money = 0.01;
             }
