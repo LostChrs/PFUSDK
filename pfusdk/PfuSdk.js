@@ -776,6 +776,10 @@ const PfuSdk = cc.Class({
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
         } else {
+            if(this.isTestMode()){
+                if (cb) cb();
+                return;
+            }
             if (!placementId || placementId == "") {
                 this.showTips("视频暂未开放");
                 return;
