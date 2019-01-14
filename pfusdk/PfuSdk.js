@@ -10,6 +10,8 @@ const GAType = cc.Enum({
     ShareNum: 8
 });
 
+let jumpBoxId = "";
+
 const PfuSdk = cc.Class({
     extends: cc.Component,
     statics: {
@@ -27,6 +29,7 @@ const PfuSdk = cc.Class({
     properties: {
         executionOrder: -1000,
         pbBannerRelive: cc.Prefab,
+        pbLandingPage: cc.Prefab,
     },
     onLoad() {
         if (PfuSdk.Instance == null) {
@@ -110,10 +113,10 @@ const PfuSdk = cc.Class({
 
         this.setItem("pfuRedpacketGive", false);//每日简单的重置状态
         //红包领取天数
-        let redDay = this.getItem("pfuRedpacketDay",0);
-        this.setItem("pfuRedpacketDay",redDay+1);
+        let redDay = this.getItem("pfuRedpacketDay", 0);
+        this.setItem("pfuRedpacketDay", redDay + 1);
         //每日领取次数
-        this.setItem("pfuRedpacketDailyCount",0);
+        this.setItem("pfuRedpacketDailyCount", 0);
 
         this.setItem("bannerReliveCount", 0);
 
@@ -131,7 +134,7 @@ const PfuSdk = cc.Class({
         //记录一次游玩的时间
     },
 
-    getPlayTime(){
+    getPlayTime() {
         return this._userPlayTime;
     },
 
@@ -145,16 +148,19 @@ const PfuSdk = cc.Class({
     },
     onAppShow(launchOptions) {
         let self = this;
+        if (!launchOptions) {
+            if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+                launchOptions = wx.getLaunchOptionsSync();
+            }
+        }
         if (launchOptions) {
             this.log("场景值:" + launchOptions.scene);
             if (launchOptions.scene == 1037 || launchOptions.scene == 1038) {
-                if (launchOptions.referrerInfo && launchOptions.referrerInfo.extraData) {
+                if (launchOptions.referrerInfo && launchOptions.referrerInfo.appId == jumpBoxId) {
                     //复活
                     if (PfuSdk.reliveCb) {
-                        if (launchOptions.referrerInfo.extraData.relive) {
-                            PfuSdk.reliveCb();
-                            PfuSdk.reliveCb = null;
-                        }
+                        PfuSdk.reliveCb();
+                        PfuSdk.reliveCb = null;
                     }
                 }
             }
@@ -214,7 +220,7 @@ const PfuSdk = cc.Class({
             this.resetDailyTask();
         }
 
-        const shareConfirm = ()=>{
+        const shareConfirm = () => {
             this.showModel("提示", this._shareTitle3, "确定", "取消", () => {
                 this.showShare({
                     success: this._shareCb,
@@ -228,7 +234,7 @@ const PfuSdk = cc.Class({
             });
         };
 
-        if(this._hadShareFinish && this._startShare){
+        if (this._hadShareFinish && this._startShare) {
             this._startShare = false;
             shareConfirm();
             return;
@@ -440,6 +446,11 @@ const PfuSdk = cc.Class({
         }
     },
 
+    showLandingPage(info) {
+        let ui = this.createUI(this.pbLandingPage);
+        ui.getComponent("PfuLandingPage").show(info);
+    },
+
     resetBannerPos() {
         if (this._bannerPreStyle) {
             //console.log("resetBannerPos");
@@ -451,10 +462,10 @@ const PfuSdk = cc.Class({
         }
     },
     //从左上角为原点的cocos坐标值 y
-    getBannerTop(){
-        
-        if(this._haveBanner){
-            const r = this._wxHeight/cc.winSize.height;
+    getBannerTop() {
+
+        if (this._haveBanner) {
+            const r = this._wxHeight / cc.winSize.height;
             const y = PfuSdk.bannerAd.style.top / r;
             return y;
         }
@@ -539,9 +550,13 @@ const PfuSdk = cc.Class({
             if (online.wechatparam.pfuSdkBoxRelive) {
                 jumpId = online.wechatparam.pfuSdkBoxRelive;
             }
+            jumpBoxId = jumpId;
+            //jumpId = "wx716b36314be3fe89";
             wx.navigateToMiniProgram({
                 appId: jumpId,
                 path: "pages/index/index?pfukey=" + config.wxId + "&pfuRelive=true",
+                extraData: { pfukey: config.wxId, pfuRelive: true },
+                //envVersion:"trial",
                 success(res) {
 
                 },
@@ -565,7 +580,7 @@ const PfuSdk = cc.Class({
                     let r = res.windowWidth / cc.winSize.width;
                     self._wxRatio = r;
                     self._wxHeight = res.windowHeight;
-                    self._wxHeightRation = res.windowHeight/cc.winSize.height;
+                    self._wxHeightRation = res.windowHeight / cc.winSize.height;
                     if (config.bannerId != "") {
                         self.createBanner();
                     }
@@ -673,9 +688,9 @@ const PfuSdk = cc.Class({
         if (this._bannerRefreshCount >= this._maxBannerRefreshCount) return;
 
         let sec = this.getDiffFromNow(this._bannerLastTs);
-       
+
         if (Math.abs(sec) >= this._minBannerRefreshTime) {
-            
+
             this.createBanner(failCb);
         }
     },
@@ -683,16 +698,16 @@ const PfuSdk = cc.Class({
     createBanner(failCb) {
         if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
         if (config.bannerId == "") return;
-        
+
         let self = this;
         if (PfuSdk.bannerAd != null) {
-            
+
             //banner隐藏时不增加刷新次数
             if (!this._bannerHideState) {
                 PfuSdk.bannerAd.destroy();
                 this._bannerRefreshCount += 1;
                 this.setItem("pfuBannerRefreshCount", this._bannerRefreshCount);
-            }else{
+            } else {
                 return;
             }
         }
@@ -730,7 +745,7 @@ const PfuSdk = cc.Class({
         bannerAd.onError(err => {
             this.log("Banner onError:" + JSON.stringify(err));
             this._haveBanner = false;
-            if(failCb)failCb();
+            if (failCb) failCb();
         })
 
         PfuSdk.bannerAd = bannerAd;
@@ -776,7 +791,7 @@ const PfuSdk = cc.Class({
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             if (cb) cb();
         } else {
-            if(this.isTestMode()){
+            if (this.isTestMode()) {
                 if (cb) cb();
                 return;
             }
@@ -1271,6 +1286,13 @@ const PfuSdk = cc.Class({
 
     listenInviteChange(cb) {
         this._inviteChangeCallback = cb;
+    },
+    //世界排行榜
+    sendWorldRankInfo(data,cb){
+        online.sendWorldRankInfo(data,PfuSdk.loginToken,cb);
+    },
+    getWorldRankList(data,cb){
+        online.getWorldRankList(data,PfuSdk.loginToken,cb);
     },
     /*
     * 邀请END

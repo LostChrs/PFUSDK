@@ -14,6 +14,8 @@ const urlGetUserInfoList= "https://info.jfydgame.com/user/1333";
 const urlUploadUserInfo= "https://info.jfydgame.com/user/1801";//上传用户信息
 const urlGAClick = "https://info.jfydgame.com/user/2201";
 const urlGAVideo = "https://info.jfydgame.com/user/2202";
+const urlWorldRank = "https://info.jfydgame.com/user/1327";
+const urlGetWorldRankList = "https://info.jfydgame.com/user/1328";
 const urlGetAdsList = "https://wxhz.jfydgame.com/jfyd_advert_wechat/wxbox";
 //pfuSdkBoxRelive  跳转盒子复活
 var pfuOnline = {
@@ -276,6 +278,23 @@ var pfuOnline = {
             uids:uids,
         };
         msg.sendCommonShare(data,urlGetUserInfoList,loginToken,cb);
+    },
+
+    //世界排行榜
+    sendWorldRankInfo(data,loginToken,cb){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
+        msg.sendCommonShare(data,urlWorldRank,loginToken,cb);
+    },
+
+    getWorldRankList(data,loginToken,cb){
+        if(loginToken == ""){
+            this.errorNoLogin();
+            return;
+        }
+        msg.sendCommonShare(data,urlGetWorldRankList,loginToken,cb);
     },
 
     pfuCheckIOSOrder(orderId,loginToken,cb){
