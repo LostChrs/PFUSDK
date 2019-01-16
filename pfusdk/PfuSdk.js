@@ -516,7 +516,7 @@ const PfuSdk = cc.Class({
     //从左上角为原点的cocos坐标值 y
     getBannerTop() {
         if(this.isIphoneX()){
-            return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx*this._wxRatio;
+            return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx;
         }else{
             return cc.winSize.height - config.bannerHeight;
         }
@@ -783,6 +783,7 @@ const PfuSdk = cc.Class({
         if (this.isIphoneX()) {
             offY = config.bannerOffYForIpx ? config.bannerOffYForIpx : 1;
         }
+        offY = offY*this._wxRatio;
         this.log("重新创建了Banner");
         let bannerAd = wx.createBannerAd({
             adUnitId: config.bannerId,
