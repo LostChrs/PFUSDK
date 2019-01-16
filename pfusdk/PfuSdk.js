@@ -241,39 +241,52 @@ const PfuSdk = cc.Class({
             return;
         }
 
+        const finishShare = ()=>{
+            this._hadShareFinish = true;
+            shareConfirm();
+
+            this._shareFlag = true;
+            this._successShareCount++;
+            this._shareNum++;
+            this.setItem("pfuSdkShareNum", this._shareNum);
+            this.setItem("pfuSdkSuccessShareCount", this._successShareCount);
+        };
+
         if (this._startShare) {
             this._startShare = false;
+            let ts = this.getDiffFromNow(this.getItem("shareTs"));
+            let needTime = (online.shareTime / 1000);
+            if (needTime >= 5) needTime = 5;
             if (!this.isTestMode()) {
                 //检测cancel
                 if(this._pfuSdkRealShare === 1){
                     this.scheduleOnce(()=>{
                         if(!this._isShareCancel){
                             if (this._shareCb) {
-                                this._hadShareFinish = true;
-                                shareConfirm();
-        
-                                this._shareFlag = true;
-                                this._successShareCount++;
-                                this._shareNum++;
-                                this.setItem("pfuSdkShareNum", this._shareNum);
-                                this.setItem("pfuSdkSuccessShareCount", this._successShareCount);
+                               if(Math.abs(ts) < needTime){
+                                    //当做分享失败
+                                    let shareContent = this._shareTitle2;
+                                    this.showModel("提示", shareContent, "继续", "放弃", () => {
+                                        this.showShare({
+                                            success: this._shareCb,
+                                            fail: this._shareFailCb
+                                        })
+                                    }, () => {
+                                        if (this._shareFailCb) {
+                                            this._shareFailCb();
+                                        }
+                                    });
+                               }else{
+                                    finishShare();
+                               }
                             }
                         }
                     },0.1);
                 }else{
-                    let ts = this.getDiffFromNow(this.getItem("shareTs"));
-                    let needTime = (online.shareTime / 1000);
-                    if (needTime >= 5) needTime = 5;
+                    
                     if (Math.abs(ts) > needTime) {
                         if (this._shareCb) {
-                            this._hadShareFinish = true;
-                            shareConfirm();
-    
-                            this._shareFlag = true;
-                            this._successShareCount++;
-                            this._shareNum++;
-                            this.setItem("pfuSdkShareNum", this._shareNum);
-                            this.setItem("pfuSdkSuccessShareCount", this._successShareCount);
+                            finishShare();
                         }
                     } else {
                         if (this._shareCb) {
@@ -307,11 +320,6 @@ const PfuSdk = cc.Class({
             this._isShareCancel = true;
             if (this._shareCb) {
                 let shareContent = this._shareTitle1;
-                // if (Math.abs(ts) < this._preShareCountMax) {
-                //     shareContent = this._shareTitle1;
-                // } else {
-                //     shareContent = this._shareTitle2;
-                // }
                 this.showModel("提示", shareContent, "继续", "放弃", () => {
                     this.showShare({
                         success: this._shareCb,
@@ -506,6 +514,14 @@ const PfuSdk = cc.Class({
     },
     //从左上角为原点的cocos坐标值 y
     getBannerTop() {
+        if(config.bannerType == 1){
+            if(this.isIphoneX()){
+                return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx*this._wxRatio;
+            }else{
+                return cc.winSize.height - config.bannerHeight;
+            }
+            
+        }
 
         if (this._haveBanner) {
             const r = this._wxHeight / cc.winSize.height;
@@ -762,7 +778,7 @@ const PfuSdk = cc.Class({
         this._bannerLastTs = this.getNowTimestamp();
 
         let targetHeight = config.bannerHeight;
-        let designSizeH = this._wxWidth / (cc.winSize.width) * targetHeight;
+        let designSizeH = this._wxRatio * targetHeight;
 
         let offY = 0;
         if (this.isIphoneX()) {
@@ -778,17 +794,25 @@ const PfuSdk = cc.Class({
             }
         });
         this._haveBanner = true;
-        bannerAd.onResize(size => {
-            if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
-                bannerAd.style.width = this._wxWidth * designSizeH / size.height;
-
-            } else {
-                bannerAd.offResize();
-            }
-
-            bannerAd.style.top = self._wxHeight - size.height - offY;
-            bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
-        });
+        if(config.bannerType == 1){
+            console.log("贴顶Banner");
+            bannerAd.onResize(size => {
+                bannerAd.style.top = self._wxHeight - designSizeH - offY;
+                bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
+            });
+        }else{
+            bannerAd.onResize(size => {
+                if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
+                    bannerAd.style.width = this._wxWidth * designSizeH / size.height;
+    
+                } else {
+                    bannerAd.offResize();
+                }
+                bannerAd.style.top = self._wxHeight - size.height - offY;
+                bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
+            });
+        }
+       
 
         bannerAd.onError(err => {
             this.log("Banner onError:" + JSON.stringify(err));
