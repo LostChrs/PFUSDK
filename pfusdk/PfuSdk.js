@@ -610,6 +610,7 @@ const PfuSdk = cc.Class({
             self._bannerType = parseInt(online.wechatparam.pfuSdkBannerMargin);
             self._bannerRelive = parseInt(online.wechatparam.pfuSdkBannerRelive);
             self._refreshBannerTime = parseInt(online.wechatparam.pfuSdkRefresh);
+            self.createBanner();
             self.scheduleOnce(self.createBanner, self._refreshBannerTime);
             if (self._onlineParamsCallback) self._onlineParamsCallback(online.wechatparam);
             if (self._redpacketCallback) self._redpacketCallback();
@@ -670,7 +671,7 @@ const PfuSdk = cc.Class({
                     self._wxHeight = res.windowHeight;
                     self._wxHeightRation = res.windowHeight / cc.winSize.height;
                     if (config.bannerId != "") {
-                        self.createBanner();
+                        
                     }
                 }
             });
@@ -825,7 +826,6 @@ const PfuSdk = cc.Class({
         });
         this._haveBanner = true;
         if(this._bannerType == 1){
-            console.log("贴顶Banner");
             bannerAd.onResize(size => {
                 bannerAd.style.top = self._wxHeight - designSizeH - offY;
                 bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
