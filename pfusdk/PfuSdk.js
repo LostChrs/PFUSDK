@@ -57,6 +57,7 @@ const PfuSdk = cc.Class({
         this._shareTitle1 = "分享到群才行哦";
         this._shareTitle2 = "请分享到不同的群哦~";
         this._shareTitle3 = "有群友点击即可获得奖励，是否分享更多群？";
+        this._bannerType = 1;
         this._pfuSdkRealShare = 1;
         this._inviteFriendInfoList = this.getItem("inviteFriendInfoList");
         if (!this._inviteFriendInfoList) {
@@ -514,22 +515,19 @@ const PfuSdk = cc.Class({
     },
     //从左上角为原点的cocos坐标值 y
     getBannerTop() {
-        if(config.bannerType == 1){
-            if(this.isIphoneX()){
-                return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx*this._wxRatio;
-            }else{
-                return cc.winSize.height - config.bannerHeight;
-            }
-            
+        if(this.isIphoneX()){
+            return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx*this._wxRatio;
+        }else{
+            return cc.winSize.height - config.bannerHeight;
         }
 
-        if (this._haveBanner) {
-            const r = this._wxHeight / cc.winSize.height;
-            const y = PfuSdk.bannerAd.style.top / r;
-            return y;
-        }
+        // if (this._haveBanner) {
+        //     const r = this._wxHeight / cc.winSize.height;
+        //     const y = PfuSdk.bannerAd.style.top / r;
+        //     return y;
+        // }
 
-        return cc.winSize.height - 200;
+        // return cc.winSize.height - 200;
     },
     createUI(pb) {
         let root = this.node.parent;
@@ -592,6 +590,7 @@ const PfuSdk = cc.Class({
             self._controlPlayTime = parseInt(online.wechatparam.pfuSdkPlayTime);//min 控制某些功能开关
             self._dailyPlayTimeLimit = parseInt(online.wechatparam.pfuSdkDailyTime);
 
+            self._bannerType = parseInt(online.wechatparam.pfuSdkBannerMargin);
             self._bannerRelive = parseInt(online.wechatparam.pfuSdkBannerRelive);
             self._refreshBannerTime = parseInt(online.wechatparam.pfuSdkRefresh);
             self.scheduleOnce(self.createBanner, self._refreshBannerTime);
@@ -794,7 +793,7 @@ const PfuSdk = cc.Class({
             }
         });
         this._haveBanner = true;
-        if(config.bannerType == 1){
+        if(this._bannerType == 1){
             console.log("贴顶Banner");
             bannerAd.onResize(size => {
                 bannerAd.style.top = self._wxHeight - designSizeH - offY;
