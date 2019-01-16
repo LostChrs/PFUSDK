@@ -53,6 +53,9 @@ const PfuSdk = cc.Class({
         this._pfuShareSucNum = 1;
         this._pfuCurSucNum = 0;
 
+        this._pfuBoxReliveNum = 3;
+        this._pfuCurReliveNum = this.getItem("pfuCurReliveNum",0);
+
         this._maxBannerRefreshCount = 5;
         this._dailyPlayTimeLimit = 3;
 
@@ -123,6 +126,9 @@ const PfuSdk = cc.Class({
         this.setItem("pfuRedpacketDailyCount", 0);
 
         this.setItem("bannerReliveCount", 0);
+
+        this._pfuCurReliveNum = 0;
+        this.setItem("pfuCurReliveNum",0);
 
         this._bannerRefreshCount = 0;//每日banner刷新次数
         this.setItem("pfuBannerRefreshCount", 0);
@@ -238,25 +244,25 @@ const PfuSdk = cc.Class({
             });
         };
 
-        if (this._hadShareFinish && this._startShare) {
-            this._startShare = false;
-            if(this._pfuCurSucNum >= this._pfuShareSucNum){
-                if (this._shareCb) {
-                    this._shareCb();
-                    this._hadShareFinish = false;
-                }
-            }else{
-                shareConfirm();
-            }
-            return;
-        }
+        // if (this._hadShareFinish && this._startShare) {
+        //     this._startShare = false;
+        //     if(this._pfuCurSucNum >= this._pfuShareSucNum){
+        //         if (this._shareCb) {
+        //             this._shareCb();
+        //             this._hadShareFinish = false;
+        //         }
+        //     }else{
+        //         shareConfirm();
+        //     }
+        //     return;
+        // }
 
         const finishShare = ()=>{
             this._hadShareFinish = true;
-            if(this._pfuCurSucNum < this._pfuShareSucNum){
-                shareConfirm();
-            }
-           
+            // if(this._pfuCurSucNum < this._pfuShareSucNum){
+            //     shareConfirm();
+            // }
+            this._shareCb && this._shareCb();
             this._shareFlag = true;
             this._successShareCount++;
             this._shareNum++;
@@ -338,9 +344,7 @@ const PfuSdk = cc.Class({
                         fail: this._shareFailCb
                     })
                 }, () => {
-                    if (this._shareFailCb) {
-                        this._shareFailCb();
-                    }
+                    this._shareFailCb && this._shareFailCb();
                 });
             }
         }
@@ -597,6 +601,7 @@ const PfuSdk = cc.Class({
             self._shareTitle3 = online.wechatparam.pfuSdkShare3;
             self._pfuShareSucNum =  parseInt(online.wechatparam.pfuSdkShareSucNum);
             self._pfuSdkRealShare =  parseInt(online.wechatparam.pfuSdkRealShare);
+            self._pfuBoxReliveNum = parseInt(online.wechatparam.pfuSdkBoxReliveNum);
             self._maxBannerRefreshCount = parseInt(online.wechatparam.pfuSdkBannerCount);
             self._minBannerRefreshTime = parseInt(online.wechatparam.pfuSdkBannerMin);//sec
             self._controlPlayTime = parseInt(online.wechatparam.pfuSdkPlayTime);//min 控制某些功能开关
@@ -619,22 +624,34 @@ const PfuSdk = cc.Class({
             PfuSdk.reliveCb = cb;
             let jumpId = "wx3e33fef689f472b1";
             if (online.wechatparam.pfuSdkBoxRelive) {
-                jumpId = online.wechatparam.pfuSdkBoxRelive;
-            }
-            jumpBoxId = jumpId;
-            //jumpId = "wx716b36314be3fe89";
-            wx.navigateToMiniProgram({
-                appId: jumpId,
-                path: "pages/index/index?pfukey=" + config.wxId + "&pfuRelive=true",
-                extraData: { pfukey: config.wxId, pfuRelive: true },
-                //envVersion:"trial",
-                success(res) {
-
-                },
-                fail(res) {
-                    PfuSdk.reliveCb = null;
+                if(cc.sys.os === cc.sys.OS_ANDROID){
+                    jumpId = online.wechatparam.pfuSdkBoxRelive;
+                }else{
+                    jumpId = online.wechatparam.pfuSdkBoxReliveIOS;
                 }
-            })
+            }
+            
+            if(this.checkDirectJump(jumpId) && this._pfuCurReliveNum<this._pfuBoxReliveNum){
+                jumpBoxId = jumpId;
+                //jumpId = "wx716b36314be3fe89";
+                wx.navigateToMiniProgram({
+                    appId: jumpId,
+                    path: "pages/index/index?pfukey=" + config.wxId + "&pfuRelive=true",
+                    extraData: { pfukey: config.wxId, pfuRelive: true },
+                    //envVersion:"trial",
+                    success(res) {
+                        this._pfuCurReliveNum++;
+                    },
+                    fail(res) {
+                        PfuSdk.reliveCb = null;
+                    }
+                })
+            }else{
+                this._pfuCurReliveNum++;
+                this.showVideo({
+                    success:cb
+                });
+            }
         } else {
             if (cb) cb();
         }
