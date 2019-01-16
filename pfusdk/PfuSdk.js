@@ -54,7 +54,7 @@ const PfuSdk = cc.Class({
         this._pfuCurSucNum = 0;
 
         this._pfuBoxReliveNum = 3;
-        this._pfuCurReliveNum = this.getItem("pfuCurReliveNum",0);
+        this._pfuCurReliveNum = this.getItem("pfuCurReliveNum", 0);
 
         this._maxBannerRefreshCount = 5;
         this._dailyPlayTimeLimit = 3;
@@ -128,7 +128,7 @@ const PfuSdk = cc.Class({
         this.setItem("bannerReliveCount", 0);
 
         this._pfuCurReliveNum = 0;
-        this.setItem("pfuCurReliveNum",0);
+        this.setItem("pfuCurReliveNum", 0);
 
         this._bannerRefreshCount = 0;//每日banner刷新次数
         this.setItem("pfuBannerRefreshCount", 0);
@@ -257,7 +257,7 @@ const PfuSdk = cc.Class({
         //     return;
         // }
 
-        const finishShare = ()=>{
+        const finishShare = () => {
             this._hadShareFinish = true;
             // if(this._pfuCurSucNum < this._pfuShareSucNum){
             //     shareConfirm();
@@ -277,11 +277,11 @@ const PfuSdk = cc.Class({
             if (needTime >= 5) needTime = 5;
             if (!this.isTestMode()) {
                 //检测cancel
-                if(this._pfuSdkRealShare === 1){
-                    this.scheduleOnce(()=>{
-                        if(!this._isShareCancel){
+                if (this._pfuSdkRealShare === 1) {
+                    this.scheduleOnce(() => {
+                        if (!this._isShareCancel) {
                             if (this._shareCb) {
-                               if(Math.abs(ts) < needTime){
+                                if (Math.abs(ts) < needTime) {
                                     //当做分享失败
                                     let shareContent = this._shareTitle2;
                                     this.showModel("提示", shareContent, "继续", "放弃", () => {
@@ -294,14 +294,14 @@ const PfuSdk = cc.Class({
                                             this._shareFailCb();
                                         }
                                     });
-                               }else{
+                                } else {
                                     finishShare();
-                               }
+                                }
                             }
                         }
-                    },0.1);
-                }else{
-                    
+                    }, 0.1);
+                } else {
+
                     if (Math.abs(ts) > needTime) {
                         if (this._shareCb) {
                             finishShare();
@@ -327,14 +327,14 @@ const PfuSdk = cc.Class({
                         }
                     }
                 }
-               
+
             }
 
         }
     },
-    shareCancel(){
+    shareCancel() {
         console.log("分享取消....");
-        if(!this.isTestMode() && this._pfuSdkRealShare === 1){
+        if (!this.isTestMode() && this._pfuSdkRealShare === 1) {
             this._isShareCancel = true;
             if (this._shareCb) {
                 let shareContent = this._shareTitle1;
@@ -530,19 +530,23 @@ const PfuSdk = cc.Class({
     },
     //从左上角为原点的cocos坐标值 y
     getBannerTop() {
-        if(this.isIphoneX()){
-            return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx;
-        }else{
-            return cc.winSize.height - config.bannerHeight;
+        if (this._bannerType == 1) {
+            if (this.isIphoneX()) {
+                return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx;
+            } else {
+                return cc.winSize.height - config.bannerHeight;
+            }
+        } else {
+            if (this._haveBanner) {
+                const r = this._wxHeight / cc.winSize.height;
+                const y = PfuSdk.bannerAd.style.top / r - 50;
+                return y;
+            }
+
+            return cc.winSize.height - 200;
         }
 
-        // if (this._haveBanner) {
-        //     const r = this._wxHeight / cc.winSize.height;
-        //     const y = PfuSdk.bannerAd.style.top / r;
-        //     return y;
-        // }
 
-        // return cc.winSize.height - 200;
     },
     createUI(pb) {
         let root = this.node.parent;
@@ -599,8 +603,8 @@ const PfuSdk = cc.Class({
             self._shareTitle1 = online.wechatparam.pfuSdkShare1;
             self._shareTitle2 = online.wechatparam.pfuSdkShare2;
             self._shareTitle3 = online.wechatparam.pfuSdkShare3;
-            self._pfuShareSucNum =  parseInt(online.wechatparam.pfuSdkShareSucNum);
-            self._pfuSdkRealShare =  parseInt(online.wechatparam.pfuSdkRealShare);
+            self._pfuShareSucNum = parseInt(online.wechatparam.pfuSdkShareSucNum);
+            self._pfuSdkRealShare = parseInt(online.wechatparam.pfuSdkRealShare);
             self._pfuBoxReliveNum = parseInt(online.wechatparam.pfuSdkBoxReliveNum);
             self._maxBannerRefreshCount = parseInt(online.wechatparam.pfuSdkBannerCount);
             self._minBannerRefreshTime = parseInt(online.wechatparam.pfuSdkBannerMin);//sec
@@ -625,14 +629,14 @@ const PfuSdk = cc.Class({
             PfuSdk.reliveCb = cb;
             let jumpId = "wx3e33fef689f472b1";
             if (online.wechatparam.pfuSdkBoxRelive) {
-                if(cc.sys.os === cc.sys.OS_ANDROID){
+                if (cc.sys.os === cc.sys.OS_ANDROID) {
                     jumpId = online.wechatparam.pfuSdkBoxRelive;
-                }else{
+                } else {
                     jumpId = online.wechatparam.pfuSdkBoxReliveIOS;
                 }
             }
-            
-            if(this.checkDirectJump(jumpId) && this._pfuCurReliveNum<this._pfuBoxReliveNum){
+
+            if (this.checkDirectJump(jumpId) && this._pfuCurReliveNum < this._pfuBoxReliveNum) {
                 jumpBoxId = jumpId;
                 //jumpId = "wx716b36314be3fe89";
                 wx.navigateToMiniProgram({
@@ -647,10 +651,10 @@ const PfuSdk = cc.Class({
                         PfuSdk.reliveCb = null;
                     }
                 })
-            }else{
+            } else {
                 this._pfuCurReliveNum++;
                 this.showVideo({
-                    success:cb
+                    success: cb
                 });
             }
         } else {
@@ -671,7 +675,7 @@ const PfuSdk = cc.Class({
                     self._wxHeight = res.windowHeight;
                     self._wxHeightRation = res.windowHeight / cc.winSize.height;
                     if (config.bannerId != "") {
-                        
+
                     }
                 }
             });
@@ -739,7 +743,7 @@ const PfuSdk = cc.Class({
                     imageUrl: shareImage,
                     query: queryData,
                     withShareTicket: true,
-                    cancel:()=>{
+                    cancel: () => {
                         this.shareCancel();
                     }
                 });
@@ -814,35 +818,36 @@ const PfuSdk = cc.Class({
         if (this.isIphoneX()) {
             offY = config.bannerOffYForIpx ? config.bannerOffYForIpx : 1;
         }
-        offY = offY*this._wxRatio;
+        offY = offY * this._wxRatio;
+        const bannerWidth = this._bannerType == 1? this._wxWidth:this._wxWidth-150;
         this.log("重新创建了Banner");
         let bannerAd = wx.createBannerAd({
             adUnitId: config.bannerId,
             style: {
                 left: 0,
                 top: 0,
-                width: this._wxWidth
+                width: bannerWidth
             }
         });
         this._haveBanner = true;
-        if(this._bannerType == 1){
+        if (this._bannerType == 1) {
             bannerAd.onResize(size => {
                 bannerAd.style.top = self._wxHeight - designSizeH - offY;
                 bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
             });
-        }else{
+        } else {
             bannerAd.onResize(size => {
-                if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
-                    bannerAd.style.width = this._wxWidth * designSizeH / size.height;
-    
-                } else {
-                    bannerAd.offResize();
-                }
+                // if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
+                //     bannerAd.style.width = this._wxWidth * designSizeH / size.height;
+
+                // } else {
+                //     bannerAd.offResize();
+                // }
                 bannerAd.style.top = self._wxHeight - size.height - offY;
                 bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
             });
         }
-       
+
 
         bannerAd.onError(err => {
             this.log("Banner onError:" + JSON.stringify(err));
@@ -1390,11 +1395,11 @@ const PfuSdk = cc.Class({
         this._inviteChangeCallback = cb;
     },
     //世界排行榜
-    sendWorldRankInfo(data,cb){
-        online.sendWorldRankInfo(data,PfuSdk.loginToken,cb);
+    sendWorldRankInfo(data, cb) {
+        online.sendWorldRankInfo(data, PfuSdk.loginToken, cb);
     },
-    getWorldRankList(data,cb){
-        online.getWorldRankList(data,PfuSdk.loginToken,cb);
+    getWorldRankList(data, cb) {
+        online.getWorldRankList(data, PfuSdk.loginToken, cb);
     },
     /*
     * 邀请END
