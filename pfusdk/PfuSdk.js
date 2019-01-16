@@ -50,6 +50,8 @@ const PfuSdk = cc.Class({
         this._shareNum = 0;
         this._preShareCountMax = 5;//视频前分享成功次数
         this._successShareCount = 0;//已经分享成功次数
+        this._pfuShareSucNum = 1;
+        this._pfuCurSucNum = 0;
 
         this._maxBannerRefreshCount = 5;
         this._dailyPlayTimeLimit = 3;
@@ -212,7 +214,6 @@ const PfuSdk = cc.Class({
 
                 //每日登陆时间戳
                 this._dailyTs = parseInt(this.getItem("pfuDailyTs", this._playTimeTs));
-
             }
         } else {
             let date = new Date();
@@ -223,6 +224,7 @@ const PfuSdk = cc.Class({
         }
 
         const shareConfirm = () => {
+            this._pfuCurSucNum++;
             this.showModel("提示", this._shareTitle3, "确定", "取消", () => {
                 this.showShare({
                     success: this._shareCb,
@@ -238,14 +240,23 @@ const PfuSdk = cc.Class({
 
         if (this._hadShareFinish && this._startShare) {
             this._startShare = false;
-            shareConfirm();
+            if(this._pfuCurSucNum >= this._pfuShareSucNum){
+                if (this._shareCb) {
+                    this._shareCb();
+                    this._hadShareFinish = false;
+                }
+            }else{
+                shareConfirm();
+            }
             return;
         }
 
         const finishShare = ()=>{
             this._hadShareFinish = true;
-            shareConfirm();
-
+            if(this._pfuCurSucNum < this._pfuShareSucNum){
+                shareConfirm();
+            }
+           
             this._shareFlag = true;
             this._successShareCount++;
             this._shareNum++;
@@ -584,6 +595,7 @@ const PfuSdk = cc.Class({
             self._shareTitle1 = online.wechatparam.pfuSdkShare1;
             self._shareTitle2 = online.wechatparam.pfuSdkShare2;
             self._shareTitle3 = online.wechatparam.pfuSdkShare3;
+            self._pfuShareSucNum =  parseInt(online.wechatparam.pfuSdkShareSucNum);
             self._pfuSdkRealShare =  parseInt(online.wechatparam.pfuSdkRealShare);
             self._maxBannerRefreshCount = parseInt(online.wechatparam.pfuSdkBannerCount);
             self._minBannerRefreshTime = parseInt(online.wechatparam.pfuSdkBannerMin);//sec
@@ -689,6 +701,7 @@ const PfuSdk = cc.Class({
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             this._startShare = true;
             this._isShareCancel = false;
+            this._pfuCurSucNum = 0;
             this.setItem("shareTs", this.getNowTimestamp());
 
             let queryData = "fromUid=" + PfuSdk.uid;
