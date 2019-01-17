@@ -281,22 +281,27 @@ const PfuSdk = cc.Class({
                     this.scheduleOnce(() => {
                         if (!this._isShareCancel) {
                             if (this._shareCb) {
-                                if (Math.abs(ts) < needTime) {
-                                    //当做分享失败
-                                    let shareContent = this._shareTitle2;
-                                    this.showModel("提示", shareContent, "继续", "放弃", () => {
-                                        this.showShare({
-                                            success: this._shareCb,
-                                            fail: this._shareFailCb
-                                        })
-                                    }, () => {
-                                        if (this._shareFailCb) {
-                                            this._shareFailCb();
-                                        }
-                                    });
-                                } else {
+                                if(this._successShareCount >= 1){
+                                    if (Math.abs(ts) < needTime) {
+                                        //当做分享失败
+                                        let shareContent = this._shareTitle2;
+                                        this.showModel("提示", shareContent, "继续", "放弃", () => {
+                                            this.showShare({
+                                                success: this._shareCb,
+                                                fail: this._shareFailCb
+                                            })
+                                        }, () => {
+                                            if (this._shareFailCb) {
+                                                this._shareFailCb();
+                                            }
+                                        });
+                                    } else {
+                                        finishShare();
+                                    }
+                                }else{
                                     finishShare();
                                 }
+                                
                             }
                         }
                     }, 0.1);
