@@ -22,6 +22,7 @@ const PfuSdk = cc.Class({
         uid: "",
         pfuUserInfo: null,
         bannerAd: null,
+        bannerRelive:null,
         videoAdSuccessCb: null,
         reliveCb: null,
         mScreenRatio: 0,
@@ -74,6 +75,7 @@ const PfuSdk = cc.Class({
         this._loginCount = 0;//尝试登录次数
         this.login();
         this.initShare();
+        this.createReliveBanner();
 
         //用户时长
         this._userPlayTime = parseInt(this.getItem("pfuSdkUserPlayTime", 1));//sec
@@ -500,22 +502,37 @@ const PfuSdk = cc.Class({
         let ui = this.createUI(this.pbBannerRelive);
         if (ui) {
             ui.getComponent("PfuBannerRelive").show(obj);
-            if (PfuSdk.bannerAd) {
-                const bannerBgY = 60 * this._wxRatio;
-                let prestyle = {
-                    top: PfuSdk.bannerAd.style.top,
-                    left: PfuSdk.bannerAd.style.left,
-                    width: PfuSdk.bannerAd.style.width
-                }
-                this._bannerPreStyle = prestyle;
-                PfuSdk.bannerAd.style.left = 1;
-                PfuSdk.bannerAd.style.top = this._wxHeight / 2 + bannerBgY;
-                PfuSdk.bannerAd.style.width = this._wxWidth - 2;
-                PfuSdk.bannerAd.show();
-                this.unschedule(this.createBanner);
+            if (PfuSdk.bannerRelive) {
+                PfuSdk.bannerRelive.show();
             }
 
         }
+    },
+
+    createReliveBanner(){
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
+        if (config.bannerReliveId == "") return;
+        const bannerBgY = 60 * this._wxRatio;
+        let bannerAd = wx.createBannerAd({
+            adUnitId: config.bannerReliveId,
+            style: {
+                left: 0,
+                top: 0,
+                width: this._wxWidth
+            }
+        });
+        bannerAd.onResize(size => {
+            bannerAd.style.top = this._wxHeight / 2 + bannerBgY;
+            bannerAd.style.left = 0;
+        });
+
+
+        bannerAd.onError(err => {
+            this.log("复活Banner创建失败:"+JSON.stringify(err));
+        });
+
+        PfuSdk.bannerRelive = bannerAd;
+        PfuSdk.bannerRelive.hide();
     },
 
     showLandingPage(info) {
@@ -524,14 +541,7 @@ const PfuSdk = cc.Class({
     },
 
     resetBannerPos() {
-        if (this._bannerPreStyle) {
-            //console.log("resetBannerPos");
-            PfuSdk.bannerAd.style.left = this._bannerPreStyle.left;
-            PfuSdk.bannerAd.style.top = this._bannerPreStyle.top;
-            PfuSdk.bannerAd.style.width = this._bannerPreStyle.width;
-            this._resetBannerState();
-            this.tryRefreshBanner();
-        }
+        PfuSdk.bannerRelive&&PfuSdk.bannerRelive.hide();
     },
     //从左上角为原点的cocos坐标值 y
     getBannerTop() {
@@ -543,9 +553,15 @@ const PfuSdk = cc.Class({
             }
         } else {
             if (this._haveBanner) {
-                const r = this._wxHeight / cc.winSize.height;
-                const y = PfuSdk.bannerAd.style.top / r - 50;
-                return y;
+                if(config.ipxBanner === 1 && this.isIphoneX()){
+                    const r = this._wxHeight / cc.winSize.height;
+                    const y = PfuSdk.bannerAd.style.top / r - 100;
+                    return y;
+                }else{
+                    const r = this._wxHeight / cc.winSize.height;
+                    const y = PfuSdk.bannerAd.style.top / r - 50;
+                    return y;
+                }
             }
 
             return cc.winSize.height - 200;
@@ -842,13 +858,11 @@ const PfuSdk = cc.Class({
             });
         } else {
             bannerAd.onResize(size => {
-                // if (designSizeH <= size.height.toFixed(1) && this._wxWidth == bannerAd.style.width) {
-                //     bannerAd.style.width = this._wxWidth * designSizeH / size.height;
-
-                // } else {
-                //     bannerAd.offResize();
-                // }
-                bannerAd.style.top = self._wxHeight - size.height - offY;
+                if (config.ipxBanner === 1 && this.isIphoneX()){
+                    bannerAd.style.top = self._wxHeight - size.height - offY + 30;
+                }else{
+                    bannerAd.style.top = self._wxHeight - size.height - offY;
+                }
                 bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
             });
         }
