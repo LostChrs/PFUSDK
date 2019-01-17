@@ -506,6 +506,7 @@ const PfuSdk = cc.Class({
                 PfuSdk.bannerRelive.show();
             }
 
+            PfuSdk.bannerAd && PfuSdk.bannerAd.hide();
         }
     },
 
@@ -542,6 +543,7 @@ const PfuSdk = cc.Class({
 
     resetBannerPos() {
         PfuSdk.bannerRelive&&PfuSdk.bannerRelive.hide();
+        this._resetBannerState();
     },
     //从左上角为原点的cocos坐标值 y
     getBannerTop() {
