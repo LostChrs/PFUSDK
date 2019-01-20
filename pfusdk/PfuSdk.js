@@ -279,7 +279,7 @@ const PfuSdk = cc.Class({
             if (needTime >= 5) needTime = 5;
             if (!this.isTestMode()) {
                 //检测cancel
-                if (this._pfuSdkRealShare === 1) {
+                if (this._pfuSdkRealShare === 1 && (cc.sys.os === cc.sys.OS_IOS)) {
                     this.scheduleOnce(() => {
                         if (!this._isShareCancel) {
                             if (this._shareCb) {
