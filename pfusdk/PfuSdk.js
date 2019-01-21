@@ -278,84 +278,35 @@ const PfuSdk = cc.Class({
             let needTime = (online.shareTime / 1000);
             if (needTime >= 5) needTime = 5;
             if (!this.isTestMode()) {
-                //检测cancel
-                if (this._pfuSdkRealShare === 1 && (cc.sys.os === cc.sys.OS_IOS)) {
-                    this.scheduleOnce(() => {
-                        if (!this._isShareCancel) {
-                            if (this._shareCb) {
-                                if(this._successShareCount >= 1){
-                                    if (Math.abs(ts) < needTime) {
-                                        //当做分享失败
-                                        let shareContent = this._shareTitle2;
-                                        this.showModel("提示", shareContent, "继续", "放弃", () => {
-                                            this.showShare({
-                                                success: this._shareCb,
-                                                fail: this._shareFailCb
-                                            })
-                                        }, () => {
-                                            if (this._shareFailCb) {
-                                                this._shareFailCb();
-                                            }
-                                        });
-                                    } else {
-                                        finishShare();
-                                    }
-                                }else{
-                                    finishShare();
-                                }
-                                
-                            }
-                        }
-                    }, 0.1);
+                if (Math.abs(ts) > needTime) {
+                    if (this._shareCb) {
+                        finishShare();
+                    }
                 } else {
-
-                    if (Math.abs(ts) > needTime) {
-                        if (this._shareCb) {
-                            finishShare();
+                    if (this._shareCb) {
+                        let shareContent = "";
+                        if (Math.abs(ts) < this._preShareCountMax) {
+                            shareContent = this._shareTitle1;
+                        } else {
+                            shareContent = this._shareTitle2;
                         }
-                    } else {
-                        if (this._shareCb) {
-                            let shareContent = "";
-                            if (Math.abs(ts) < this._preShareCountMax) {
-                                shareContent = this._shareTitle1;
-                            } else {
-                                shareContent = this._shareTitle2;
+                        this.showModel("提示", shareContent, "继续", "放弃", () => {
+                            this.showShare({
+                                success: this._shareCb,
+                                fail: this._shareFailCb
+                            })
+                        }, () => {
+                            if (this._shareFailCb) {
+                                this._shareFailCb();
                             }
-                            this.showModel("提示", shareContent, "继续", "放弃", () => {
-                                this.showShare({
-                                    success: this._shareCb,
-                                    fail: this._shareFailCb
-                                })
-                            }, () => {
-                                if (this._shareFailCb) {
-                                    this._shareFailCb();
-                                }
-                            });
-                        }
+                        });
                     }
                 }
-
             }
 
         }
     },
-    shareCancel() {
-        console.log("分享取消....");
-        if (!this.isTestMode() && this._pfuSdkRealShare === 1) {
-            this._isShareCancel = true;
-            if (this._shareCb) {
-                let shareContent = this._shareTitle1;
-                this.showModel("提示", shareContent, "继续", "放弃", () => {
-                    this.showShare({
-                        success: this._shareCb,
-                        fail: this._shareFailCb
-                    })
-                }, () => {
-                    this._shareFailCb && this._shareFailCb();
-                });
-            }
-        }
-    },
+
     bannerReliveSuccess() {
         this._bannerReliveCount++;
         this.setItem("bannerReliveCount", this._bannerReliveCount);
@@ -506,7 +457,6 @@ const PfuSdk = cc.Class({
                 PfuSdk.bannerRelive.show();
             }
 
-            PfuSdk.bannerAd && PfuSdk.bannerAd.hide();
         }
     },
 
@@ -543,7 +493,6 @@ const PfuSdk = cc.Class({
 
     resetBannerPos() {
         PfuSdk.bannerRelive&&PfuSdk.bannerRelive.hide();
-        this._resetBannerState();
     },
     //从左上角为原点的cocos坐标值 y
     getBannerTop() {
@@ -627,7 +576,7 @@ const PfuSdk = cc.Class({
             self._shareTitle2 = online.wechatparam.pfuSdkShare2;
             self._shareTitle3 = online.wechatparam.pfuSdkShare3;
             self._pfuShareSucNum = parseInt(online.wechatparam.pfuSdkShareSucNum);
-            self._pfuSdkRealShare = parseInt(online.wechatparam.pfuSdkRealShare);
+            self._pfuSdkRealShare = 0;//parseInt(online.wechatparam.pfuSdkRealShare);
             self._pfuBoxReliveNum = parseInt(online.wechatparam.pfuSdkBoxReliveNum);
             self._maxBannerRefreshCount = parseInt(online.wechatparam.pfuSdkBannerCount);
             self._minBannerRefreshTime = parseInt(online.wechatparam.pfuSdkBannerMin);//sec
@@ -745,7 +694,6 @@ const PfuSdk = cc.Class({
         let self = this;
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             this._startShare = true;
-            this._isShareCancel = false;
             this._pfuCurSucNum = 0;
             this.setItem("shareTs", this.getNowTimestamp());
 
@@ -766,9 +714,6 @@ const PfuSdk = cc.Class({
                     imageUrl: shareImage,
                     query: queryData,
                     withShareTicket: true,
-                    cancel: () => {
-                        this.shareCancel();
-                    }
                 });
             } else {
                 let shareTitle = title ? title : "快来和我一起玩吧~";
@@ -842,7 +787,7 @@ const PfuSdk = cc.Class({
             offY = config.bannerOffYForIpx ? config.bannerOffYForIpx : 1;
         }
         offY = offY * this._wxRatio;
-        const bannerWidth = this._bannerType == 1? this._wxWidth:this._wxWidth-150;
+        const bannerWidth = this._bannerType == 1? this._wxWidth:205;
         this.log("重新创建了Banner");
         let bannerAd = wx.createBannerAd({
             adUnitId: config.bannerId,
