@@ -22,7 +22,8 @@ cc.Class({
             online.getAdsList(res =>{
                 let list = res.adverts;
                 if(!list || list.length <= 0){
-                    self.content.active = false;
+                    self.node.active = false;
+                    PfuSdk.Instance.HideBanner(false);
                     return;
                 }
               

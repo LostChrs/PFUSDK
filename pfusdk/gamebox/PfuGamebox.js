@@ -36,6 +36,7 @@ cc.Class({
                 let list = res.adverts;
                 if(!list || list.length <= 0){
                     self.node.active = false;
+                    PfuSdk.Instance.HideBanner(false);
                     return;
                 }
                 self.initList(this.getCanJumpList(list));
