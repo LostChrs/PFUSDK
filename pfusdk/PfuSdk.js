@@ -134,13 +134,17 @@ const PfuSdk = cc.Class({
 
         this._bannerRefreshCount = 0;//每日banner刷新次数
         this.setItem("pfuBannerRefreshCount", 0);
-        this._dailyTs = this.getNowTimestamp();
-        this.setItem("pfuDailyTs", this._dailyTs);
+        this.resetDailyPlayTime();
     },
     //今日游玩时间
     getDailyPlayTime() {
         const playTime = Math.abs(this.getDiffFromNow(this._dailyTs));
         return playTime;
+    },
+    //重置在线时长
+    resetDailyPlayTime(){
+        this._dailyTs = this.getNowTimestamp();
+        this.setItem("pfuDailyTs", this._dailyTs);
     },
     onAppHide(launchOptions) {
         //记录一次游玩的时间
