@@ -6,7 +6,7 @@
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
   "subMetas": {
-    "待领取": {
+    "fk_wz2": {
       "ver": "1.0.3",
       "uuid": "586c7ecf-95c8-4183-a55b-7e4c74776411",
       "rawTextureUuid": "cce9e23e-1fbb-441d-a310-ef49c234c6ca",

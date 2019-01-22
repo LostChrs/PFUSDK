@@ -19,12 +19,14 @@ cc.Class({
         lbCloseDes:cc.Label,
         btnClose:cc.Button,
         btnWithdraw:cc.Button,
+        btnOpen:cc.Button,
         lbDes:cc.Label,
     },
 
     onLoad(){
         this.btnClose.node.on("click",this.onClose,this);
         this.btnWithdraw.node.on("click",this.onWithdraw,this);
+        this.btnOpen.node.on("click",this.onOpenRedpacket,this);
     },
 
     onEnable() {

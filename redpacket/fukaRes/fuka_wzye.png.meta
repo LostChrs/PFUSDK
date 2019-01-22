@@ -1,15 +1,15 @@
 {
   "ver": "2.2.0",
-  "uuid": "c70fc004-b107-494b-b29e-30692fe01dbc",
+  "uuid": "d64ac25e-42ba-4225-8e95-75f6b839063d",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
   "subMetas": {
-    "您获得了一个福袋！": {
+    "fuka_wzye": {
       "ver": "1.0.3",
-      "uuid": "74f2ee71-879c-473f-ba7e-04f45d8a12f0",
-      "rawTextureUuid": "c70fc004-b107-494b-b29e-30692fe01dbc",
+      "uuid": "23a0f43f-8c3f-4487-b83b-b76bbf3c28b4",
+      "rawTextureUuid": "d64ac25e-42ba-4225-8e95-75f6b839063d",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
@@ -17,9 +17,9 @@
       "offsetY": 0,
       "trimX": 0,
       "trimY": 0,
-      "width": 299,
+      "width": 83,
       "height": 34,
-      "rawWidth": 299,
+      "rawWidth": 83,
       "rawHeight": 34,
       "borderTop": 0,
       "borderBottom": 0,
