@@ -38,15 +38,12 @@ Redpacket.Instance.showRedpacket({
 
 兑换道具成功后可通过系统事件监听得到结果,如下
 ```
-    onEnable() {
-        cc.systemEvent.on("PfuEvent_BuyItem",this.onBuyItem,this);
-    },
+    const PfuEvent = require("PfuEventSystem").Event;
+    //注册事件
+    PfuEvent.register("PfuEvent_BuyItem",this.onBuyItem,this);
 
-    onDisable(){
-        cc.systemEvent.off("PfuEvent_BuyItem");
-    },
-    onBuyItem(idx){
-        //idx为道具索引，0为道具1，1为道具2
+    onBuyItem(self,idx){
+        //注意this使用self替代
         console.log("购买成功:"+idx);
-    },
+    }
 ```
