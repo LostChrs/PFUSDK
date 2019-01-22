@@ -17,8 +17,14 @@ cc.Class({
         lbGetMoney:cc.Label,//本次获得红包
         desGetMoney:cc.Node,//已存入余额
         lbCloseDes:cc.Label,
-        btnOpenNode:cc.Node,
+        btnClose:cc.Button,
+        btnWithdraw:cc.Button,
         lbDes:cc.Label,
+    },
+
+    onLoad(){
+        this.btnClose.node.on("click",this.onClose,this);
+        this.btnWithdraw.node.on("click",this.onWithdraw,this);
     },
 
     onEnable() {

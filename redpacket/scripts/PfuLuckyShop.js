@@ -5,13 +5,16 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        btnClose:cc.Button,
         lbNum:cc.Label,
         pbItem:cc.Node,
         content:cc.Node,
         spList:[cc.SpriteFrame],
     },
 
-    onLoad () {},
+    onLoad () {
+        this.btnClose.node.on("click",this.onClose,this);
+    },
 
     onEnable() {
         PfuEvent.register(EventType.RedpacketStateChange,this.evtRedpacketChange,this);

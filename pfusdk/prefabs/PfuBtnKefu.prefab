@@ -30,7 +30,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 6
+      "__id__": 5
     },
     "_opacity": 255,
     "_color": {
@@ -125,11 +125,7 @@
     "_enabled": true,
     "duration": 0.1,
     "zoomScale": 1.2,
-    "clickEvents": [
-      {
-        "__id__": 5
-      }
-    ],
+    "clickEvents": [],
     "_N$interactable": true,
     "_N$enableAutoGrayEffect": false,
     "_N$transition": 0,
@@ -186,22 +182,12 @@
     "_id": ""
   },
   {
-    "__type__": "cc.ClickEvent",
-    "target": {
-      "__id__": 1
-    },
-    "component": "",
-    "_componentId": "42c4f9ddCRJk74jqwmNuIV8",
-    "handler": "onKefuClick",
-    "customEventData": ""
-  },
-  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "207bbdd2-3608-42e2-bf87-84198be4484b"
     },
     "fileId": "1b3kWnrxRKnoFkIRZheJon",
     "sync": false

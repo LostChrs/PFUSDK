@@ -12,7 +12,8 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        
+        const btn = this.getComponent(cc.Button);
+        btn.node.on("click",this.onRedpacketBtnClick,this);
     },
 
     start() {

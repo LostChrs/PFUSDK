@@ -7,6 +7,11 @@ cc.Class({
         
     },
 
+    onLoad(){
+        const btn = this.getComponent(cc.Button);
+        btn.node.on("click",this.onKefuClick,this);
+    },
+
     onKefuClick(){
         if(cc.sys.platform === cc.sys.WECHAT_GAME){
             wx.navigateToMiniProgram({
