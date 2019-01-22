@@ -70,7 +70,8 @@ cc.Class({
             if(this._curNum >= cost){
                 this.showTips("兑换道具成功");
                 PfuRedpacket.Instance.addOwnMoney(-cost/100);
-                cc.systemEvent.emit("PfuEvent_BuyItem",idx);
+                //cc.systemEvent.emit("PfuEvent_BuyItem",idx);
+                PfuEvent.send("PfuEvent_BuyItem",idx);
             }else{
                 this.showTips("福卡数量不足，玩游戏可以获得哦！");
             }

@@ -11,14 +11,14 @@ var _pfuEventSystem = cc.Class({
         console.log("------init PfuEventSystem");
         this._eventList = [];
     },
-    send(eventId){
+    send(eventId,args){
 
         //发送的同时删除掉不合法的事件
         let removeList = [];
         this._eventList.forEach(evt => {
             if(eventId == evt.eventId){
                 if(this.checkEventValid(evt)){
-                    evt.method(evt.target);
+                    evt.method(evt.target,args);
                 }else{
                     removeList.push(evt);
                 }
