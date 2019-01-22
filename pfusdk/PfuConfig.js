@@ -1,7 +1,7 @@
 
 let config = {
     version:"1.0.0",//*必填  游戏参数版本号，用来控制运营后台参数
-
+    gameName:"哈哈哈哈",//如需使用客服功能，请配置游戏名称
     bannerHeight:300,//230-170   
     bannerOffYForIpx:60,//在ipx上banner的偏移量，因为不同引擎版本有所区别，所以提供了修改的接口。
     payAppId:"1450018202",//虚拟支付Id，当接入虚拟支付的时候需要填写

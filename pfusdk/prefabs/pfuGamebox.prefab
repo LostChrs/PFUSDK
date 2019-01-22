@@ -52,7 +52,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 720,
+      "width": 750,
       "height": 200
     },
     "_anchorPoint": {
@@ -62,7 +62,7 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 360,
+      "x": 375,
       "y": 100,
       "z": 0
     },
@@ -176,7 +176,7 @@
     "_isTrimmedMode": true,
     "_state": 0,
     "_atlas": null,
-    "_id": "38Uy97A9BDFqaz9H18jDvw"
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -224,7 +224,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 720,
+      "width": 750,
       "height": 200
     },
     "_anchorPoint": {
@@ -549,7 +549,7 @@
     "_isTrimmedMode": true,
     "_state": 0,
     "_atlas": null,
-    "_id": "e77M+y5lRBgbPj5a1GNhhZ"
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -579,7 +579,7 @@
     "_segments": 64,
     "_N$alphaThreshold": 0.6,
     "_N$inverted": false,
-    "_id": "65sLo4WeJIF6yPHqLvTtfX"
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -618,7 +618,7 @@
     "_isTrimmedMode": true,
     "_state": 0,
     "_atlas": null,
-    "_id": "33SvFx1MNBqo3IlJjqGtW9"
+    "_id": ""
   },
   {
     "__type__": "fcf4dypa0VLlKlYa5pnZsxz",
@@ -632,7 +632,7 @@
       "__id__": 10
     },
     "lbName": null,
-    "_id": "206NXvh8ZDnLRrPEtYN4wS"
+    "_id": ""
   },
   {
     "__type__": "cc.Button",
@@ -642,21 +642,6 @@
       "__id__": 7
     },
     "_enabled": true,
-    "transition": 0,
-    "pressedColor": {
-      "__type__": "cc.Color",
-      "r": 211,
-      "g": 211,
-      "b": 211,
-      "a": 255
-    },
-    "hoverColor": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
     "duration": 0.1,
     "zoomScale": 1.2,
     "clickEvents": [
@@ -666,11 +651,41 @@
     ],
     "_N$interactable": true,
     "_N$enableAutoGrayEffect": false,
+    "_N$transition": 0,
+    "transition": 0,
     "_N$normalColor": {
       "__type__": "cc.Color",
       "r": 214,
       "g": 214,
       "b": 214,
+      "a": 255
+    },
+    "_N$pressedColor": {
+      "__type__": "cc.Color",
+      "r": 211,
+      "g": 211,
+      "b": 211,
+      "a": 255
+    },
+    "pressedColor": {
+      "__type__": "cc.Color",
+      "r": 211,
+      "g": 211,
+      "b": 211,
+      "a": 255
+    },
+    "_N$hoverColor": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "hoverColor": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_N$disabledColor": {
@@ -689,7 +704,7 @@
     "_N$target": {
       "__id__": 7
     },
-    "_id": "51enwUv/JHXrABD+loHIyI"
+    "_id": ""
   },
   {
     "__type__": "cc.ClickEvent",
@@ -697,6 +712,7 @@
       "__id__": 7
     },
     "component": "PfuGameboxItem",
+    "_componentId": "",
     "handler": "onBtnClick",
     "customEventData": ""
   },
@@ -737,7 +753,7 @@
     "_segments": 64,
     "_N$alphaThreshold": 0,
     "_N$inverted": false,
-    "_id": "e8sZQXkCpCP5WY/yfyVyBy"
+    "_id": ""
   },
   {
     "__type__": "cc.Widget",
@@ -764,7 +780,7 @@
     "_isAbsVerticalCenter": true,
     "_originalWidth": 240,
     "_originalHeight": 250,
-    "_id": "71ksmgJeJKd7/cNK0FSwrs"
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -866,7 +882,7 @@
     "_isTrimmedMode": true,
     "_state": 0,
     "_atlas": null,
-    "_id": "a4vDTYnYtGBagEujQIzgqV"
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -887,9 +903,6 @@
       "__id__": 1
     },
     "_enabled": true,
-    "content": {
-      "__id__": 6
-    },
     "horizontal": true,
     "vertical": false,
     "inertia": true,
@@ -902,16 +915,23 @@
       }
     ],
     "cancelInnerEvents": true,
+    "_N$content": {
+      "__id__": 6
+    },
+    "content": {
+      "__id__": 6
+    },
     "_N$horizontalScrollBar": null,
     "_N$verticalScrollBar": null,
-    "_id": "19sQooSvpLd6tbjq9GsRBz"
+    "_id": ""
   },
   {
     "__type__": "cc.ClickEvent",
     "target": {
       "__id__": 1
     },
-    "component": "PfuGamebox",
+    "component": "",
+    "_componentId": "35d88lgTsZPKKUws40i+X/e",
     "handler": "scrollEvent",
     "customEventData": ""
   },
@@ -940,7 +960,7 @@
     "_isAbsVerticalCenter": true,
     "_originalWidth": 240,
     "_originalHeight": 0,
-    "_id": "7aZHQEIRBCiqf/UOUPm3Ri"
+    "_id": ""
   },
   {
     "__type__": "35d88lgTsZPKKUws40i+X/e",
@@ -959,7 +979,7 @@
     "itemTemplate": {
       "__id__": 7
     },
-    "_id": "42ilxaPyRCi4Fp9DxabC08"
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",

@@ -1,5 +1,7 @@
 const PfuRedpacket = require("PfuRedpacket");
 const PfuSdk = require("PfuSdk");
+const PfuEvent = require("PfuEventSystem").Event;
+const EventType = require("PfuEventSystem").Type;
 const PageType = {
     OPEN:"Open",//显示余额
     WATCH:"Watch",//看视频开启
@@ -19,6 +21,17 @@ cc.Class({
         lbDes:cc.Label,
     },
 
+    onEnable() {
+        PfuEvent.register(EventType.RedpacketStateChange,this.evtRedpacketChange,this);
+    },
+
+    evtRedpacketChange(self){
+        self.updateMoney();
+    },
+    updateMoney(){
+        this.lbTotalMoney.string = parseInt(PfuRedpacket.Instance.getMoney()*100) + "福卡";
+    },
+
     show(type,num,des){
         this._type = type;
         this._num = num;
@@ -29,11 +42,11 @@ cc.Class({
         if(type == PageType.OPEN){
             this.openPage.active = true;
             this.closePage.active = false;
-            this.lbTotalMoney.string = PfuRedpacket.Instance.getMoney();
+            this.updateMoney();
             if(num){
                 this.lbGetMoney.node.active = true;
                 this.desGetMoney.active = true;
-                this.lbGetMoney.string = num;
+                this.lbGetMoney.string = parseInt(num*100) + "福卡";
             }else{
                 this.lbGetMoney.node.active = false;
                 this.desGetMoney.active = false;
@@ -52,7 +65,7 @@ cc.Class({
     },
 
     onWithdraw(){
-        PfuSdk.Instance.showTips("满20元可以提现哦~");
+        PfuRedpacket.Instance.showLuckyShop();
     },
     onOpenRedpacket(){
         //开红包

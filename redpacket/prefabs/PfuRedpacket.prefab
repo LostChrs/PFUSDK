@@ -79,14 +79,18 @@
       "__id__": 1
     },
     "_enabled": true,
+    "isRoot": false,
     "pbRedpacketLoginGift": {
       "__uuid__": "28178738-daf8-47ec-a113-653c95e57e93"
     },
     "pbRedpacketInfo": {
       "__uuid__": "310e8a0d-e5de-44b6-9e42-60f8b3f92e83"
     },
+    "pbLuckyShop": {
+      "__uuid__": "77152dbe-bd93-459c-a3a8-a619f390e4b5"
+    },
     "executionOrder": -900,
-    "_id": "fd/LlGZz1DUp6GcQIggX/t"
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -94,7 +98,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "79c4efaf-a8fb-429b-9515-8624be5f8f14"
     },
     "fileId": "a9FMlo0dpEnprl+34M/yJ2",
     "sync": false

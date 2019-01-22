@@ -1,3 +1,6 @@
+### v0.3.0
+* 将红包功能修改为福袋，详情查看[这里](https://github.com/LostChrs/PFUSDK/blob/master/Redpacket.md)
+* 增加了客服功能，将`prefabs/PfuBtnKefu.prefab`拖入任意界面  配置Config中的gameName字段即可
 ### v0.2.7
 * 修改了红包的金额规则(去掉了登陆红包)
 * 提供了获取banner坐标的方法`getBannerTop`,用来适配UI紧贴Banner的情况

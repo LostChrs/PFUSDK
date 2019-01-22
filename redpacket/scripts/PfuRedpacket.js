@@ -8,9 +8,9 @@ var PfuRedpacket = cc.Class({
         Instance:null,
     },
     properties: {
-        isRoot:false,
         pbRedpacketLoginGift:cc.Prefab,
         pbRedpacketInfo:cc.Prefab,
+        pbLuckyShop:cc.Prefab,
         executionOrder: -900
     },
 
@@ -52,6 +52,11 @@ var PfuRedpacket = cc.Class({
         });
 
        // this.test();
+    },
+    //指定商店中两个可购买道具的图标 SpriteFrame
+    setShopIcon(icon1,icon2){
+        this.shopIcon1 = icon1;
+        this.shopIcon2 = icon2;
     },
     //显示红包  type  des pageOpen pageClose
     showRedpacket(obj = {}){
@@ -177,6 +182,14 @@ var PfuRedpacket = cc.Class({
         let ui = this.createUI(this.pbRedpacketInfo);
         if(ui){
             ui.getComponent("PfuRedpacketInfo").show(type,num,des);
+        }
+    },
+    showLuckyShop(){
+        //console.log("showLuckyShop");
+        const num = this._ownMoney;
+        let ui = this.createUI(this.pbLuckyShop);
+        if(ui){
+            ui.getComponent("PfuLuckyShop").show(num);
         }
     },
     createUI(pb){

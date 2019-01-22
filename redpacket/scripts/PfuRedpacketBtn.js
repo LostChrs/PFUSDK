@@ -30,7 +30,7 @@ cc.Class({
     },
 
     updateMoney(){
-        this.lbMoney.string = "¥"+PfuRedpacket.Instance.getMoney();
+        this.lbMoney.string =  parseInt(PfuRedpacket.Instance.getMoney()*100);
     },
 
     onEnable() {

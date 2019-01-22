@@ -29,3 +29,24 @@ Redpacket.Instance.showRedpacket({
             type:"Watch"
         });
 ```
+
+### 福卡商店兑换道具
+可以设置两个可兑换道具
+
+>setShopIcon(icon1,icon2)
+其中icon1,icon2为SpriteFrame类型，可为空(不显示)
+
+兑换道具成功后可通过系统事件监听得到结果,如下
+```
+    onEnable() {
+        cc.systemEvent.on("PfuEvent_BuyItem",this.onBuyItem,this);
+    },
+
+    onDisable(){
+        cc.systemEvent.off("PfuEvent_BuyItem");
+    },
+    onBuyItem(idx){
+        //idx为道具索引，0为道具1，1为道具2
+        console.log("购买成功:"+idx);
+    },
+```

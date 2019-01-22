@@ -1,4 +1,4 @@
-# PFUSDK V0.2.0
+# PFUSDK V0.3.0
 
 ## 红包功能
 [点击这里查看红包功能接入文档](https://github.com/LostChrs/PFUSDK/blob/master/Redpacket.md)
@@ -153,6 +153,10 @@ pfuSdk.Instance.HideBanner(false);//显示Banner
             console.log("复活成功");
         })
 ```
+
+### 客服功能
+将`prefabs/PfuBtnKefu.prefab`拖入任意界面  配置Config中的gameName字段即可
+
 ### 获取玩家邀请的新用户列表
 使用sdk中的分享功能后，通过分享卡片进入游戏的新用户将被服务器记录。游戏中可以直接使用此邀请用户列表。为了记录玩家的基本信息，游戏必须在第一个界面（未进入主场景前）获取相应权限，相关代码如下：
 
