@@ -541,7 +541,7 @@ const PfuSdk = cc.Class({
     * 红包
     */
     isHideRedpacket() {
-        if (!online.wechatparam) return true;
+        if (!online.wechatparam) return false;
         if (this.isTestMode()) return true;
 
         if (online.wechatparam.pfuSdkRed && online.wechatparam.pfuSdkRed == "1") {
@@ -554,6 +554,16 @@ const PfuSdk = cc.Class({
         if (online.wechatparam) {
             if (this._redpacketCallback) this._redpacketCallback();
         }
+    },
+
+    isHideCustomer(){
+        if (!online.wechatparam) return false;
+        if (this.isTestMode()) return true;
+
+        if (online.wechatparam.pfuSdkCustomer && online.wechatparam.pfuSdkCustomer == "1") {
+            return false;
+        }
+        return true;
     },
 
     //在线参数回调
@@ -594,6 +604,8 @@ const PfuSdk = cc.Class({
             self.scheduleOnce(self.createBanner, self._refreshBannerTime);
             if (self._onlineParamsCallback) self._onlineParamsCallback(online.wechatparam);
             if (self._redpacketCallback) self._redpacketCallback();
+
+            cc.systemEvent.emit("PfuOnline");
         });
     },
 

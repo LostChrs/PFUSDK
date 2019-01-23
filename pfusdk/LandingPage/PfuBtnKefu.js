@@ -1,5 +1,6 @@
 
 const config = require("PfuConfig");
+const PfuSdk = require("PfuSdk");
 cc.Class({
     extends: cc.Component,
 
@@ -10,6 +11,21 @@ cc.Class({
     onLoad(){
         const btn = this.getComponent(cc.Button);
         btn.node.on("click",this.onKefuClick,this);
+    },
+
+    start(){
+
+    },
+
+    updateBtnState(){
+        this.node.active =  !PfuSdk.Instance.isHideCustomer();
+    },
+
+    onEnable() {
+        cc.systemEvent.on("PfuOnline",this.updateBtnState,this);
+    },
+    onDisable(){
+        cc.systemEvent.off("PfuOnline",this.updateBtnState,this);
     },
 
     onKefuClick(){
