@@ -510,11 +510,11 @@ const PfuSdk = cc.Class({
             if (this._haveBanner) {
                 if(config.ipxBanner === 1 && this.isIphoneX()){
                     const r = this._wxHeight / cc.winSize.height;
-                    const y = PfuSdk.bannerAd.style.top / r - 100;
+                    const y = PfuSdk.bannerAd.style.top / r - 80;
                     return y;
                 }else{
                     const r = this._wxHeight / cc.winSize.height;
-                    const y = PfuSdk.bannerAd.style.top / r - 50;
+                    const y = PfuSdk.bannerAd.style.top / r - 30;
                     return y;
                 }
             }
