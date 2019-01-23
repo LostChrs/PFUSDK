@@ -238,7 +238,7 @@ var pfuOnline = {
         }
 
         let fromUid = query.fromUid;
-        if (fromUid && fromUid != "") {
+        if (fromUid && fromUid != "" && fromUid != "undefined") {
             data.rinviteUid = fromUid;
         }
         msg.sendCommonShare(data,urlPfuLogin,null,cb);
