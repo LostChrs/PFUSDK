@@ -19,6 +19,10 @@ cc.Class({
     start() {
         this._str = "hahahhahah";
         this.updateMoney();
+        this.updateBtnState();
+    },
+
+    updateBtnState(){
         this.node.active =  !PfuSdk.Instance.isHideRedpacket();
     },
 
@@ -36,8 +40,9 @@ cc.Class({
 
     onEnable() {
         PfuEvent.register(EventType.RedpacketStateChange,this.evtRedpacketChange,this);
-        PfuEvent.register(EventType.RedpacketBtnHide,(self)=>{
-            self.node.active =  !PfuSdk.Instance.isHideRedpacket();
-        },this);
+        cc.systemEvent.on("PfuOnline",this.updateBtnState,this);
+    },
+    onDisable(){
+        cc.systemEvent.off("PfuOnline",this.updateBtnState,this);
     }
 });
