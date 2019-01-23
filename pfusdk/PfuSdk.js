@@ -791,7 +791,7 @@ const PfuSdk = cc.Class({
             offY = config.bannerOffYForIpx ? config.bannerOffYForIpx : 1;
         }
         offY = offY * this._wxRatio;
-        const bannerWidth = this._bannerType == 1? this._wxWidth:205;
+        const bannerWidth = this._bannerType == 1? this._wxWidth:this._wxWidth-20;
         this.log("重新创建了Banner");
         let bannerAd = wx.createBannerAd({
             adUnitId: config.bannerId,
