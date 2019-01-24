@@ -12,6 +12,8 @@ const GAType = cc.Enum({
 
 let jumpBoxId = "";
 
+const marginTopOffY = 20;
+
 const PfuSdk = cc.Class({
     extends: cc.Component,
     statics: {
@@ -500,29 +502,22 @@ const PfuSdk = cc.Class({
     },
     //从左上角为原点的cocos坐标值 y
     getBannerTop() {
-        if (this._bannerType == 1) {
-            if (this.isIphoneX()) {
-                return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx;
-            } else {
-                return cc.winSize.height - config.bannerHeight;
-            }
+        const offY = this._bannerType == 1?0:marginTopOffY;
+        if (this.isIphoneX()) {
+            return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx;
         } else {
-            if (this._haveBanner) {
-                if(config.ipxBanner === 1 && this.isIphoneX()){
-                    const r = this._wxHeight / cc.winSize.height;
-                    const y = PfuSdk.bannerAd.style.top / r - 80;
-                    return y;
-                }else{
-                    const r = this._wxHeight / cc.winSize.height;
-                    const y = PfuSdk.bannerAd.style.top / r - 30;
-                    return y;
-                }
-            }
-
-            return cc.winSize.height - 200;
+            return cc.winSize.height - config.bannerHeight;
         }
-
-
+    },
+    setPosWithBanner(node){
+        let widget = node.getComponent(cc.Widget);
+        if(!widget){
+            widget = node.addComponent(cc.Widget);
+        }
+        widget.isAlignBottom = true;
+        const y = cc.winSize.height - this.getBannerTop();
+        console.log("y==========="+y);
+        widget.bottom = y;
     },
     createUI(pb) {
         let root = this.node.parent;
@@ -802,8 +797,12 @@ const PfuSdk = cc.Class({
         if (this.isIphoneX()) {
             offY = config.bannerOffYForIpx ? config.bannerOffYForIpx : 1;
         }
+
+        if(this._bannerType != 1){
+            offY -= marginTopOffY;
+        }
         offY = offY * this._wxRatio;
-        const bannerWidth = this._bannerType == 1? this._wxWidth:this._wxWidth-10;
+        const bannerWidth = this._bannerType == 1? this._wxWidth:this._wxWidth-20;
         this.log("重新创建了Banner");
         let bannerAd = wx.createBannerAd({
             adUnitId: config.bannerId,
@@ -814,22 +813,10 @@ const PfuSdk = cc.Class({
             }
         });
         this._haveBanner = true;
-        if (this._bannerType == 1) {
-            bannerAd.onResize(size => {
-                bannerAd.style.top = self._wxHeight - designSizeH - offY;
-                bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
-            });
-        } else {
-            bannerAd.onResize(size => {
-                if (config.ipxBanner === 1 && this.isIphoneX()){
-                    bannerAd.style.top = self._wxHeight - size.height - offY + 30;
-                }else{
-                    bannerAd.style.top = self._wxHeight - size.height - offY;
-                }
-                bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
-            });
-        }
-
+        bannerAd.onResize(size => {
+            bannerAd.style.top = self._wxHeight - designSizeH - offY;
+            bannerAd.style.left = self._wxWidth / 2 - size.width / 2;
+        });
 
         bannerAd.onError(err => {
             this.log("Banner onError:" + JSON.stringify(err));
