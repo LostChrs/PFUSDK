@@ -33,6 +33,7 @@ cc.Class({
         
         online.addCb(()=>{
             online.getAdsList(res =>{
+                if(!cc.isValid(this.node))return;
                 let list = res.adverts;
                 if(!list || list.length <= 0){
                     self.node.active = false;

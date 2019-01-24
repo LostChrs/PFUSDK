@@ -1,34 +1,30 @@
 
 var online = require("PfuOnline");
 var config = require("PfuConfig");
-const PfuEvent = require("PfuEventSystem").Event;
 cc.Class({
     extends: cc.Component,
 
     properties: {
         content: cc.Node,
         itemTemplate: cc.Node,
-        arrowNode:cc.Node,
-    },
-    onEnable() {
-        PfuEvent.register("PfuEvent_CloseSidePage",this.evtClosePage,this);
-    },
-
-    evtClosePage(){
-        this._isShow = true;
-        this.toggleShow();
+        pageNode:cc.Node,
+        spLeft:cc.SpriteFrame,
+        spRight:cc.SpriteFrame,
+        arrowSprite:cc.Sprite,
     },
 
     start(){
         let self = this;
-        this._offX = this.node.width;
+        this._offX = this.pageNode.width;
         this._isShow = false;
-        this.node.x = -cc.winSize.width/2 - this._offX;
-        this.arrowNode.scaleX = -1;
+        this.pageNode.x = -this._offX;
         this.content.active = false;
+        this.arrowSprite.spriteFrame = this.spRight;
         this._boxList = [];   
         online.addCb(()=>{
             online.getAdsList(res =>{
+                if(!cc.isValid(this.node))return;
+                
                 let list = res.adverts;
                 if(!list || list.length <= 0){
                     self.node.active = false;
@@ -38,8 +34,16 @@ cc.Class({
               
                 self.initList(this.getCanJumpList(list));
             });
-        })
+        });
+
+        this.btn = this.getComponent(cc.Button);
+        this.btn.enabled = false;
+        this.btn.node.on("click",()=>{
+            this._isShow = true;
+            this.toggleShow();
+        },this);
     },
+ 
     getCanJumpList(list){
         let jumpList = [];
         list.forEach(item => {
@@ -47,9 +51,7 @@ cc.Class({
             let condition2 = (item.qrcodelink&&item.qrcodelink != "");
             let condition3 = this.checkDirectJump(item.jumpId);
             if(condition1 || condition2 || condition3){
-                if(item.wechatGameid != config.wxId){
-                    jumpList.push(item);
-                }
+                jumpList.push(item);
             }
         });
         return jumpList;
@@ -91,15 +93,20 @@ cc.Class({
     toggleShow(){
         let self = this;
         this._isShow = !this._isShow;
-        this.node.stopAllActions();
+        if(this._isShow == false && this.content.active == false){
+            return;
+        }
+        this.pageNode.stopAllActions();
         let t = 0.1;
         if(this._isShow){
-            this.arrowNode.scaleX = 1;
+            this.btn.enabled = true;
             this.content.active = true;
-            this.node.runAction(cc.moveTo(t,cc.v2(-cc.winSize.width/2,this.node.y)));
+            this.arrowSprite.spriteFrame = this.spLeft;
+            this.pageNode.runAction(cc.moveTo(t,cc.v2(0,this.pageNode.y)));
         }else{
-            this.arrowNode.scaleX = -1;
-            this.node.runAction(cc.sequence(cc.moveTo(t,cc.v2(-cc.winSize.width/2-this._offX,this.node.y)),cc.callFunc(()=>{
+            this.btn.enabled = false;
+            this.arrowSprite.spriteFrame = this.spRight;
+            this.pageNode.runAction(cc.sequence(cc.moveTo(t,cc.v2(-this._offX,this.pageNode.y)),cc.callFunc(()=>{
                 self.content.active = false;
             })));
         }

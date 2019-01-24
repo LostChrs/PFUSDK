@@ -30,11 +30,13 @@ cc.Class({
                 let sp = new cc.SpriteFrame(self._texture);
                 self.iconSp.spriteFrame = sp;
                 
-                if(self.lbName){
-                    self.resetSize(self.iconSp.node,sp,82);
-                }else{
-                    self.resetSize(self.iconSp.node,sp,110);
-                }
+                // if(self.lbName){
+                //     self.resetSize(self.iconSp.node,sp,118);
+                // }else{
+                //     self.resetSize(self.iconSp.node,sp,110);
+                // }
+                self.iconSp.node.height = 118;
+                self.iconSp.node.width = 118;
             };
         }
     },
