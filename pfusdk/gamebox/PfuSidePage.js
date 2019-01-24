@@ -1,6 +1,7 @@
 
 var online = require("PfuOnline");
 var config = require("PfuConfig");
+const PfuEvent = require("PfuEventSystem").Event;
 cc.Class({
     extends: cc.Component,
 
@@ -8,6 +9,14 @@ cc.Class({
         content: cc.Node,
         itemTemplate: cc.Node,
         arrowNode:cc.Node,
+    },
+    onEnable() {
+        PfuEvent.register("PfuEvent_CloseSidePage",this.evtClosePage,this);
+    },
+
+    evtClosePage(){
+        this._isShow = true;
+        this.toggleShow();
     },
 
     start(){
@@ -38,7 +47,9 @@ cc.Class({
             let condition2 = (item.qrcodelink&&item.qrcodelink != "");
             let condition3 = this.checkDirectJump(item.jumpId);
             if(condition1 || condition2 || condition3){
-                jumpList.push(item);
+                if(item.wechatGameid != config.wxId){
+                    jumpList.push(item);
+                }
             }
         });
         return jumpList;
