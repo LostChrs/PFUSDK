@@ -504,7 +504,7 @@ const PfuSdk = cc.Class({
     getBannerTop() {
         const offY = this._bannerType == 1?0:marginTopOffY;
         if (this.isIphoneX()) {
-            return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx;
+            return cc.winSize.height - config.bannerHeight - config.bannerOffYForIpx - config.ipxBanner;
         } else {
             return cc.winSize.height - config.bannerHeight;
         }
