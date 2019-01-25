@@ -41,11 +41,11 @@ cc.Class({
 
     show (num) {
         this.updateMoney();
-        this._costList = [200,200,2000,4000,6000,10000,15000,20000];
+        this._costList = [200,200,2000,4000,6000,10000,15000,20000,40000,80000];
         this.spList[0] = PfuRedpacket.Instance.shopIcon1;
         this.spList[1] = PfuRedpacket.Instance.shopIcon2;
  
-        for(let i=0;i<8;i++){
+        for(let i=0;i<10;i++){
             if(this.spList[i]){
                 const item = cc.instantiate(this.pbItem);
                 item.parent = this.content;
