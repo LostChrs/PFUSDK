@@ -1,6 +1,7 @@
 const PfuEvent = require("PfuEventSystem").Event;
 const EventType = require("PfuEventSystem").Type;
 const PfuRedpacket = require("PfuRedpacket");
+const PfuSdk = require("PfuSdk");
 cc.Class({
     extends: cc.Component,
 
@@ -9,11 +10,16 @@ cc.Class({
         lbNum:cc.Label,
         pbItem:cc.Node,
         content:cc.Node,
+        pageContent:cc.Node,
         spList:[cc.SpriteFrame],
     },
 
     onLoad () {
         this.btnClose.node.on("click",this.onClose,this);
+        if(PfuSdk.Instance.isIphoneX()){
+            const widget = this.pageContent.getComponent(cc.Widget);
+            widget.top = 50;
+        }
     },
 
     onEnable() {
