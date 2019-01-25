@@ -7,6 +7,8 @@ cc.Class({
     properties: {
         iconSp:cc.Sprite,
         lbName:cc.Label,
+        mask:cc.Mask,
+        maskSp:cc.SpriteFrame,
     },
 
     initData(data){
@@ -16,6 +18,8 @@ cc.Class({
             let gameName = data.gameName.substr(0,5);
             this.lbName.string = gameName;
         }
+
+        this.mask.spriteFrame = this.maskSp;
         //iconlink wechatgameid boxId
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
            
@@ -30,13 +34,8 @@ cc.Class({
                 let sp = new cc.SpriteFrame(self._texture);
                 self.iconSp.spriteFrame = sp;
                 
-                // if(self.lbName){
-                //     self.resetSize(self.iconSp.node,sp,118);
-                // }else{
-                //     self.resetSize(self.iconSp.node,sp,110);
-                // }
-                self.iconSp.node.height = 118;
-                self.iconSp.node.width = 118;
+                self.iconSp.node.height = 112;
+                self.iconSp.node.width = 112;
             };
         }
     },

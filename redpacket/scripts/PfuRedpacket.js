@@ -8,7 +8,6 @@ var PfuRedpacket = cc.Class({
         Instance:null,
     },
     properties: {
-        pbRedpacketLoginGift:cc.Prefab,
         pbRedpacketInfo:cc.Prefab,
         pbLuckyShop:cc.Prefab,
         executionOrder: -900
@@ -143,11 +142,7 @@ var PfuRedpacket = cc.Class({
     //每天减1毛   
     //计算可以领取的上限
     getMaxNum(){
-        // const day = this.getDay();//已经领取的天数
-        // let remain = 0;//保留的钱
-        // for(let i=day-1;i<7;i++){
-        //    remain += (moneyList[i]*2);
-        // }
+        
 
         return 19.5;
     },
@@ -172,12 +167,6 @@ var PfuRedpacket = cc.Class({
         self.showRedpacketInfo("Open");
     },
     //ui
-    showRedpacketLoginGift(){
-        let ui = this.createUI(this.pbRedpacketLoginGift);
-        if(ui){
-            ui.getComponent("PfuRedpacketLoginGift").show(moneyList);
-        }
-    },
     showRedpacketInfo(type,num,des){
         let ui = this.createUI(this.pbRedpacketInfo);
         if(ui){
@@ -185,7 +174,7 @@ var PfuRedpacket = cc.Class({
         }
     },
     showLuckyShop(){
-        //console.log("showLuckyShop");
+
         const num = this._ownMoney;
         let ui = this.createUI(this.pbLuckyShop);
         if(ui){

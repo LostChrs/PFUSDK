@@ -759,14 +759,14 @@ const PfuSdk = cc.Class({
     /*
     * 进入界面时主动刷新banner,能否刷新成功由函数内部判断
     */
-    refreshBanner(failCb) {
+    refreshBanner(failCb,force) {
         if (PfuSdk.bannerAd == null) return;
         this._bannerRefreshCount = this.getItem("pfuBannerRefreshCount");
-        if (this._bannerRefreshCount >= this._maxBannerRefreshCount) return;
+        if (!force && this._bannerRefreshCount >= this._maxBannerRefreshCount) return;
 
         let sec = this.getDiffFromNow(this._bannerLastTs);
 
-        if (Math.abs(sec) >= this._minBannerRefreshTime) {
+        if (force || Math.abs(sec) >= this._minBannerRefreshTime) {
 
             this.createBanner(failCb);
         }
