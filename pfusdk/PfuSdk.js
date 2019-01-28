@@ -609,13 +609,17 @@ const PfuSdk = cc.Class({
 
     //跳转盒子复活
     jumpGameboxForRelive(cb) {
+        if(this.isTestMode()){
+            if (cb) cb();
+            return;
+        }
         if(this._haveJumpBox || this._pfuCurReliveNum >= this._pfuBoxReliveNum){
-            this.showVideo({
-                success: cb
+            this.showBannerRelive({
+                success:cb
             });
             return;
         }
-        if (cc.sys.platform === cc.sys.WECHAT_GAME && !this.isTestMode()) {
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             PfuSdk.reliveCb = cb;
             let jumpId = "wx3e33fef689f472b1";
             if (online.wechatparam.pfuSdkBoxRelive) {
@@ -643,8 +647,8 @@ const PfuSdk = cc.Class({
                     }
                 })
             } else {
-                this.showVideo({
-                    success: cb
+                this.showBannerRelive({
+                    success:cb
                 });
             }
         } else {
