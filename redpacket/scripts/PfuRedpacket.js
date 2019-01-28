@@ -214,6 +214,7 @@ var PfuRedpacket = cc.Class({
             return 0;
         }
     },
+
     msgStateChange(){
         PfuEvent.send(EventType.RedpacketStateChange);
     },

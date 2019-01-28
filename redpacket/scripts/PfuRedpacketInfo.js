@@ -27,6 +27,10 @@ cc.Class({
         this.btnClose.node.on("click",this.onClose,this);
         this.btnWithdraw.node.on("click",this.onWithdraw,this);
         this.btnOpen.node.on("click",this.onOpenRedpacket,this);
+
+        PfuSdk.bannerAd && PfuSdk.bannerAd.show();
+
+        PfuSdk.Instance.setPosWithBanner(this.btnClose.node);
     },
 
     onEnable() {
@@ -100,6 +104,7 @@ cc.Class({
         }
     },
     onClose(){
+        PfuSdk.Instance._resetBannerState();
         const state = this._type == PageType.OPEN?0:1;
         PfuRedpacket.Instance.onInfoPageClose(state);
         this.node.destroy();
