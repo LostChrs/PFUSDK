@@ -58,6 +58,7 @@ const PfuSdk = cc.Class({
 
         this._pfuBoxReliveNum = 3;
         this._pfuCurReliveNum = this.getItem("pfuCurReliveNum", 0);
+        this._haveJumpBox = this.getItem("pfuHaveJumpBox",false);
 
         this._maxBannerRefreshCount = 5;
         this._dailyPlayTimeLimit = 3;
@@ -131,8 +132,8 @@ const PfuSdk = cc.Class({
 
         this.setItem("bannerReliveCount", 0);
 
-        this._pfuCurReliveNum = 0;
-        this.setItem("pfuCurReliveNum", 0);
+        this._haveJumpBox = false;
+        this.setItem("pfuHaveJumpBox", false);
 
         this._bannerRefreshCount = 0;//每日banner刷新次数
         this.setItem("pfuBannerRefreshCount", 0);
@@ -608,7 +609,13 @@ const PfuSdk = cc.Class({
 
     //跳转盒子复活
     jumpGameboxForRelive(cb) {
-        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+        if(this._haveJumpBox || this._pfuCurReliveNum >= this._pfuBoxReliveNum){
+            this.showVideo({
+                success: cb
+            });
+            return;
+        }
+        if (cc.sys.platform === cc.sys.WECHAT_GAME && !this.isTestMode()) {
             PfuSdk.reliveCb = cb;
             let jumpId = "wx3e33fef689f472b1";
             if (online.wechatparam.pfuSdkBoxRelive) {
@@ -619,23 +626,23 @@ const PfuSdk = cc.Class({
                 }
             }
 
-            if (this.checkDirectJump(jumpId) && this._pfuCurReliveNum < this._pfuBoxReliveNum) {
+            if (this.checkDirectJump(jumpId)) {
                 jumpBoxId = jumpId;
-                //jumpId = "wx716b36314be3fe89";
                 wx.navigateToMiniProgram({
                     appId: jumpId,
                     path: "pages/index/index?pfukey=" + config.wxId + "&pfuRelive=true",
                     extraData: { pfukey: config.wxId, pfuRelive: true },
-                    //envVersion:"trial",
                     success(res) {
                         this._pfuCurReliveNum++;
+                        this.setItem("pfuCurReliveNum",this._pfuCurReliveNum);
+                        this._haveJumpBox = true;
+                        this.setItem("pfuHaveJumpBox",true);
                     },
                     fail(res) {
                         PfuSdk.reliveCb = null;
                     }
                 })
             } else {
-                this._pfuCurReliveNum++;
                 this.showVideo({
                     success: cb
                 });
