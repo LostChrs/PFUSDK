@@ -13,6 +13,16 @@ cc.Class({
     onLoad(){
         this._initPos = this.node.position;
         this._widget = this.getComponent(cc.Widget);
+        cc.systemEvent.on("PfuOnline",this.evtTestMode,this);
+    },
+
+    onEnable(){
+        this.evtTestMode();
+    },
+
+
+    evtTestMode(){
+        this.node.active = !PfuSdk.Instance.isTestMode();
     },
 
     start(){

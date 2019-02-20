@@ -1,6 +1,7 @@
 
-var online = require("PfuOnline");
-var config = require("PfuConfig");
+const online = require("PfuOnline");
+const config = require("PfuConfig");
+const PfuSdk = require("PfuSdk");
 cc.Class({
     extends: cc.Component,
 
@@ -13,6 +14,17 @@ cc.Class({
         arrowSprite:cc.Sprite,
     },
 
+    onLoad(){
+        cc.systemEvent.on("PfuOnline",this.evtTestMode,this);
+    },
+    onEnable(){
+        this.evtTestMode();
+    },
+
+
+    evtTestMode(){
+        this.node.active = !PfuSdk.Instance.isTestMode();
+    },
     start(){
         let self = this;
         this._offX = this.pageNode.width;
