@@ -63,6 +63,7 @@ cc.Class({
     onBtnClick(){
         if(!this._data)return;
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            if(!wx.navigateToMiniProgram)return;
             let info = this._data;
             let gaid = PfuSdk.Instance.getGAID(info.link);
             online.pfuGAClick(6,gaid,PfuSdk.loginToken);
