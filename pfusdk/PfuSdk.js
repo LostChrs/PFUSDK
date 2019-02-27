@@ -637,7 +637,7 @@ const PfuSdk = cc.Class({
                     appId: jumpId,
                     path: "pages/index/index?pfukey=" + config.wxId + "&pfuRelive=true",
                     extraData: { pfukey: config.wxId, pfuRelive: true },
-                    success(res) {
+                    success:res=> {
                         this._pfuCurReliveNum++;
                         this.setItem("pfuCurReliveNum",this._pfuCurReliveNum);
                         this._haveJumpBox = true;
