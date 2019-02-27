@@ -223,6 +223,7 @@ var pfuOnline = {
 
         // 参数的query字段中可以获取到gdt_vid、weixinadinfo、channel等参数值
         let query = launchOptions.query;
+        if(!query)return;
         let gdt_vid = query.gdt_vid;
         let weixinadinfo = query.weixinadinfo;
         // 获取⼴告id

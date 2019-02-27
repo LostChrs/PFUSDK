@@ -620,6 +620,7 @@ const PfuSdk = cc.Class({
             return;
         }
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            if(!wx.navigateToMiniProgram)return;
             PfuSdk.reliveCb = cb;
             let jumpId = "wx3e33fef689f472b1";
             if (online.wechatparam.pfuSdkBoxRelive) {
@@ -979,6 +980,7 @@ const PfuSdk = cc.Class({
     //支付
     payIos(pName, pPrice) {
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            if(!wx.navigateToMiniProgram)return;
             const orderId = new Date().getTime();
             this._payOrder = orderId;
             //透传字段
@@ -1080,6 +1082,7 @@ const PfuSdk = cc.Class({
         this.schedule(this.updateMoreGameBtn, 10, cc.macro.REPEAT_FOREVER, 0);
     },
     onMoreGameClick(event, node) {
+        if(!wx.navigateToMiniProgram)return;
         this.log("onMoreGameClick:" + JSON.stringify(node.gameInfo));
         let info = node.gameInfo;
         let gaid = this.getGAID(info.iconlink);

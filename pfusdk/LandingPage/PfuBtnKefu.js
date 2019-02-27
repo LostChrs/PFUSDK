@@ -30,6 +30,7 @@ cc.Class({
 
     onKefuClick(){
         if(cc.sys.platform === cc.sys.WECHAT_GAME){
+            if(!wx.navigateToMiniProgram)return;
             wx.navigateToMiniProgram({
                 appId: "wx3e33fef689f472b1",
                 path: "pages/report/report?gameName=" + config.gameName,
