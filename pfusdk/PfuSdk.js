@@ -1013,6 +1013,7 @@ const PfuSdk = cc.Class({
 
     //更多游戏图标自动更新，请在获取在线参数后调用,传入需要更新的sprite
     setMoreGame(spLeft, spRight) {
+        if(!online.wechatparam)return;
         if ((online.wechatparam.pfuSdkMoreGame && online.wechatparam.pfuSdkMoreGame == "0") || this.isTestMode())  {
             this.log("隐藏更多游戏按钮");
             if (spLeft) spLeft.node.active = false;
